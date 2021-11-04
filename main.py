@@ -5,7 +5,6 @@ import json
 import platform
 from funcs import load_cfg
 from discord.ext import commands
-from discord.errors import ExtensionAlreadyLoaded, ExtensionNotLoaded
 from discord.commands import permissions
 from discord.commands import Option
 
@@ -26,15 +25,15 @@ if __name__ == "__main__":
                 exception = f"{type(e).__name__}: {e}"
                 print(f"Failed to load extension '{extension}'\n{exception}")
 
-
-@bot.slash_command(guild_ids=[cfg['test_guild_id']])
-@permissions.has_role(cfg['dev_role'], guild_id=cfg['test_guild_id'])
+# This command is for loading, unloading and reloading cogs!
+@bot.slash_command(guild_ids=[cfg['test_guild_id']])  # Only allow this command in the test server!
+@permissions.has_role(cfg['dev_role'], guild_id=cfg['test_guild_id'])  # Only allow a developer to use it!
 async def cog(
     ctx, 
     cog: Option(str, "Choose cog", choices=bot.cogs.keys()), 
     action: Option(str, "Choose action", choices=["Load", "Unload", "Reload"], default="Reload"),
 ):
-    cog = cog.lower()
+    cog = cog.lower()  # Example -> example (so it can recognize the cog when loading/unloading!)
     info = f"Cog: `{cog}`, Action: `{action}`\n"
 
     try:
@@ -45,9 +44,9 @@ async def cog(
         else:
             bot.unload_extension(f"cogs.{cog}")
             bot.load_extension(f"cogs.{cog}")
-    except Exception as e:
+    except Exception as e:  # Something went wrong!
         exception = f"`Exception: {type(e).__name__}`, ```{e}```"
-        return await ctx.respond(info + exception)
+        return await ctx.respond(info + exception)  # Returns, which stops code execution
 
     await ctx.respond(info)
 
