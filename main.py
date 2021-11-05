@@ -3,10 +3,18 @@ import sys
 import os
 import json
 import platform
-from funcs import load_cfg
+import logging
+from scripts import load_cfg
 from discord.ext import commands
 from discord.commands import permissions
 from discord.commands import Option
+
+# Setup logger
+logger = logging.getLogger('discord')
+logger.setLevel(logging.DEBUG)
+handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
+handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+logger.addHandler(handler)
 
 # Load config
 cfg = load_cfg()
@@ -15,6 +23,7 @@ bot = commands.Bot(command_prefix=cfg['prefix'])
 
 # Load cogs
 if __name__ == "__main__":
+    print("LOADING COGS")
     for file in os.listdir("./cogs"):
         if file.endswith(".py"):
             extension = file[:-3]
@@ -24,6 +33,7 @@ if __name__ == "__main__":
             except Exception as e:
                 exception = f"{type(e).__name__}: {e}"
                 print(f"Failed to load extension '{extension}'\n{exception}")
+    print()
 
 # This command is for loading, unloading and reloading cogs!
 @bot.slash_command(guild_ids=[cfg['test_guild_id']])  # Only allow this command in the test server!
@@ -53,11 +63,12 @@ async def cog(
 # The code in this even is executed when the bot is ready
 @bot.event
 async def on_ready():
+    print("RNB ONLINE")
     print(f"Logged in as {bot.user.name}")
     print(f"Py-cord version: {discord.__version__}")
     print(f"Python version: {platform.python_version()}")
     print(f"Running on: {platform.system()} {platform.release()} ({os.name})")
-    print("-------------------")
+    print()
 
 # The code in this event is executed every time a valid commands catches an error
 @bot.event
