@@ -1,3 +1,4 @@
+import requests  # For testing purposes
 from scripts import load_cfg, image_embed
 from discord.ext import commands
 from discord.commands import slash_command # Importing the decorator that makes slash commands.
@@ -9,10 +10,18 @@ class Example(commands.Cog):
         self.bot = bot
  
     @slash_command(guild_ids=[cfg['test_guild_id']]) # Create a slash command for the supplied guilds.
-    async def image_test(self, ctx):
+    async def image_test(self, ctx, post_id: int):
+        async def get_post_data(post_id):  # Temporary for testing purposes
+            url = f"https://api.rec.net/api/images/v4/{post_id}"
+            r = requests.get(url)
+            if r.ok:
+                return r.json()
+            return {}
+
+        post_data = await get_post_data(post_id)
+
         # Test post
-        post = {"Id":45084641,"Type":1,"Accessibility":1,"AccessibilityLocked":False,"ImageName":"fe721c0f7f1c4deaaa2d79057cc62af1.jpg","Description":None,"PlayerId":1827567,"TaggedPlayerIds":[1827567],"RoomId":170134,"PlayerEventId":189069,"CreatedAt":"2020-12-15T04:56:54.4519046Z","CheerCount":1,"CommentCount":2}
-        em = await image_embed(post)  # Get embed
+        em = await image_embed(post_data)  # Get embed
         await ctx.respond(embed=em)
 
     @slash_command() # Not passing in guild_ids creates a global slash command (might take an hour to register).
