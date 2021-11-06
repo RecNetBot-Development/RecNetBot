@@ -1,5 +1,7 @@
 # Config
 config.json
+.config.json
+config.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -108,6 +110,7 @@ celerybeat.pid
 .env
 .venv
 .vscode
+.vscode/
 env/
 RNB-env/
 venv/
