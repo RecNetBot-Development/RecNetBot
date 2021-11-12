@@ -8,6 +8,7 @@ from scripts import load_cfg
 from discord.ext import commands
 from discord.commands import permissions
 from discord.commands import Option
+from modules.CogManager import CogManager
 
 # Setup logger
 logger = logging.getLogger('discord')
@@ -20,19 +21,12 @@ logger.addHandler(handler)
 cfg = load_cfg()
 
 bot = commands.Bot(command_prefix=cfg['prefix'])
+cogManager = CogManager(bot)
 
 # Load cogs
 if __name__ == "__main__":
     print("LOADING COGS")
-    for file in os.listdir("./cogs"):
-        if file.endswith(".py"):
-            extension = file[:-3]
-            try:
-                bot.load_extension(f"cogs.{extension}")
-                print(f"Loaded extension '{extension}'")
-            except Exception as e:
-                exception = f"{type(e).__name__}: {e}"
-                print(f"Failed to load extension '{extension}'\n{exception}")
+    cogManager.buildCogs()
     print()
 
 # This command is for loading, unloading and reloading cogs!
