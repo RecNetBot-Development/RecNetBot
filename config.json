@@ -1,9 +1,9 @@
 {
-    "prefix": "RNB!",
-    "token": "NzkzMTE0MjkyNDEzMDA1ODU1.X-njPg.5b6Dhkj9n6lHwhca9B-rmjf5CFE",
+    "prefix": "",
+    "token": "",
     "owners": [
-        293008770957836299
+        
     ],
-    "test_guild_id": 745219512529584195,
-    "dev_role": "V3 Developer"
-  }
+    "test_guild_id": 0,
+    "dev_role": ""
+}

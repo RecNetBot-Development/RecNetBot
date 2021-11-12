@@ -70,4 +70,4 @@ async def on_command_error(ctx, error):
     raise error
 
 # Run the bot
-bot.run(cfg['token'])
+bot.run(os.environ.get('DISCORD_TOKEN', cfg['token']))  # Either from Heroku vars or local cfg
