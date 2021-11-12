@@ -1,7 +1,6 @@
-from typing import Type
 import discord
-from .funcs import date_to_unix
-from .emojis import Emoji  # RNB Emojis
+from scripts import date_to_unix
+from scripts import Emoji  # RNB Emojis
 
 # Makes an embed for a single RecNet post
 async def image_embed(post_data: dict):
