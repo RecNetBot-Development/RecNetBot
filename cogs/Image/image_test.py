@@ -1,5 +1,5 @@
 import requests  # For testing purposes
-from scripts import load_cfg
+from scripts import load_cfg, log
 from embeds import image_embed, finalize_embed
 from discord.commands import slash_command # Importing the decorator that makes slash commands.
 
@@ -7,6 +7,7 @@ cfg = load_cfg()
 
 @slash_command(guild_ids=[cfg['test_guild_id']]) # Create a slash command for the supplied guilds.
 async def image_test(self, ctx, post_id: int):
+    log(ctx)
     async def get_post_data(post_id):  # Temporary for testing purposes
         url = f"https://api.rec.net/api/images/v4/{post_id}"
         r = requests.get(url)
