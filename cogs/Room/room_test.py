@@ -1,20 +1,16 @@
-import requests  # For testing purposes
-from scripts import load_cfg
+from rest import route_manager as route
+from scripts import load_cfg, log
 from embeds import room_embed, finalize_embed
 from discord.commands import slash_command # Importing the decorator that makes slash commands.
 
 cfg = load_cfg()
+obj = route.APIRouteManager()
 
 @slash_command(guild_ids=[cfg['test_guild_id']]) # Create a slash command for the supplied guilds.
 async def room_test(self, ctx, room_id: int, icons: bool = True, explanations: bool = False):
-    async def get_room_data(post_id):  # Temporary for testing purposes
-        url = f"https://rooms.rec.net/rooms/{room_id}?include=366"
-        r = requests.get(url)
-        if r.ok:
-            return r.json()
-        return {}
+    log(ctx)
 
-    room_data = await get_room_data(room_id)
+    room_data = await obj.rooms.rooms(room_id).get({"include": 366}).data
     
     # Test post
     em = await room_embed(room_data, icons, explanations)  # Get embed

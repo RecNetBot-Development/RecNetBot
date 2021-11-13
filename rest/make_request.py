@@ -13,9 +13,8 @@ class APIRequest:
             data = helpers.data_to_multidict(data)
 
         self._data = data
+        self.data = asyncio.create_task(self.make_request())
 
-        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-        self.data = asyncio.run(self.make_request())
 
     async def make_request(self):
         async with aiohttp.request(method=self._method, url=self._path, params=self._params, data=self._data) as response:

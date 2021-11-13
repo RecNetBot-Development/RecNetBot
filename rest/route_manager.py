@@ -1,7 +1,7 @@
 from rest import route_builder
 
 class APIRouteManager:
-    def __init__(self, client):
+    def __init__(self, client=None):
         self.client = client
 
     @property
