@@ -20,6 +20,7 @@ logger.addHandler(handler)
 # Load config
 cfg = load_cfg()
 
+# Setup bot
 bot = commands.Bot(command_prefix=cfg['prefix'])
 cogManager = CogManager(bot)
 
@@ -70,4 +71,4 @@ async def on_command_error(ctx, error):
     raise error
 
 # Run the bot
-bot.run(os.environ.get('DISCORD_TOKEN', cfg['token']))  # Either from Heroku vars or local cfg
+bot.run(cfg['token'])

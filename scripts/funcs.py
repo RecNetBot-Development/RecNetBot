@@ -8,12 +8,20 @@ from datetime import datetime
 
 # Loads the local config file
 def load_cfg():
-    if not os.path.isfile("config.json"):
-        sys.exit("'config.json' not found! Please add it and try again.")
-    else:
+    if os.path.isfile("config.json"):
         with open("config.json", "r") as file:
-            cfg = json.load(file)
-        
+            l_cfg = json.load(file)  # Local config
+    
+    cfg = {
+        "dev_role": os.environ.get('DEV_ROLE', l_cfg['dev_role']),
+        "test_guild_id": int(os.environ.get('TEST_GUILD_ID', l_cfg['test_guild_id'])),
+        "prefix": os.environ.get('PREFIX', l_cfg['prefix']),
+        "token": os.environ.get('DISCORD_TOKEN', l_cfg['token'])
+    }  # Prioritize env variables
+
+    for key in cfg:
+        if not cfg[key]:  # If some key is missing, the config is invalid
+            sys.exit("Invalid config!")
     return cfg
 
 
