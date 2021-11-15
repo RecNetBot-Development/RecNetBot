@@ -22,4 +22,4 @@ class APIRequest:
                 data = await response.json()
                 return data
             else:
-                return None
+                return {}

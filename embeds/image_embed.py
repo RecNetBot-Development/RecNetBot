@@ -2,7 +2,7 @@ import discord
 from scripts import date_to_unix
 from scripts import Emoji  # RNB Emojis
 
-# Makes an embed for a single RecNet post
+"""Makes an embed for a single RecNet post"""
 async def image_embed(post_data: dict):
     # Unpack required data
     try:
