@@ -16,7 +16,8 @@ def load_cfg():
         "dev_role": os.environ.get('DEV_ROLE', l_cfg['dev_role']),
         "test_guild_id": int(os.environ.get('TEST_GUILD_ID', l_cfg['test_guild_id'])),
         "prefix": os.environ.get('PREFIX', l_cfg['prefix']),
-        "token": os.environ.get('DISCORD_TOKEN', l_cfg['token'])
+        "token": os.environ.get('DISCORD_TOKEN', l_cfg['token']),
+        "redis_url": os.environ.get('REDIS_URL', l_cfg['redis_url'])
     }  # Prioritize env variables
 
     for key in cfg:

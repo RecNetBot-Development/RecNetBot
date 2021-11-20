@@ -4,8 +4,9 @@ from scripts.ModuleCollector import ModuleCollector
 from discord.commands import ApplicationCommand
 
 class Cog(commands.Cog):
-    def __init__(self, manager, name):
+    def __init__(self, manager, name, rn_client):
         self.bot = manager.bot
+        self.rn = rn_client
         self._modules = ModuleCollector()
         self.__cog_name__ = name
         self.__cog_commands__ = []

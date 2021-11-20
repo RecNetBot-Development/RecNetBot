@@ -1,13 +1,14 @@
 import discord
 import sys
 import os
+import redis
 import json
 import platform
 import logging
 from scripts import load_cfg
+from rest import Client
 from discord.ext import commands
-from discord.commands import permissions
-from discord.commands import Option
+from discord.commands import permissions, Option
 from modules.CogManager import CogManager
 
 # Setup logger
@@ -20,9 +21,17 @@ logger.addHandler(handler)
 # Load config
 cfg = load_cfg()
 
+# Setup redis
+redis_url = cfg['redis_url']
+assert redis_url, "Redis database is missing!"
+rnb_db = redis.from_url(redis_url)
+
+# RecNet API client
+rn_client = Client()
+
 # Setup bot
 bot = commands.Bot(command_prefix=cfg['prefix'])
-cogManager = CogManager(bot)
+cogManager = CogManager(bot, rnb_db, rn_client)  # include database and client for all cogs to use
 
 # Load cogs
 if __name__ == "__main__":
