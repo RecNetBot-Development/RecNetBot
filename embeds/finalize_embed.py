@@ -1,11 +1,13 @@
-import discord
 import datetime
+from discord import Embed
+from discord import Colour
+from discord.ext.commands import Context
 
 """Adds finishing touches to embeds"""
-async def finalize_embed(em: discord.Embed, author: discord.Member = None):
+def finalize_embed(ctx: Context, em: Embed):
     em.timestamp = datetime.datetime.now()
-    if author:
-        em.set_footer(text=f"Ran by {author.name}", icon_url=author.avatar)
-    em.colour = discord.Colour.orange()
+    if ctx.author:
+        em.set_footer(text=f"Ran by {ctx.author.name}", icon_url=ctx.author.avatar)
+    em.colour = Colour.orange()
 
     return em

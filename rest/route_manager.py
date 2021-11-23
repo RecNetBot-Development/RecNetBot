@@ -15,3 +15,7 @@ class APIRouteManager:
     @property
     def accounts(self):
         return route_builder.APIRouteBuilder("https://accounts.rec.net/")
+
+    @property
+    def clubs(self):
+        return route_builder.APIRouteBuilder("https://clubs.rec.net/")

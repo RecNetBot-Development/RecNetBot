@@ -1,9 +1,11 @@
-import discord
+from discord import Embed
+from discord.ext.commands import Context
+from embeds.finalize_embed import finalize_embed
 from scripts import date_to_unix
 from scripts import Emoji  # RNB Emojis
 
 """Makes an embed for a single room"""
-async def room_embed(room_data: dict, icons: bool = True, explanations: bool = True):
+def room_embed(ctx: Context, room_data: dict, icons: bool = True, explanations: bool = True):
     # Unpack required data
     try:
         name, room_id, creator, img_name, description, cheers, favorites, visitors, visits, unix_date, tags, subrooms, max_players, rro = room_data['Name'], room_data['RoomId'], room_data['CreatorAccountId'], room_data['ImageName'], room_data['Description'], room_data['Stats']['CheerCount'], room_data['Stats']['FavoriteCount'], room_data['Stats']['VisitorCount'], room_data['Stats']['VisitCount'], date_to_unix(room_data['CreatedAt']), room_data['Tags'], room_data['SubRooms'], room_data['MaxPlayers'], room_data['IsRRO']
@@ -62,7 +64,7 @@ async def room_embed(room_data: dict, icons: bool = True, explanations: bool = T
     """
 
     # Define embed
-    em = discord.Embed(
+    em = Embed(
         title = f"^{name} {'(RRO)' if rro else ''}",
         description = desc,
         url=f"https://rec.net/room/{name}"
@@ -71,4 +73,5 @@ async def room_embed(room_data: dict, icons: bool = True, explanations: bool = T
     # Add the room thumbnail
     em.set_image(url="https://img.rec.net/" + img_name)
 
+    em = finalize_embed(ctx, em)
     return em  # Return the embed.

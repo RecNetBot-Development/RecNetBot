@@ -10,6 +10,8 @@ from rest import Client
 from discord.ext import commands
 from discord.commands import permissions, Option
 from modules.CogManager import CogManager
+from rest.wrapper.exceptions import AccountNotFound
+from embeds import error_embed
 
 # Setup logger
 logger = logging.getLogger('discord')
@@ -74,10 +76,17 @@ async def on_ready():
     print(f"Running on: {platform.system()} {platform.release()} ({os.name})")
     print()
 
-# The code in this event is executed every time a valid commands catches an error
+# Global error handling
 @bot.event
-async def on_command_error(ctx, error):
-    raise error
+async def on_application_command_error(ctx: commands.Context, error):
+    raise_error = True
+    if isinstance(error.original, AccountNotFound):
+        raise_error = False
+        
+    em = error_embed(ctx, error.original)
+
+    await ctx.respond(embed=em)
+    if raise_error: raise error
 
 # Run the bot
 bot.run(cfg['token'])

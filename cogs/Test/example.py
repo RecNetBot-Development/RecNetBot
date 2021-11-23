@@ -14,11 +14,8 @@ async def hi(self, ctx):
     description="Sends username from account id."
 ) # Create a slash command for the supplied guilds.
 async def accountid(self, ctx, id: int):
-    try:
-        user = await self.rn.account(account_id=id).get_account_by_id()
-    except AccountNotFound:
-        return await ctx.respond(f"Couldn't find account with the id `{id}`")
-    await ctx.respond(user.username)
+    user = await self.rn.account(account_id=id).get_user()
+    await ctx.respond(f"Username from API: `{user.username}`")
 
 @slash_command(
     guild_ids=[cfg['test_guild_id']],
@@ -26,11 +23,8 @@ async def accountid(self, ctx, id: int):
     description="Sends user's username from the API."
 ) # Create a slash command for the supplied guilds.
 async def username(self, ctx, username: str):
-    try:
-        user = await self.rn.account(username=username).get_account_by_username()
-    except AccountNotFound:
-        return await ctx.respond(f"Couldn't find `@{username}`")
-    await ctx.respond(user.username)
+    user = await self.rn.account(username=username).get_user()
+    await ctx.respond(f"Username from API: `{user.username}`")
 
 @slash_command(
     guild_ids=[cfg['test_guild_id']],
@@ -38,12 +32,8 @@ async def username(self, ctx, username: str):
     description="Sends user's platforms."
 )
 async def platforms(self, ctx, username: str):
-    try:
-        user = await self.rn.account(username=username).get_account_by_username()
-    except AccountNotFound:
-        return await ctx.respond(f"Couldn't find `@{username}`")
-
-    await ctx.respond(user.platform_names)
+    user = await self.rn.account(username=username).get_user()
+    await ctx.respond(f"Platforms: `{user.platform_names}`")
 
 @slash_command(
     guild_ids=[cfg['test_guild_id']],
@@ -51,9 +41,23 @@ async def platforms(self, ctx, username: str):
     description="Sends user's bio."
 )
 async def bio(self, ctx, username: str):
-    try:
-        user = await self.rn.account(username=username, include_bio=True).get_account_by_username()
-    except AccountNotFound:
-        return await ctx.respond(f"Couldn't find `@{username}`")
+    user = await self.rn.account(username=username, include_bio=True).get_user()
+    await ctx.respond(f"Bio: ```{user.bio}```")
 
-    await ctx.respond(user.bio)
+@slash_command(
+    guild_ids=[cfg['test_guild_id']],
+    name="progression",
+    description="Sends user's progression."
+)
+async def progression(self, ctx, username: str):
+    user = await self.rn.account(username=username, include_progression=True).get_user()
+    await ctx.respond(f"lvl: `{user.progression['lvl']}` xp: `{user.progression['xp']}`")
+
+@slash_command(
+    guild_ids=[cfg['test_guild_id']],
+    name="subs",
+    description="Sends user's subs."
+)
+async def subs(self, ctx, username: str):
+    user = await self.rn.account(username=username, include_subscribers=True).get_user()
+    await ctx.respond(f"subs: `{user.subscribers}`")

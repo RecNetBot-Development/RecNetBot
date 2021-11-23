@@ -1,15 +1,17 @@
+from discord.ext import commands
+
 class Error(Exception):
     """Base class for other exceptions"""
-    pass
+    ...
 
-class AccountIdMissing(Error):
-    """Raised when trying to access the account id without it being defined"""
-    pass
-
-class UsernameMissing(Error):
-    """Raised when trying to access the account id without it being defined"""
-    pass
+class AccountDetailsMissing(Error):
+    """Raised when trying to get an account without details"""
+    ...
 
 class AccountNotFound(Error):
     """Raised when an account couldn't be found"""
-    pass
+    ...
+
+class APIFailure(Error):
+    """Raised when request fails"""
+    ...
