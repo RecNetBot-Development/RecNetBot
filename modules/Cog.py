@@ -4,9 +4,8 @@ from scripts.ModuleCollector import ModuleCollector
 from discord.commands import ApplicationCommand
 
 class Cog(commands.Cog):
-    def __init__(self, manager, name, rn_client):
+    def __init__(self, manager, name):
         self.bot = manager.bot
-        self.rn = rn_client
         self._modules = ModuleCollector()
         self.__cog_name__ = name
         self.__cog_commands__ = []
@@ -26,3 +25,8 @@ class Cog(commands.Cog):
     def addCommand(self, command):
         command.cog = self
         self.__cog_commands__.append(command._update_copy(self.__cog_settings__))
+
+    async def cog_command_error(self, ctx, error):
+        #TODO: handel command errors here
+        pass
+        

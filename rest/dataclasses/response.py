@@ -4,4 +4,4 @@ from attr import dataclass
 class Response:
     status: int
     success: bool
-    data: int | dict | str
+    data: int or dict or str

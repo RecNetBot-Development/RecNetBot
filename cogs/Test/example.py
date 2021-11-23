@@ -14,7 +14,7 @@ async def hi(self, ctx):
     description="Sends username from account id."
 ) # Create a slash command for the supplied guilds.
 async def accountid(self, ctx, id: int):
-    user = await self.rn.account(account_id=id).get_user()
+    user = await self.bot.rec_net.account(account_id=id).get_user()
     await ctx.respond(f"Username from API: `{user.username}`")
 
 @slash_command(
@@ -23,7 +23,7 @@ async def accountid(self, ctx, id: int):
     description="Sends user's username from the API."
 ) # Create a slash command for the supplied guilds.
 async def username(self, ctx, username: str):
-    user = await self.rn.account(username=username).get_user()
+    user = await self.bot.rec_net.account(username=username).get_user()
     await ctx.respond(f"Username from API: `{user.username}`")
 
 @slash_command(
@@ -32,7 +32,7 @@ async def username(self, ctx, username: str):
     description="Sends user's platforms."
 )
 async def platforms(self, ctx, username: str):
-    user = await self.rn.account(username=username).get_user()
+    user = await self.bot.rec_net.account(username=username).get_user()
     await ctx.respond(f"Platforms: `{user.platform_names}`")
 
 @slash_command(
@@ -41,7 +41,7 @@ async def platforms(self, ctx, username: str):
     description="Sends user's bio."
 )
 async def bio(self, ctx, username: str):
-    user = await self.rn.account(username=username, include_bio=True).get_user()
+    user = await self.bot.rec_net.account(username=username, include_bio=True).get_user()
     await ctx.respond(f"Bio: ```{user.bio}```")
 
 @slash_command(
@@ -50,7 +50,7 @@ async def bio(self, ctx, username: str):
     description="Sends user's progression."
 )
 async def progression(self, ctx, username: str):
-    user = await self.rn.account(username=username, include_progression=True).get_user()
+    user = await self.bot.rec_net.account(username=username, include_progression=True).get_user()
     await ctx.respond(f"lvl: `{user.progression['lvl']}` xp: `{user.progression['xp']}`")
 
 @slash_command(
@@ -59,5 +59,5 @@ async def progression(self, ctx, username: str):
     description="Sends user's subs."
 )
 async def subs(self, ctx, username: str):
-    user = await self.rn.account(username=username, include_subscribers=True).get_user()
+    user = await self.bot.rec_net.account(username=username, include_subscribers=True).get_user()
     await ctx.respond(f"subs: `{user.subscribers}`")

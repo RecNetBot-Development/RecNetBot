@@ -6,10 +6,8 @@ from modules.Cog import Cog
 from discord.commands import ApplicationCommand
 
 class CogManager:
-    def __init__(self, bot, rnb_db, rn_client=Client(), *args, **kwargs):
+    def __init__(self, bot, *args, **kwargs):
         self.bot = bot
-        self.rn_client = rn_client
-        self.rnb_db = rnb_db
         self._cogs = []
 
     @property
@@ -22,4 +20,4 @@ class CogManager:
     def buildCogs(self):
         cogDirs = self.cogDirs
         for dir in cogDirs:
-            self.bot.add_cog(Cog(self, dir, self.rn_client))
+            self.bot.add_cog(Cog(self, dir))
