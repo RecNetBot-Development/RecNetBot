@@ -16,6 +16,7 @@ class User:
 
     @property
     def platform_names(self):
+        if not self.platforms: return []
         chk_tuple = ('Steam', 'Oculus', 'PlayStation', 'Xbox', 'HeadlessBot', 'iOS', 'Android')
         platform_list, pos = [], 0
         while self.platforms:

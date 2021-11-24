@@ -2,6 +2,8 @@ import discord
 import platform
 import os
 from discord.ext import commands
+from rest.wrapper.exceptions import AccountNotFound
+from embeds import error_embed
 from bot import RecNetBot
 
 bot = RecNetBot()
@@ -19,13 +21,13 @@ async def on_ready():
 # Global error handling
 @bot.event
 async def on_application_command_error(ctx: commands.Context, error):
-    raise_error = False
+    raise_error = True
     if isinstance(error.original, AccountNotFound):
-        raise_error = False
+        raise_error = True
 
     em = error_embed(ctx, error.original)
 
-    await ctx.respond(embed=em, ephemeral=true)
+    await ctx.respond(embed=em, ephemeral=True)
     if raise_error: raise error
 
 # Run the bot

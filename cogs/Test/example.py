@@ -61,3 +61,15 @@ async def progression(self, ctx, username: str):
 async def subs(self, ctx, username: str):
     user = await self.bot.rec_net.account(username=username, include_subscribers=True).get_user()
     await ctx.respond(f"subs: `{user.subscribers}`")
+
+@slash_command(
+    guild_ids=[cfg['test_guild_id']],
+    name="bulk",
+    description="bulk"
+)
+async def bulk(self, ctx, ids: str):
+    user = await self.bot.rec_net.account(account_id=ids.split(":"), include_subscribers=True, include_progression=True, include_bio=True).get_user()
+
+    msg = ""
+    for account in user: msg += f"{account.username}: `{account.subscribers:,}`, `{account.bio}`, `{account.progression['lvl']}`\n"
+    await ctx.respond(msg)

@@ -1,3 +1,4 @@
+from typing import List
 from ..dataclasses import User
 from .exceptions import *
 
@@ -5,7 +6,7 @@ class Account:
     def __init__(
         self, 
         rn_client,
-        account_id: int = None, 
+        account_id: int or list = None, 
         username: str = None,
         include_bio: bool = False,
         include_progression: bool = False,
@@ -22,55 +23,71 @@ class Account:
     """Used to get the user dataclass."""
     async def get_user(self):
         acc_data = await self.get_account_data()
-        self.account_id = acc_data['accountId']
-
-        if self.include_bio:  # If bio is wanted
-            bio = await self.get_account_bio()
+        if len(acc_data) == 1: self.account_id = acc_data[0]['accountId']
+        bulk = []
 
         if self.include_progression:  # If lvl & xp are wanted
-            progression = await self.get_account_progression()
+            progression = await self.get_account_progression(self.account_id)
 
-        if self.include_subscribers:  # If subscriber count is wanted
-            subscribers = await self.get_account_subscribers()
+        for index, account in enumerate(acc_data):
+            account_id = account['accountId']
+            if self.include_bio:  # If bio is wanted
+                bio = await self.get_account_bio(account_id)
 
-        user = self.create_user_dataclass(
-            account_data = acc_data,
-            bio = bio if self.include_bio else None,
-            progression = progression if self.include_progression else None,
-            subscribers = subscribers if self.include_subscribers else None
-        )  # Create the dataclass
-        return user
+            if self.include_subscribers:  # If subscriber count is wanted
+                subscribers = await self.get_account_subscribers(account_id)
+
+            user = self.create_user_dataclass(
+                account_data = acc_data[index],
+                bio = bio if self.include_bio else None,
+                progression = progression[index] if self.include_progression else None,
+                subscribers = subscribers if self.include_subscribers else None
+            )  # Create the dataclass
+            bulk.append(user)
+
+        if len(bulk) == 1: return bulk[0]  # If only 1 account, only return it
+        return bulk  # Otherwise the whole bulk
 
     async def get_account_data(self):
         try:
             if self.account_id is not None:  # 0 is falsy, so this prevents issues if user inputs 0
-                resp = await self.rn.accounts.account(self.account_id).get().response
+                resp = await self.rn.accounts.account.bulk.get({"id": self.account_id}).response
+                acc_data = resp.data
             elif self.username:
                 resp = await self.rn.accounts.account.get({"username": self.username}).response
+                acc_data = [resp.data]
             else:
                 raise AccountDetailsMissing("Missing account details! Can't find an account without them.")
         except APIFailure:
             raise AccountNotFound("Couldn't find the account you were looking for!")
 
-        acc_data = resp.data
         return acc_data
 
-    async def get_account_bio(self):
-        resp = await self.rn.accounts.account(self.account_id).bio.get().response
+    async def get_account_bio(self, acc_id=None):
+        if not acc_id: acc_id = self.account_id
+        resp = await self.rn.accounts.account(acc_id).bio.get().response
         bio = resp.data['bio']
         return bio
 
-    async def get_account_progression(self):
-        resp = await self.rn.api.players.v2.progression.bulk.get({"id": [self.account_id]}).response
+    async def get_account_progression(self, acc_id=None):
+        if not acc_id: acc_id = self.account_id
+        if type(acc_id) is not list: acc_id = [acc_id]  # Turn to list for bulk
+        resp = await self.rn.api.players.v2.progression.bulk.get({"id": acc_id}).response
         data = resp.data
-        progression = {
-            "lvl": data[0]['Level'],
-            "xp": data[0]['XP']
-        }
-        return progression
 
-    async def get_account_subscribers(self): 
-        resp = await self.rn.clubs.subscription.subscriberCount(self.account_id).get().response
+        bulk = []
+        for account in data:
+            progression = {
+                "lvl": account['Level'],
+                "xp": account['XP']
+            }
+            bulk.append(progression)
+        return bulk
+
+    async def get_account_subscribers(self, acc_id=None): 
+        if not acc_id:
+            acc_id = self.account_id
+        resp = await self.rn.clubs.subscription.subscriberCount(acc_id).get().response
         subscribers = resp.data
         return subscribers
 
