@@ -1,7 +1,7 @@
 from typing_extensions import runtime
 from rest import route_manager as route
 from .account import Account
-from .image import Image
+from .image import ImageManager
 
 class Client:
     def __init__(
@@ -14,4 +14,4 @@ class Client:
         return Account(rn=self.rn, client=self, *args, **kwargs)
 
     def image(self, *args, **kwargs):
-        return Image(rn=self.rn, client=self, *args, **kwargs)
+        return ImageManager(rn=self.rn, client=self, *args, **kwargs)

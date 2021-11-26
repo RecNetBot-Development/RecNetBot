@@ -1,7 +1,7 @@
 from ..dataclasses import Image
 from .exceptions import *
 
-class Image:
+class ImageManager:
     def __init__(
         self, 
         rn,
