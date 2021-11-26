@@ -59,8 +59,8 @@ async def progression(self, ctx, username: str):
     description="Sends user's subs."
 )
 async def subs(self, ctx, username: str):
-    user = await self.bot.rec_net.account(username=username, include_subscribers=True).get_user()
-    await ctx.respond(f"subs: `{user.subscribers}`")
+    user = await self.bot.rec_net.account(username=username, include_subscriber_count=True).get_user()
+    await ctx.respond(f"subs: `{user.subscriber_count}`")
 
 @slash_command(
     guild_ids=[cfg['test_guild_id']],
@@ -68,8 +68,26 @@ async def subs(self, ctx, username: str):
     description="bulk"
 )
 async def bulk(self, ctx, ids: str):
-    user = await self.bot.rec_net.account(account_id=ids.split(":"), include_subscribers=True, include_progression=True, include_bio=True).get_user()
+    user = await self.bot.rec_net.account(account_id=ids.split(":"), include_subscriber_count=True, include_progression=True, include_bio=True).get_user()
 
     msg = ""
-    for account in user: msg += f"{account.username}: `{account.subscribers:,}`, `{account.bio}`, `{account.progression['lvl']}`\n"
+    for account in user: msg += f"{account.username}: `{account.subscriber_count:,}`, `{account.bio}`, `{account.progression['lvl']}`\n"
     await ctx.respond(msg)
+
+@slash_command(
+    guild_ids=[cfg['test_guild_id']],
+    name="created",
+    description="createdat"
+)
+async def createdat(self, ctx, username: str):
+    user = await self.bot.rec_net.account(username=username).get_user()
+    await ctx.respond(f"<t:{user.unix_created_at}:f>")
+
+@slash_command(
+    guild_ids=[cfg['test_guild_id']],
+    name="image",
+    description="images indeed"
+)
+async def image(self, ctx, username: str):
+    user = await self.bot.rec_net.account(username=username, include_posts=True, include_feed=True).get_user()
+    await ctx.respond(f"posts: {len(user.posts)}, feed: {len(user.feed)}")

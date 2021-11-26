@@ -1,4 +1,5 @@
 from attr import dataclass
+from scripts import date_to_unix
 
 @dataclass
 class User:
@@ -12,7 +13,9 @@ class User:
     created_at: str
     bio: str = None
     progression: dict = None
-    subscribers: int = None
+    subscriber_count: int = None
+    posts: list = None
+    feed: list = None
 
     @property
     def platform_names(self):
@@ -25,3 +28,7 @@ class User:
             pos += 1
             self.platforms >>= 1
         return platform_list
+
+    @property
+    def unix_created_at(self):
+        return date_to_unix(self.created_at)
