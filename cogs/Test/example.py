@@ -33,7 +33,7 @@ async def username(self, ctx, username: str):
 )
 async def platforms(self, ctx, username: str):
     user = await self.bot.rec_net.account(username=username).get_user()
-    await ctx.respond(f"Platforms: `{user.platform_names}`")
+    await ctx.respond(f"Platforms: `{user.platforms}`")
 
 @slash_command(
     guild_ids=[cfg['test_guild_id']],

@@ -31,33 +31,28 @@ class Account:
         if len(acc_data) == 1: self.account_id = acc_data[0]['accountId']
         bulk = []
 
+        #TODO: Fit into data structure
         if self.include_progression:  # If lvl & xp are wanted
             progression = await self.get_account_progression(self.account_id)
 
         for index, account in enumerate(acc_data):
+            kwargs = {}
             account_id = account['accountId']
             if self.include_bio:  # If bio is wanted
-                bio = await self.get_account_bio(account_id)
+                kwargs["bio"] = await self.get_account_bio(account_id)
 
             if self.include_subscriber_count:  # If subscriber count is wanted
-                subscriber_count = await self.get_account_subscriber_count(account_id)
+                kwargs["subscriber_count"] = await self.get_account_subscriber_count(account_id)
 
             if self.include_posts:  # If posts are wanted
                 post_data = await self.get_account_posts(account_id)
-                posts = await self.client.image(image_data=post_data).get_image()
+                kwargs["posts"] = await self.client.image(image_data=post_data).get_image()
 
             if self.include_feed:  # If feed is wanted
                 feed_data = await self.get_account_feed(account_id)
-                feed = await self.client.image(image_data=feed_data).get_image()
+                kwargs["feed"] = await self.client.image(image_data=feed_data).get_image()
 
-            user = self.create_user_dataclass(
-                account_data = acc_data[index],
-                bio = bio if self.include_bio else None,
-                progression = progression[index] if self.include_progression else None,
-                subscriber_count = subscriber_count if self.include_subscriber_count else None,
-                posts = posts if self.include_posts else None,
-                feed = feed if self.include_feed else None
-            )  # Create the dataclass
+            user = User.from_data(acc_data[index], **kwargs)  # Create the dataclass
             bulk.append(user)
 
         if len(bulk) == 1: return bulk[0]  # If only 1 account, only return it
@@ -116,19 +111,3 @@ class Account:
         resp = await self.rn.api.images.v3.feed.player(acc_id).get({"take": 9999999}).response
         feed = resp.data
         return feed
-
-    def create_user_dataclass(self, account_data: dict, bio: str = None, progression: dict = None, subscriber_count: int = None, feed: list = None, posts: list = None):
-        return User(
-            account_id=account_data['accountId'], 
-            username=account_data['username'], 
-            display_name=account_data['displayName'], 
-            profile_image=account_data['profileImage'], 
-            is_junior=account_data['isJunior'],
-            platforms=account_data['platforms'],
-            created_at=account_data['createdAt'],
-            bio=bio,
-            progression=progression,
-            subscriber_count=subscriber_count,
-            feed=feed,
-            posts=posts
-        )
