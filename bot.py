@@ -14,13 +14,16 @@ class RecNetBot(commands.Bot):
         handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
         handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
         self.logger.addHandler(handler)
+
         # Add Modules
         self.config = load_cfg()
         self.rec_net = Client()
         self.cog_manager = CogManager(self)
         self.database = DatabaseManager()
-        #initialize
+
+        # Initialize
         self.cog_manager.buildCogs()
+        
         #TODO: add config validation & address module dependencies
 
     def run(self):

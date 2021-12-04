@@ -1,6 +1,6 @@
-from rest import Client, AccountNotFound
 from scripts import load_cfg
 from discord.commands import slash_command # Importing the decorator that makes slash commands.
+from embeds import image_embed
 
 cfg = load_cfg()
 
@@ -51,7 +51,7 @@ async def bio(self, ctx, username: str):
 )
 async def progression(self, ctx, username: str):
     user = await self.bot.rec_net.account(username=username, include_progression=True).get_user()
-    await ctx.respond(f"lvl: `{user.progression['lvl']}` xp: `{user.progression['xp']}`")
+    await ctx.respond(f"lvl: `{user.progression.lvl}` xp: `{user.progression.xp}`")
 
 @slash_command(
     guild_ids=[cfg['test_guild_id']],
@@ -81,7 +81,7 @@ async def bulk(self, ctx, ids: str):
 )
 async def createdat(self, ctx, username: str):
     user = await self.bot.rec_net.account(username=username).get_user()
-    await ctx.respond(f"<t:{user.unix_created_at}:f>")
+    await ctx.respond(f"<t:{user.created_at}:f>")
 
 @slash_command(
     guild_ids=[cfg['test_guild_id']],
@@ -91,3 +91,23 @@ async def createdat(self, ctx, username: str):
 async def image(self, ctx, username: str):
     user = await self.bot.rec_net.account(username=username, include_posts=True, include_feed=True).get_user()
     await ctx.respond(f"posts: {len(user.posts)}, feed: {len(user.feed)}")
+
+@slash_command(
+    guild_ids=[cfg['test_guild_id']],
+    name="latest",
+    description="latest test command...!"
+)
+async def latest(self, ctx, username: str):
+    user = await self.bot.rec_net.account(username=username, include_posts=True).get_user()
+    embed = image_embed(ctx, user.posts[0])
+    await ctx.respond(embed=embed)
+
+@slash_command(
+    guild_ids=[cfg['test_guild_id']],
+    name="oldest",
+    description="oldest test command...!"
+)
+async def oldest(self, ctx, username: str):
+    user = await self.bot.rec_net.account(username=username, include_feed=True).get_user()
+    embed = image_embed(ctx, user.feed[-1])
+    await ctx.send(embed=embed)

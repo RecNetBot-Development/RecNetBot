@@ -29,6 +29,7 @@ def load_cfg():
 # Converts dates from RecNet to an unix timestamp, that can be used to show dates more elegantly
 def date_to_unix(date):
     # Split example: 2020-12-15T04:56:54 <-> .4519046Z
+    if type(date) is int: return date
     date = date.split(".")[0]
     return int(time.mktime(datetime.strptime(date, "%Y-%m-%dT%H:%M:%S").timetuple()))  # Return UNIX timestamp as an int to get rid of any decimals
 
@@ -37,3 +38,10 @@ def date_to_unix(date):
 def log(ctx):
     user, server, command = ctx.author, ctx.guild.name, ctx.command
     print(f"{user} ran /{ctx.command.name} in {ctx.guild} at {datetime.utcnow()} UTC")
+
+
+# Remove list duplicates
+def remove_dupes_from_list(list_):
+    pure = []
+    [pure.append(x) for x in list_ if x not in pure]
+    return pure

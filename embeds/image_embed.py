@@ -1,27 +1,28 @@
-import discord
+import asyncio
 from discord import Embed
+from rest.dataclasses.image import Image
 from discord.ext.commands import Context
 from embeds.finalize_embed import finalize_embed
-from scripts import date_to_unix
-from scripts import Emoji  # RNB Emojis
+from rest.wrapper.exceptions import ImageDetailsMissing
+from scripts import Emoji
 
 """Makes an embed for a single RecNet post"""
-def image_embed(ctx: Context, post_data: dict):
+def image_embed(ctx: Context, image: Image):
     # Unpack required data
     try:
-        img_name, acc_id, unix, cheers, comments, event_id, tagged, post_id = post_data['ImageName'], post_data['PlayerId'], date_to_unix(post_data['CreatedAt']), post_data['CheerCount'], post_data['CommentCount'], post_data['PlayerEventId'], post_data['TaggedPlayerIds'], post_data['Id']
+        img_name, acc_id, unix, cheers, comments, event_id, tagged, post_id = image.image_name, image.account_id, image.created_at, image.cheer_count, image.comment_count, image.event_id, image.tagged, image.id
     except TypeError:  # Missing required data
-        return
+        raise ImageDetailsMissing("Missing required image data!")
 
     # Information of the post that'll be included in the embed
     info = f"""
         {Emoji.date} <t:{unix}:f>
         {Emoji.cheer} `{cheers}` {Emoji.comment} `{comments}`
         {f"During event: `{event_id}`" if event_id else ""}
-        {f"Tagged: `{','.join(str(id) for id in tagged)}`" if tagged else ""}
+        {f"Tagged: `{', '.join(user.username for user in tagged)}`" if tagged else ""}
     """
 
-    # Define embed
+    # Define embed  
     em = Embed(
         title = f"Taken by @{acc_id}",
         description = info,

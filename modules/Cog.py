@@ -2,6 +2,8 @@ import os
 from discord.ext import commands
 from scripts.ModuleCollector import ModuleCollector
 from discord.commands import ApplicationCommand
+from rest.wrapper.exceptions import AccountNotFound
+from embeds import error_embed
 
 class Cog(commands.Cog):
     def __init__(self, manager, name):
@@ -26,7 +28,14 @@ class Cog(commands.Cog):
         command.cog = self
         self.__cog_commands__.append(command._update_copy(self.__cog_settings__))
 
+    # Global error handling
     async def cog_command_error(self, ctx, error):
-        #TODO: handel command errors here
-        pass
+        raise_error = True
+        if isinstance(error.original, AccountNotFound):
+            raise_error = True
+
+        em = error_embed(ctx, error.original)
+
+        await ctx.respond(embed=em, ephemeral=True)
+        if raise_error: raise error
         

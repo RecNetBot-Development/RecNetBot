@@ -1,9 +1,5 @@
-import importlib
 import os
-import sys
-from rest import Client
 from modules.Cog import Cog
-from discord.commands import ApplicationCommand
 
 class CogManager:
     def __init__(self, bot, *args, **kwargs):

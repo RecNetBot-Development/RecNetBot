@@ -1,6 +1,5 @@
-from typing_extensions import runtime
 from rest import route_manager as route
-from .account import Account
+from .account import AccountManager
 from .image import ImageManager
 
 class Client:
@@ -8,10 +7,10 @@ class Client:
         self, 
         route_manager=route.APIRouteManager()
         ):
-        self.rn = route_manager
+        self.rec_net = route_manager
 
     def account(self, *args, **kwargs):
-        return Account(rn=self.rn, client=self, *args, **kwargs)
+        return AccountManager(rec_net=self.rec_net, client=self, *args, **kwargs)
 
     def image(self, *args, **kwargs):
-        return ImageManager(rn=self.rn, client=self, *args, **kwargs)
+        return ImageManager(rec_net=self.rec_net, client=self, *args, **kwargs)
