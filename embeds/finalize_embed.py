@@ -1,6 +1,5 @@
 import datetime
-from discord import Embed
-from discord import Colour
+from discord import Embed, Colour
 from discord.ext.commands import Context
 
 """Adds finishing touches to embeds"""

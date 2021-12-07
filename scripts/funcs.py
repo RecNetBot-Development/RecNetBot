@@ -30,7 +30,11 @@ def load_cfg():
 def date_to_unix(date):
     # Split example: 2020-12-15T04:56:54 <-> .4519046Z
     if type(date) is int: return date
-    date = date.split(".")[0]
+    if "." in date: 
+        date = date.split(".")[0]
+    else:  # Cuz apparently not all dates have the damn dot!!
+        date = date.split("Z")[0]
+        
     return int(time.mktime(datetime.strptime(date, "%Y-%m-%dT%H:%M:%S").timetuple()))  # Return UNIX timestamp as an int to get rid of any decimals
 
 

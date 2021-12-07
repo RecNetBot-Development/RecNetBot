@@ -72,13 +72,13 @@ class AccountManager:
 
                     acc_data = []
                     for id_group in split_groups:
-                        resp = await self.rec_net.accounts.account.bulk.get({"id": id_group}).response
+                        resp = await self.rec_net.accounts.account.bulk.get({"id": id_group}).fetch()
                         acc_data += resp.data
                 else:
-                    resp = await self.rec_net.accounts.account.bulk.get({"id": self.account_id}).response
+                    resp = await self.rec_net.accounts.account.bulk.get({"id": self.account_id}).fetch()
                     acc_data = resp.data
             elif self.username:
-                resp = await self.rec_net.accounts.account.get({"username": self.username}).response
+                resp = await self.rec_net.accounts.account.get({"username": self.username}).fetch()
                 acc_data = [resp.data]
             else:
                 raise AccountDetailsMissing("Missing account details! Can't find an account without them.")
@@ -89,14 +89,14 @@ class AccountManager:
 
     async def get_account_bio(self, acc_id=None):
         if not acc_id: acc_id = self.account_id
-        resp = await self.rec_net.accounts.account(acc_id).bio.get().response
+        resp = await self.rec_net.accounts.account(acc_id).bio.get().fetch()
         bio = resp.data['bio']
         return bio
 
     async def get_account_progression(self, acc_id=None):
         if not acc_id: acc_id = self.account_id
         if type(acc_id) is not list: acc_id = [acc_id]  # Turn to list for bulk
-        resp = await self.rec_net.api.players.v2.progression.bulk.get({"id": acc_id}).response
+        resp = await self.rec_net.api.players.v2.progression.bulk.get({"id": acc_id}).fetch()
         data = resp.data
 
         bulk = []
@@ -107,18 +107,18 @@ class AccountManager:
 
     async def get_account_subscriber_count(self, acc_id=None): 
         if not acc_id: acc_id = self.account_id
-        resp = await self.rec_net.clubs.subscription.subscriberCount(acc_id).get().response
+        resp = await self.rec_net.clubs.subscription.subscriberCount(acc_id).get().fetch()
         subscriber_count = resp.data
         return subscriber_count
 
     async def get_account_posts(self, acc_id=None): 
         if not acc_id: acc_id = self.account_id
-        resp = await self.rec_net.api.images.v4.player(acc_id).get({"take": 9999999}).response
+        resp = await self.rec_net.api.images.v4.player(acc_id).get({"take": 9999999}).fetch()
         posts = await self.client.image(image_data=resp.data, fetch_tagged_users=True).get_image()
         return posts
 
     async def get_account_feed(self, acc_id=None): 
         if not acc_id: acc_id = self.account_id
-        resp = await self.rec_net.api.images.v3.feed.player(acc_id).get({"take": 9999999}).response
+        resp = await self.rec_net.api.images.v3.feed.player(acc_id).get({"take": 9999999}).fetch()
         feed = await self.client.image(image_data=resp.data, fetch_tagged_users=True).get_image()
         return feed

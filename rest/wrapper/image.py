@@ -44,10 +44,11 @@ class ImageManager:
                 
                 # Replace tagged account ids with user dataclasses
                 for data_index in range(len(image_data)):
+                    image_data[data_index]['TaggedUsers'] = []
                     if not image_data[data_index]['TaggedPlayerIds']: continue  # Don't bother with below if nobody tagged
-                    for tag_index, account_id in enumerate(image_data[data_index]['TaggedPlayerIds']):
+                    for account_id in image_data[data_index]['TaggedPlayerIds']:   
                         if account_id in tagged_users:
-                            image_data[data_index]['TaggedPlayerIds'][tag_index] = tagged_users[account_id]  # Replace the account id with the dataclass
+                            image_data[data_index]['TaggedUsers'].append(tagged_users[account_id])
 
         bulk = []
         for index, image_data in enumerate(image_data):
@@ -66,22 +67,10 @@ class ImageManager:
 
                     image_data = []
                     for id_group in split_groups:
-                        resp = await self.rec_net.api.images.v3.post({"id": id_group}).response
+                        resp = await self.rec_net.api.images.v3.post({"id": id_group}).fetch()
                         image_data += resp.data
                 else:
-                    resp = await self.rec_net.api.images.v3.post({"id": self.image_id}).response
-                image_data = resp.data
-            else:
-                raise ImageDetailsMissing("Missing image details! Can't find a image without them.")
-        except APIFailure:
-            raise ImageNotFound("Couldn't find the image you were looking for!")
-
-        return image_data
-
-    async def fetch_tagged_users(self):
-        try:
-            if self.image_id is not None:  # 0 is falsy, so this prevents issues if user inputs 0
-                resp = await self.rec_net.api.images.v3.post({"id": self.image_id}).response
+                    resp = await self.rec_net.api.images.v3.post({"id": self.image_id}).fetch()
                 image_data = resp.data
             else:
                 raise ImageDetailsMissing("Missing image details! Can't find a image without them.")

@@ -10,7 +10,7 @@ from scripts import Emoji
 def image_embed(ctx: Context, image: Image):
     # Unpack required data
     try:
-        img_name, acc_id, unix, cheers, comments, event_id, tagged, post_id = image.image_name, image.account_id, image.created_at, image.cheer_count, image.comment_count, image.event_id, image.tagged, image.id
+        img_name, acc_id, unix, cheers, comments, event_id, tagged, post_id = image.image_name, image.account_id, image.created_at, image.cheer_count, image.comment_count, image.event_id, image.tagged_users, image.id
     except TypeError:  # Missing required data
         raise ImageDetailsMissing("Missing required image data!")
 
@@ -19,7 +19,7 @@ def image_embed(ctx: Context, image: Image):
         {Emoji.date} <t:{unix}:f>
         {Emoji.cheer} `{cheers}` {Emoji.comment} `{comments}`
         {f"During event: `{event_id}`" if event_id else ""}
-        {f"Tagged: `{', '.join(user.username for user in tagged)}`" if tagged else ""}
+        {f"Tagged: {', '.join(f'[@{user.username}](https://rec.net/user/{user.username})' for user in tagged)}" if tagged else ""}
     """
 
     # Define embed  
