@@ -22,5 +22,14 @@ class ImageNotFound(Error):
 
 """REQUESTOR"""
 class APIFailure(Error):
-    """Raised when request fails"""
-    ...
+    def __init__(self, res):
+        self._response = res
+        super().__init__(
+            f"""
+            Failed to send request to RecNet!
+            Method: '{self._method}'
+            Path: '{self._path}'
+            Params: '{self._params}'
+            Data: '{self._data}'
+            """
+            )

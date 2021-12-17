@@ -1,19 +1,26 @@
 from rest import make_request
 
+HTTP_METHODS = [
+        "get",
+        "post",
+        "delete",
+        "patch",
+        "put"
+    ]
+
 class APIRouteBuilder(object):
-    def __init__(self, host):
+    def __init__(self, manager, host):
         self._route = []
         self._BaseURL = host
+        self._client = manager.http_client
 
-    def get(self, params=None):
+    def build_request(self, method, param, body):
         path = self._BaseURL + "/".join(self._route)
-        return make_request.APIRequest(path=path, method="get", params=params)
-
-    def post(self, params=None, data=None):
-        path = self._BaseURL + "/".join(self._route)
-        return make_request.APIRequest(path=path, method="post", params=params, data=data)
+        return make_request.APIRequest(self._client, path, method, param, body)
 
     def __getattr__(self, name):
+        if name in HTTP_METHODS:
+            return lambda param=None, data=None: self.build_request(name, param, data)
         self._route.append(name)
         return self
 
