@@ -3,11 +3,6 @@ import asyncio
 from rest.dataclasses import Response
 from rest.wrapper import exceptions
 
-async def parse_response(resonse):
-    if "application/json" in resp.headers["Content-type"]:
-        return await resp.json()
-    return await resp.text()  
-
 class HTTPClient():
     def __init__(self):
         self.__locks = {}

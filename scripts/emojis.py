@@ -17,3 +17,4 @@ class Emoji:
     junior = "🍼"
     correct = "✅"
     incorrect = "❌"
+    loading = "<a:spinning:804022054822346823>"

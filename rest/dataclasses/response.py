@@ -9,8 +9,8 @@ class Response:
     @classmethod
     async def parse_response(cls, res):
         data: str or dict
-        if "application/json" in res.headers["Content-type"]:
-            data = await res.json()
-        else:
-            data = await res.text()
+        async def parse_response(resp):
+            if "application/json" in resp.headers["Content-Type"]:
+                data = await resp.json()
+            data = await resp.text()  
         return cls(status=res.status, success=res.ok, data=data)

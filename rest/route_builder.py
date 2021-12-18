@@ -1,12 +1,12 @@
 from rest import make_request
 
 HTTP_METHODS = [
-        "get",
-        "post",
-        "delete",
-        "patch",
-        "put"
-    ]
+    "get",
+    "post",
+    "delete",
+    "patch",
+    "put"
+]
 
 class APIRouteBuilder(object):
     def __init__(self, manager, host):

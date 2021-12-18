@@ -1,6 +1,7 @@
 from scripts import load_cfg
 from discord.commands import slash_command # Importing the decorator that makes slash commands.
-from embeds.ui.image import ImageUI
+from embeds.image.ui import ImageUI
+from embeds import loading_embed
 
 cfg = load_cfg()
 
@@ -100,3 +101,7 @@ async def image(self, ctx, username: str):
 async def photos(self, ctx, username: str):
     user = await self.bot.rec_net.account(username=username, include_posts=True).get_user()
     await ImageUI(ctx, user.posts).start()
+
+@slash_command(guild_ids=[cfg['test_guild_id']])
+async def loading(self, ctx):
+    await ctx.respond(embed=loading_embed(ctx))
