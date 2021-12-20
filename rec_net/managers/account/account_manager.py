@@ -24,7 +24,8 @@ class AccountManager(BaseManager):
     async def get_data(self, user, type):
         if isinstance(user, list):
             return await self.handle_bulk(self.rec_net.accounts.account.bulk.post(), user, type)
-        req = self.rec_net.accounts.account(id).get() if isinstance(user, str) else self.rec_net.accounts.account.get(params={"username": user})
+        id = self.resolve_id(user)
+        req = self.rec_net.accounts.account(id).get() if isinstance(user, int) else self.rec_net.accounts.account.get(params={"username": user})
         resp = await req.fetch()
         return resp.data
 

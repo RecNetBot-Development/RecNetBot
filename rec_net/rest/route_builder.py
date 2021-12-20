@@ -20,7 +20,7 @@ class APIRouteBuilder(object):
 
     def __getattr__(self, name):
         if name in HTTP_METHODS:
-            return lambda param=None, data=None: self.build_request(name, param, data)
+            return lambda params=None, data=None: self.build_request(name, params, data)
         self._route.append(name)
         return self
 
