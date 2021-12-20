@@ -1,9 +1,9 @@
 import asyncio
 from discord import Embed
-from rest.dataclasses.image import Image
+from rec_net.managers.image import Image
 from discord.ext.commands import Context
 from embeds.finalize_embed import finalize_embed
-from rest.wrapper.exceptions import ImageDetailsMissing
+from rec_net.exceptions import ImageDetailsMissing
 from scripts import Emoji
 
 """Makes an embed for a single RecNet post"""

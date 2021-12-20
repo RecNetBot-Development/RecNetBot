@@ -2,7 +2,7 @@ import os
 from discord.ext import commands
 from scripts.ModuleCollector import ModuleCollector
 from discord.commands import ApplicationCommand
-from rest.wrapper.exceptions import AccountNotFound
+from rec_net.exceptions import AccountNotFound
 from embeds import error_embed
 
 class Cog(commands.Cog):
