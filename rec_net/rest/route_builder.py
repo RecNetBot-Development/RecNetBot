@@ -1,4 +1,4 @@
-from rest import make_request
+from .make_request import APIRequest
 
 HTTP_METHODS = [
     "get",
@@ -16,7 +16,7 @@ class APIRouteBuilder(object):
 
     def build_request(self, method, param, body):
         path = self._BaseURL + "/".join(self._route)
-        return make_request.APIRequest(self._client, path, method, param, body)
+        return APIRequest(self._client, path, method, param, body)
 
     def __getattr__(self, name):
         if name in HTTP_METHODS:

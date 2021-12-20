@@ -1,0 +1,1 @@
+#dataclass for roles

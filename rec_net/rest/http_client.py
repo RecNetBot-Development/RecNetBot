@@ -1,7 +1,6 @@
 import aiohttp
 import asyncio
-from rest.dataclasses import Response
-from rest.wrapper import exceptions
+from .response import Response
 
 class HTTPClient():
     def __init__(self):
@@ -30,3 +29,5 @@ class HTTPClient():
                 pass 
             if ResponseData.status >= 500:
                 pass
+    async def close(self):
+        await self.__session.close()
