@@ -1,6 +1,8 @@
 from .progression import Progression
 from attr import dataclass, field
 from scripts import date_to_unix
+from ..base import BaseDataclass
+from .account_options import AccountOptions
 
 def resolve_platforms(x):
     platforms = ['Steam', 'Oculus', 'PlayStation', 'Xbox', 'HeadlessBot', 'iOS', 'Android']
@@ -9,9 +11,9 @@ def resolve_platforms(x):
             yield platform
 
 @dataclass
-class User:
+class User(BaseDataclass):
     """Dataclass for an RR account."""
-    account_id: int
+    id: int
     username: str
     display_name: str
     profile_image: str
@@ -24,8 +26,13 @@ class User:
     posts: list = field(default=None)
     feed: list = field(default=None)
 
+    @staticmethod
+    def configure(manager, user):
+        return AccountOptions(manager, user)
+
     @classmethod
     def from_data(cls, data, **kwargs):
+        if isinstance(data, list): return [*map(User.from_data, data)]
         platforms = [platform for platform in resolve_platforms(data["platforms"])]
         created_at = date_to_unix(data['createdAt'])
         return cls(
