@@ -1,7 +1,7 @@
 import logging
 from discord.ext import commands
 from scripts import load_cfg
-from rest import Client
+from rec_net import Client
 from modules import CogManager
 from database import DatabaseManager
 
