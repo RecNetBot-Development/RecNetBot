@@ -7,21 +7,15 @@ class Options(metaclass=ABCMeta):
         self.data = dataobject
         self.tasks = []
         
-    async def build(self):
+    async def build(self, includes, options):
+        for include in includes:
+            option = options.get(include, {})
+            func = self.configurables[include]
+            task = asyncio.create_task(func(self.data, **option))
+            self.tasks.append(task)
         await asyncio.gather(*self.tasks)
         if isinstance(self.data, list):
             for data in self.data: data.manager = self.manager
         else: self.data.manager = self.manager
         return self.data
-        
-    def __getattr__(self, attr):
-        if attr in self.configurables:
-            return self.option(self.configurables[attr])
-    
-    def option(self, func):
-        def inner(include, **kwargs):
-            if include:
-                task = asyncio.create_task(func(self.data, **kwargs))
-                self.tasks.append(task)
-            return self
-        return inner
+       

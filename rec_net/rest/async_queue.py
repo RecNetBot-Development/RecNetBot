@@ -30,7 +30,8 @@ class AsyncQueue:
 
 async def run_in_queue(func, iter, **kwargs):
     data = []
-    Queue = AsyncQueue(100)
+    threads = round((0.4*len(iter))**.5)
+    Queue = AsyncQueue(threads)
     @Queue.task
     async def task(item):
         result = await func(item, **kwargs)

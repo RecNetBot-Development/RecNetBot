@@ -24,6 +24,7 @@ class HTTPClient():
             ResponseData = await Response.parse_response(res)
             if ResponseData.success:
                 return ResponseData
+            print(ResponseData)
             #Possibly make these request more detailed (low priority addition)
             if ResponseData.status >= 400 and ResponseData.status < 500:
                 pass 

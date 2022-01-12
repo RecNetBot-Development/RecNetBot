@@ -2,64 +2,74 @@ from .user import User
 from ..base import BaseManager
 from ...rest import run_in_queue
 
-
 class AccountManager(BaseManager):
     def __init__(self, client):
         super().__init__(client, User)
+        self.configurables = {
+            "bio": self.get_bio,
+            "progress": self.get_progress,
+            "subs": self.get_subscriber_count,
+            "feed": self.get_feed,
+            "posts": self.get_posts,
+            "owned_rooms": self.get_owned_rooms,
+            "created_rooms": self.get_created_rooms,
+            "room_showcase": self.get_room_showcase,
+            "events": self.get_events,
+        }
 
-    async def build_dataclass(self, config, **options):
-        (config
-            .include_bio(options.get("include_bio", False))
-            .include_progress(options.get("include_progress", False))
-            .include_subs(options.get("include_subs", False))
-            .include_feed(options.get("include_feed", False), **options.get("feed_options", {}))
-            .include_posts(options.get("include_posts", False), **options.get("posts_options", {}))
-            .include_owned_rooms(options.get("include_owned_rooms", False), **options.get("owned_rooms_options", {}))
-            .include_created_rooms(options.get("include_created_rooms", False), **options.get("created_rooms_options", {}))
-            .include_room_showcase(options.get("include_room_showcase", False), **options.get("room_showcase_options", {}))
-            .include_events(options.get("include_events", False), **options.get("events_options", {}))
-        )
-        return await config.build()
+    @BaseManager.data_method
+    def get_data(self, id):
+        return {
+            "bulk": self.rec_net.accounts.account.bulk.post(),
+            "name": self.rec_net.accounts.account.get(params={"username": id}),
+            "id": self.rec_net.accounts.account(id).get()
+        }
 
-    async def get_data(self, user, type):
-        if isinstance(user, list):
-            return await self.handle_bulk(self.rec_net.accounts.account.bulk.post(), user, type)
-        id = self.resolve_id(user)
-        req = self.rec_net.accounts.account(id).get() if isinstance(user, int) else self.rec_net.accounts.account.get(params={"username": user})
-        resp = await req.fetch()
+    @BaseManager.bulk_get_method("level")
+    async def get_progress(self):
+        return self.rec_net.api.players.v2.progression.bulk.post()
+
+    @BaseManager.get_method("bio")
+    async def get_bio(self, id, **options):
+        resp = await self.rec_net.accounts.account(id).bio.get().fetch()
+        return resp.data["bio"]
+
+    @BaseManager.get_method("subscriber_count")
+    async def get_subscriber_count(self, id, **options):
+        resp = await self.rec_net.clubs.subscription.subscriberCount(id)
         return resp.data
 
-    async def get_progress(self, user):
-        pass
+    @BaseManager.get_method("feed", "image")
+    async def get_feed(self, id, **options):
+        resp = await self.rec_net.api.images.v3.feed.player(id).get().fetch()
+        return resp.data
 
-    async def get_bio(self, user):
-        if isinstance(user, list): return await run_in_queue(self.get_bio, user)
-        id = self.resolve_id(user)
-        resp = await self.rec_net.accounts.account(id).bio.get().fetch()
-        return self.response(user, "bio", resp.data["bio"])
+    @BaseManager.get_method("posts", "image")
+    async def get_posts(self, id, **options):
+        params = {}
+        params["take"] = options.pop("take", 64)
+        params["skip"] = options.pop("skip", 0)
+        resp = await self.rec_net.api.images.v4.player(id).get(params=params).fetch()
+        return resp.data
 
-    async def get_subscriber_count(self, user):
-        pass
+    @BaseManager.get_method("owned_rooms", "room")
+    async def get_owned_rooms(self, id, **options):
+        resp = await self.rec_net.rooms.rooms.ownedby(id).get().fetch()
+        return resp.data
 
-    async def get_feed(self, user, **options):
-        pass
+    @BaseManager.get_method("created_rooms", "room")
+    async def get_created_rooms(self, id, **options):
+        resp = await self.rec_net.rooms.rooms.createdby(id).get().fetch()
+        return resp.data
 
-    async def get_posts(self, user, **options):
-        pass
+    @BaseManager.get_method("room_showcase", "room", "id")
+    async def get_room_showcase(self, id, **options):
+        resp = await self.rec_net.rooms.showcase(id).get().fetch()
+        return resp.data
 
-    async def get_owned_rooms(self, user, **options):
-        pass
-
-    async def get_created_rooms(self, user, **options):
-        pass
-
-    async def get_room_showcase(self, user, **options):
-        pass
-
-    async def get_events(self, user, **options):
-        pass
-
-    async def resolve_showcase(self, user, **options):
-        pass
+    @BaseManager.get_method("events", "event")
+    async def get_events(self, id, **options):
+        resp = await self.rec_net.api.playerevents.v1.creator(id).get().fetch()
+        return resp.data
 
 

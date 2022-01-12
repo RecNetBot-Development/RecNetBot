@@ -26,6 +26,7 @@ class Image(BaseDataclass):
 
     @classmethod
     def from_data(cls, data, **kwargs):
+        if isinstance(data, list): return [*map(Image.from_data, data)]
         created_at = date_to_unix(data['CreatedAt'])
         return cls(
             id=data["Id"],

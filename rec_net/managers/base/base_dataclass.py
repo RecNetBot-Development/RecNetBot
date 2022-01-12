@@ -2,7 +2,7 @@ from abc import ABCMeta
 
 class BaseDataclass(metaclass=ABCMeta):
     def set(self, key, value):
-        if hasattr(self, key):
+        if True:
             setattr(self, key, value)
 
     def __getattr__(self, attr):
