@@ -96,17 +96,21 @@ class BaseManager(metaclass=ABCMeta):
         return decorator
 
     @staticmethod
-    def bulk_get_method(attr, resolve = None):
+    def bulk_get_method(attr, resolve = None, data_key = None):
         def decorator(func):
             async def inner(self, data_obj, **options):
-                req = func()
+                req = func(self)
                 if isinstance(data_obj, list):
-                    data = await self.handle_bulk(req, data_obj, "id")
-                    return [self.response(data_obj[i], attr, d) for i, d in enumerate(data)]
+                    resp = await self.handle_bulk(req, data_obj, "id")
+                    if data_key is not None:
+                        return [self.response(data_obj[i], attr, d[data_key]) for i, d in enumerate(resp.data)]
+                    return [self.response(data_obj[i], attr, d) for i, d in enumerate(resp.data)]
                 id = self.resolve_id(data_obj)
                 req.body = {"id": id}
-                data = await req.fetch()
-                return self.response(data_obj, attr, data[0])
+                resp = await req.fetch()
+                data = resp.data[0]
+                if data_key is not None: data = data[data_key]
+                return self.response(data_obj, attr, data)
             return inner
         return decorator
 

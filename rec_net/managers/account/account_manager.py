@@ -25,8 +25,8 @@ class AccountManager(BaseManager):
             "id": self.rec_net.accounts.account(id).get()
         }
 
-    @BaseManager.bulk_get_method("level")
-    async def get_progress(self):
+    @BaseManager.bulk_get_method("level", data_key = "Level")
+    def get_progress(self):
         return self.rec_net.api.players.v2.progression.bulk.post()
 
     @BaseManager.get_method("bio")

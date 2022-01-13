@@ -20,6 +20,7 @@ class User(BaseDataclass):
     is_junior: bool
     platforms: list
     created_at: int
+    level: int = field(default=None)
     bio: str = field(default=None)
     progression: Progression = field(default=None)
     subscriber_count: int = field(default=None)
