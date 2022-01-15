@@ -2,9 +2,8 @@ from attr import dataclass
 
 @dataclass
 class Score:
-    
     visit_type: int
-    score: int
+    score: float
     backup_score: int
 
     @classmethod

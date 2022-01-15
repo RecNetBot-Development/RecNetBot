@@ -5,7 +5,7 @@ from .response import Response
 class HTTPClient():
     def __init__(self):
         self.__locks = {}
-        self.__session = aiohttp.ClientSession()
+        self.__session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=False))
 
     async def push(self, Request):
         lock = self.__locks.get(Request.bucket)

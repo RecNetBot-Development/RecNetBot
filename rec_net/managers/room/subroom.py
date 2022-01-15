@@ -21,7 +21,7 @@ class SubRoom:
         if data["UseAgeBasedMatchmaking"]:  match_making.append("age")
         if data["UseRecRoyaleMatchmaking"]: match_making.append("rec royal")
         return cls(
-            replication_id = data["ReplicationId"],
+            replication_id = data.get("ReplicationId", ""),
             supports_join_in_progress = data["SupportsJoinInProgress"],
             match_making=match_making,
             id = data["SubRoomId"],

@@ -6,6 +6,9 @@ from datetime import datetime
 
 """This script contains global functions for all other scripts!"""
 
+def unix_timestamp(unix: int):
+    return f"<t:{unix}:f>"
+
 # Loads the local config file
 def load_cfg():
     if os.path.isfile("config.json"):
@@ -29,6 +32,7 @@ def load_cfg():
 # Converts dates from RecNet to an unix timestamp, that can be used to show dates more elegantly
 def date_to_unix(date):
     # Split example: 2020-12-15T04:56:54 <-> .4519046Z
+    if not date: return 0
     if type(date) is int: return date
     if "." in date: 
         date = date.split(".")[0]

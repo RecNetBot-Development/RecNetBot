@@ -1,9 +1,10 @@
 {
-    "prefix": "",
-    "token": "",
+    "prefix": "RNB!",
+    "token": "NzkzMTE0MjkyNDEzMDA1ODU1.X-njPg.JS6F2CHyWDqBNu7Q69wr5uPZRWM",
     "owners": [
         
     ],
-    "test_guild_id": 0,
-    "dev_role": ""
+    "test_guild_id": 745219512529584195,
+    "dev_role": "V3 Developer",
+    "redis_url": "redis://:p294e59fb9fdc443e2ea3acfb8d261aa7a33b5672d635dc5248a95b7f4ded831b@ec2-3-219-32-86.compute-1.amazonaws.com:29019"
 }

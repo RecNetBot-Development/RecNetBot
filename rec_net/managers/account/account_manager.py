@@ -36,7 +36,7 @@ class AccountManager(BaseManager):
 
     @BaseManager.get_method("subscriber_count")
     async def get_subscriber_count(self, id, **options):
-        resp = await self.rec_net.clubs.subscription.subscriberCount(id)
+        resp = await self.rec_net.clubs.subscription.subscriberCount(id).get().fetch()
         return resp.data
 
     @BaseManager.get_method("feed", "image")

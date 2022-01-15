@@ -3,7 +3,6 @@ from ..account import User
 
 @dataclass
 class Role:
-
     account: int or User
     role: str
     last_change_by_account: int

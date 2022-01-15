@@ -16,10 +16,11 @@ class User(BaseDataclass):
     id: int
     username: str
     display_name: str
-    profile_image: str
     is_junior: bool
     platforms: list
     created_at: int
+    profile_image: str
+    banner_image: str = field(default=None)
     level: int = field(default=None)
     bio: str = field(default=None)
     progression: Progression = field(default=None)
@@ -36,13 +37,15 @@ class User(BaseDataclass):
         if isinstance(data, list): return [*map(User.from_data, data)]
         platforms = [platform for platform in resolve_platforms(data["platforms"])]
         created_at = date_to_unix(data['createdAt'])
+        banner_image = data.get("bannerImage", None)
         return cls(
-            data["accountId"],
-            data["username"],
-            data["displayName"],
-            data["profileImage"],
-            data["isJunior"],
-            platforms,
-            created_at, 
+            id=data["accountId"],
+            username=data["username"],
+            display_name=data["displayName"],
+            profile_image=data["profileImage"],
+            banner_image=banner_image,
+            is_junior=data["isJunior"],
+            platforms=platforms,
+            created_at=created_at, 
             **kwargs
         )
