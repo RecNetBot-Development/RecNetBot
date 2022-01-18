@@ -21,8 +21,10 @@ class Cog(commands.Cog):
                 lib = self._modules.get(f"cogs.{self.__cog_name__}.{extension}")
                 for attr in dir(lib):
                     if isinstance(getattr(lib, attr), ApplicationCommand):
-                        self.addCommand(getattr(lib, attr))
-                        print(f"Command {attr} in Cog {self.__cog_name__} has been loaded")
+                        mod = getattr(lib, attr)
+                        if not command.is_subcommand:
+                            self.addCommand(mod)
+                            print(f"Command {attr} in Cog {self.__cog_name__} has been loaded")
 
     def addCommand(self, command):
         command.cog = self
