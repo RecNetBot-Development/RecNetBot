@@ -1,7 +1,7 @@
 import os
 from discord.ext import commands
 from scripts.ModuleCollector import ModuleCollector
-from discord.commands import ApplicationCommand
+from discord.commands import ApplicationCommand, SlashCommand, SlashCommandGroup
 from rec_net.exceptions import AccountNotFound
 from embeds import error_embed
 
@@ -22,7 +22,12 @@ class Cog(commands.Cog):
                 for attr in dir(lib):
                     if isinstance(getattr(lib, attr), ApplicationCommand):
                         mod = getattr(lib, attr)
-                        if not command.is_subcommand:
+                        """
+                        add_application_command() only accepts SlashCommand or SlashCommandGroup
+                        it doesn't accept subcommands (not mod.is_subcommand)
+                        nor does it accept subcommand groups (not mod.parent (checks if the group has a parent group))
+                        """
+                        if isinstance(mod, SlashCommand) and not mod.is_subcommand or isinstance(mod, SlashCommandGroup) and not mod.parent:
                             self.addCommand(mod)
                             print(f"Command {attr} in Cog {self.__cog_name__} has been loaded")
 
