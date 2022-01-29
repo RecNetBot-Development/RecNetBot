@@ -1,5 +1,5 @@
 from attr import dataclass, field
-from scripts import date_to_unix
+from ...helpers import date_to_unix
 from .subroom import SubRoom
 from .role import Role
 from .score import Score

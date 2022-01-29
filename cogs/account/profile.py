@@ -1,15 +1,11 @@
 from scripts import load_cfg, img_url
 from discord.commands import slash_command, Option, SlashCommandGroup # Importing the decorator that makes slash commands.
 from embeds import profile_embed, Profile
+from scripts import img_url
 
 cfg = load_cfg()
 
-cmd_profile = SlashCommandGroup("account", "profile commands", guild_ids=[cfg['test_guild_id']])
-extra_profile = cmd_profile.create_subgroup(
-    "profile_extra", "bruh"
-)
-
-@cmd_profile.command(
+@slash_command(
     guild_ids=[cfg['test_guild_id']],
     name="profile",
     description="View a user's profile."
@@ -17,23 +13,21 @@ extra_profile = cmd_profile.create_subgroup(
 async def profile(
     self, 
     ctx, 
-    username: Option(str, "Enter user's username", required=True)
+    username: Option(str, "Enter user's username", required=True),
+    specified: Option(str, "Choose specific information", choices=["Profile", "Profile Picture", "Banner", "Platforms"], required=False, default="Profile")
 ):
-    print(type(extra_profile))
-    user = await self.bot.rec_net.account(name=username, includes=["bio", "progress", "subs"])
-    await ctx.respond(embed=profile_embed(ctx, user), view=Profile(user))
-
-@extra_profile.command(
-    guild_ids=[cfg['test_guild_id']],
-    name="pfp",
-    description="View a user's profile picture."
-)
-async def pfp(
-    self, 
-    ctx, 
-    username: Option(str, "Enter user's username", required=True)
-):
-    print(type(extra_profile))
-    user = await self.bot.rec_net.account(name=username)
-    await ctx.respond(img_url(user.profile_image), view=Profile(user))
+    match specified:
+        case "Profile Picture":  # Raw PFP
+            user = await self.bot.rec_net.account(name=username)
+            return await ctx.respond(img_url(user.profile_image), view=Profile(user))
+        case "Banner":  # Raw banner
+            user = await self.bot.rec_net.account(name=username)
+            return await ctx.respond(img_url(user.banner_image), view=Profile(user))
+        case "Platforms": # Just the platforms
+            user = await self.bot.rec_net.account(name=username)
+            return await ctx.respond(embed=profile_embed(ctx, user, "platforms"), view=Profile(user))
+        case _:  # Full profile as default
+            user = await self.bot.rec_net.account(name=username, includes=["bio", "progress", "subs"])
+            return await ctx.respond(embed=profile_embed(ctx, user), view=Profile(user))
+    
 

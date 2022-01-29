@@ -1,6 +1,6 @@
 from .progression import Progression
 from attr import dataclass, field
-from scripts import date_to_unix
+from ...helpers import date_to_unix
 from ..base import BaseDataclass
 from .account_options import AccountOptions
 

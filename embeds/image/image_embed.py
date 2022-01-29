@@ -4,33 +4,30 @@ from rec_net.managers.image import Image
 from discord.ext.commands import Context
 from embeds.finalize_embed import finalize_embed
 from rec_net.exceptions import ImageDetailsMissing
-from scripts import Emoji
+from scripts import Emoji, unix_timestamp
+from scripts.rec_net_helpers import img_url
 
 """Makes an embed for a single RecNet post"""
 def image_embed(ctx: Context, image: Image):
-    # Unpack required data
-    try:
-        img_name, acc_id, unix, cheers, comments, event_id, tagged, post_id = image.image_name, image.account_id, image.created_at, image.cheer_count, image.comment_count, image.event_id, image.tagged_users, image.id
-    except TypeError:  # Missing required data
-        raise ImageDetailsMissing("Missing required image data!")
+    user = image.user
 
     # Information of the post that'll be included in the embed
     info = f"""
-        {Emoji.date} <t:{unix}:f>
-        {Emoji.cheer} `{cheers}` {Emoji.comment} `{comments}`
-        {f"During event: `{event_id}`" if event_id else ""}
-        {f"Tagged: {', '.join(f'[@{user.username}](https://rec.net/user/{user.username})' for user in tagged)}" if tagged else ""}
+{Emoji.date} {unix_timestamp(image.created_at)}
+{Emoji.cheer} `{image.cheer_count}` {Emoji.comment} `{image.comment_count}`
+{f"During event: `{image.event_id}`" if image.event_id else ""}
+{f"Tagged: {', '.join(f'[@{user}](https://rec.net/user/{user})' for user in image.tagged)}" if image.tagged else ""}
     """
 
     # Define embed  
     em = Embed(
-        title = f"Taken by @{acc_id}",
+        title = f"Taken by @{user}",
         description = info,
-        url=f"https://rec.net/image/{post_id}"
+        url=f"https://rec.net/image/{image.id}"
     )
 
     # Set the image as the post
-    em.set_image(url="https://img.rec.net/" + img_name if img_name is not None else "DefaultProfileImage")  # Just in case it somehow doesn't exist.
+    em.set_image(url=img_url(image.image_name))  # Just in case it somehow doesn't exist.
 
     em = finalize_embed(ctx, em)
     return em  # Return the embed.

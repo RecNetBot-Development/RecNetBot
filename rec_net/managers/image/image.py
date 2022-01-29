@@ -1,4 +1,4 @@
-from scripts import date_to_unix
+from ...helpers import date_to_unix
 from attr import dataclass, field
 from .image_options import ImageOptions
 from ..base import BaseDataclass

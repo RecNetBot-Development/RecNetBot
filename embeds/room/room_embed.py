@@ -1,7 +1,6 @@
 from discord import Embed
 from discord.ext.commands import Context
 from embeds.finalize_embed import finalize_embed
-from scripts import date_to_unix
 from scripts import Emoji  # RNB Emojis
 
 """Makes an embed for a single room"""
