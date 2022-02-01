@@ -6,8 +6,8 @@ from datetime import datetime
 
 """This script contains global functions for all other scripts!"""
 
-def unix_timestamp(unix: int):
-    return f"<t:{unix}:f>"
+def unix_timestamp(timestamp):
+    return f"<t:{timestamp}:f>"
 
 # Loads the local config file
 def load_cfg():
@@ -40,3 +40,8 @@ def remove_dupes_from_list(list_):
     pure = []
     [pure.append(x) for x in list_ if x not in pure]
     return pure
+
+def handle_filters(filters):
+    if type(filters) is not str: return [filters]
+    pure_filters = filters.replace(" ", "").split(",")
+    return pure_filters

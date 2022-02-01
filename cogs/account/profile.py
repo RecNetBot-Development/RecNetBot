@@ -1,7 +1,6 @@
 from scripts import load_cfg, img_url
-from discord.commands import slash_command, Option, SlashCommandGroup # Importing the decorator that makes slash commands.
+from discord.commands import slash_command, Option # Importing the decorator that makes slash commands.
 from embeds import profile_embed, Profile
-from scripts import img_url
 
 cfg = load_cfg()
 
@@ -30,4 +29,3 @@ async def profile(
             user = await self.bot.rec_net.account(name=username, includes=["bio", "progress", "subs"])
             return await ctx.respond(embed=profile_embed(ctx, user), view=Profile(user))
     
-
