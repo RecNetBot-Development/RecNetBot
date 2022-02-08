@@ -1,4 +1,5 @@
 from .image import Image
+from .comment import Comment
 from ..base import BaseManager
 from ...rest import run_in_queue
 
@@ -15,10 +16,15 @@ class ImageManager(BaseManager):
 
     @BaseManager.data_method
     async def get_data(self, image, type):
-        pass
+        return {
+            "bulk": self.rec_net.api.images.v3.bulk.post(),
+            "id": self.rec_net.api.images.v4(id).get()
+        }
 
-    async def get_comments(self, image, **options):
-        pass
+    @BaseManager.get_method("comments")
+    async def get_comments(self, id, **options):
+        resp = await self.rec_net.api.images.v1(id).comments().get().fetch()
+        return Comment.from_data(resp.data)
 
     @BaseManager.get_method("cheers", "account", "id")
     async def get_cheers(self, id, **options):
@@ -28,17 +34,21 @@ class ImageManager(BaseManager):
         resp = await self.rec_net.api.images.v1(id).cheers.get().fetch()
         return resp.data
 
-    async def resolve_creator(self, image, **options):
-        pass
+    @BaseManager.resolve_method("creator", "account")
+    def resolve_creator(self, image, **options):
+        if isinstance(image.creator, int): return image.creator
+        return None
     
+    @BaseManager.resolve_method("room", "room")
     async def resolve_room(self, image, **options):
-        pass
+        if isinstance(image.room, int): return image.room
+        return None
 
+    @BaseManager.resolve_method("event", "event")
     async def resolve_event(self, image, **options):
-        pass
+        if isinstance(image.event, int): return image.event
+        return None
 
     async def resolve_commenters(self, image, **options):
         pass
 
-    async def resolve_cheers(self, image, **options):
-        pass
