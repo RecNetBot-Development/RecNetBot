@@ -1,11 +1,9 @@
 from discord import Embed
-from discord.ext.commands import Context
 from embeds.finalize_embed import finalize_embed
 from scripts import Emoji, img_url, unix_timestamp
-from rec_net.managers.account import User
 
 """Makes an embed for a single profile"""
-def profile_embed(ctx: Context, user: User, specify: str = None):
+def profile_embed(ctx, user, specify = ""):
     match specify:  # If only something specific is wanted
         case "platforms":
             platforms_section = create_platforms_section(user)
@@ -45,7 +43,7 @@ def profile_embed(ctx: Context, user: User, specify: str = None):
     em = finalize_embed(ctx, em)
     return em  # Return the embed.
 
-def create_platforms_section(user: User):
+def create_platforms_section(user):
     platform_info = {
         'Steam': f'{Emoji.steam} [`Steam`](https://store.steampowered.com/app/471710/Rec_Room/)', 
         'Oculus': f'{Emoji.oculus} [`Oculus`](https://www.oculus.com/experiences/quest/2173678582678296/)', 

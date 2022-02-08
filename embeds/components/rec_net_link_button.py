@@ -1,9 +1,7 @@
-from os import link
 import discord
-from rec_net.managers.account import User
 
 class RecNetLinkButton(discord.ui.Button):
-    def __init__(self, type: str, content: str):
+    def __init__(self, type, content):
         super().__init__(
             style=discord.ButtonStyle.link, 
             label="RecNet", 

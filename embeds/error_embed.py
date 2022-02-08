@@ -1,8 +1,7 @@
 from discord import Embed
-from discord.ext.commands import Context
 from embeds.finalize_embed import finalize_embed
 
-def error_embed(ctx: Context, error):
+def error_embed(ctx, error):
     # Define embed
     em = Embed(
         description = str(error)

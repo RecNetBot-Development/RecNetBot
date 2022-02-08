@@ -41,7 +41,10 @@ class AccountManager(BaseManager):
 
     @BaseManager.get_method("feed", "image")
     async def get_feed(self, id, **options):
-        resp = await self.rec_net.api.images.v3.feed.player(id).get().fetch()
+        params = {}
+        params["take"] = options.pop("take", 64)
+        params["skip"] = options.pop("skip", 0)
+        resp = await self.rec_net.api.images.v3.feed.player(id).get(params=params).fetch()
         return resp.data
 
     @BaseManager.get_method("posts", "image")
