@@ -6,14 +6,14 @@ def filter_embed(ctx, filters, sort, original_length, new_length):
     filter_desc = f"Sorted by `{sort}`\n"
     for filter in filters:
         filter_name = filters[filter].name
-        value = filters[filter].filter
+        value = filters[filter].readable_filter
         value_type = type(value)
         if value_type is str:
             value = value.capitalize()
         elif value_type is int:
             value = value
         elif value_type is list:
-            value =  ', '.join(value)
+            value =  ', '.join(map(str, value))
 
         filter_desc += f"{filter_name} `{value}`\n"
 

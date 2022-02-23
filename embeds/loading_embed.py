@@ -1,6 +1,6 @@
 from discord import Embed
 from embeds.finalize_embed import finalize_embed
-from scripts import Emoji
+from utility import Emoji
 
 def loading_embed(ctx):
     # Define embed

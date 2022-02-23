@@ -1,5 +1,4 @@
 from abc import ABCMeta, abstractmethod
-from .base_dataclass import BaseDataclass
 from ...rest import run_in_queue
 import asyncio
   

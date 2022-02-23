@@ -9,6 +9,7 @@ class Emoji:
     visitor = "👤"
     tag = "<:tag:803746052946919434>"
     controller = "🎮"
+    event = "📆"
 
     # Platforms
     walk = "🏃"

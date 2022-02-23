@@ -1,6 +1,10 @@
+import discord
+import platform
+import os
 import logging
+from datetime import datetime
 from discord.ext import commands
-from scripts import load_cfg
+from utility import load_cfg
 from rec_net import Client
 from modules import CogManager
 from database import DatabaseManager
@@ -8,6 +12,10 @@ from database import DatabaseManager
 class RecNetBot(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        # Setup Persistent Views
+        self.persistent_views_added = False
+
         # Setup logger
         self.logger = logging.getLogger('discord')
         self.logger.setLevel(logging.DEBUG)
@@ -25,6 +33,25 @@ class RecNetBot(commands.Bot):
         self.cog_manager.buildCogs()
         
         #TODO: add config validation & address module dependencies
+
+    async def on_ready(self):
+        print(f"""
+RNB ONLINE
+Logged in as {self.user.name}
+PyCord version: {discord.__version__}
+Python version: {platform.python_version()}
+Running on: {platform.system()} {platform.release()} ({os.name})
+
+        """)
+
+        # Add persistent views
+        #if not self.persistent_views_added:
+        #    self.add_view(ImageUI(None, None))
+        #    self.persistent_views_added = True
+
+    async def on_interaction(self, interaction):
+        date = datetime.utcnow()
+        print(f"{date.hour}:{date.minute} UTC | {interaction.user} ran /{interaction.data['name']}")
 
     def run(self):
         super().run(self.config['token'])

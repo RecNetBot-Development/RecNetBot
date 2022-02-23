@@ -1,6 +1,6 @@
 import os
 from discord.ext import commands
-from scripts.ModuleCollector import ModuleCollector
+from utility.ModuleCollector import ModuleCollector
 from discord.commands import ApplicationCommand, SlashCommand, SlashCommandGroup
 from rec_net.exceptions import AccountNotFound
 from embeds import error_embed
@@ -41,8 +41,7 @@ class Cog(commands.Cog):
         if isinstance(error.original, AccountNotFound):
             raise_error = True
 
-        em = error_embed(ctx, error.original)
+        em = error_embed(ctx, error)
 
         await ctx.respond(embed=em, ephemeral=True)
         if raise_error: raise error
-        

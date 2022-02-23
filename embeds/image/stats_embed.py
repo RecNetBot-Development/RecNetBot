@@ -1,6 +1,6 @@
 from discord import Embed
-from .. import finalize_embed, filter_embed
-from scripts import Emoji, img_url, post_url
+from ..finalize_embed import finalize_embed
+from utility import Emoji, img_url, post_url
 
 """Makes an embed for RecNet post stats"""
 def stats_embed(ctx, user):

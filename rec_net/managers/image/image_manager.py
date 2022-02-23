@@ -29,8 +29,7 @@ class ImageManager(BaseManager):
     @BaseManager.get_method("cheers", "account", "id")
     async def get_cheers(self, id, **options):
         image = options.pop("data_object")
-        if image.cheer_count == 0:
-            return []
+        if not image.cheer_count: return []
         resp = await self.rec_net.api.images.v1(id).cheers.get().fetch()
         return resp.data
 

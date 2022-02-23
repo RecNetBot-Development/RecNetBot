@@ -1,7 +1,3 @@
-import asyncio
-import aiohttp
-from ..exceptions import APIFailure
-
 class APIRequest:
     def __init__(self, client, path, method, params=None, data=None):
         self.url = path

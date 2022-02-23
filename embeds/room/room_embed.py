@@ -1,6 +1,6 @@
 from discord import Embed
 from embeds.finalize_embed import finalize_embed
-from scripts import Emoji  # RNB Emojis
+from utility import Emoji  # RNB Emojis
 
 """Makes an embed for a single room"""
 def room_embed(ctx, room_data, icons = True, explanations = True):

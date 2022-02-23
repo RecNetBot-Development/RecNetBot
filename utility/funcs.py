@@ -27,8 +27,7 @@ def load_cfg():
         if not cfg[key]:  # If some key is missing, the config is invalid
             sys.exit("Invalid config!")
     return cfg
-
-
+        
 # Command log
 def log(ctx):
     user, server, command = ctx.author, ctx.guild.name, ctx.command
@@ -43,5 +42,5 @@ def remove_dupes_from_list(list_):
 
 def handle_filters(filters):
     if type(filters) is not str: return [filters]
-    pure_filters = filters.replace(" ", "").split(",")
+    pure_filters = list(filter(None, filters.split(" ")))
     return pure_filters

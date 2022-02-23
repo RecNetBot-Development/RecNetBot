@@ -1,6 +1,5 @@
 from ...helpers import date_to_unix
 from attr import dataclass, field
-from .image_options import ImageOptions
 from ..base import BaseDataclass
 
 @dataclass
@@ -9,7 +8,7 @@ class Image(BaseDataclass):
     id: int
     image_name: str
     creator: int
-    tagged: list
+    tagged: int
     room: int
     event: int
     created_at: int
@@ -17,10 +16,6 @@ class Image(BaseDataclass):
     comment_count: int
     cheers: list = field(default=None)
     comments: list = field(default=None)
-
-    @staticmethod
-    def configure(manager, event):
-        return ImageOptions(manager, event)
 
     @classmethod
     def from_data(cls, data, **kwargs):

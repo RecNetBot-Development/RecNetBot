@@ -4,7 +4,6 @@ from ..base import BaseDataclass
 
 @dataclass
 class Event(BaseDataclass):
-    
     id: int
     creator: int
     name: str
@@ -19,7 +18,6 @@ class Event(BaseDataclass):
     accessibility: int
     responses: list = field(default=None)
     images: list = field(default=None)
-
 
     @classmethod
     def from_data(cls, data, **kwargs):

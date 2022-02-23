@@ -1,6 +1,6 @@
 from discord import Embed
 from embeds.finalize_embed import finalize_embed
-from scripts import Emoji, img_url, unix_timestamp
+from utility import Emoji, img_url, unix_timestamp
 
 """Makes an embed for a single profile"""
 def profile_embed(ctx, user, specify = ""):
@@ -12,7 +12,31 @@ def profile_embed(ctx, user, specify = ""):
                 title=f"{user.display_name}'s platforms",
                 description=platforms_section if platforms_section else 'No known platforms!'
             )
-
+            em.set_thumbnail(url=img_url(user.profile_image, True))
+            em = finalize_embed(ctx, em)
+            return em
+        case "bio":
+            em = Embed(
+                title=f"{user.display_name}'s bio",
+                description=f"```{user.bio}```" if user.bio else "User hasn't written a bio!"
+            )
+            em.set_thumbnail(url=img_url(user.profile_image, True))
+            em = finalize_embed(ctx, em)
+            return em
+        case "junior":
+            em = Embed(
+                title=f"{user.display_name}'s junior status",
+                description=f"{user.display_name} is a junior." if user.is_junior else f"{user.display_name} is NOT a junior."
+            )
+            em.set_thumbnail(url=img_url(user.profile_image, True))
+            em = finalize_embed(ctx, em)
+            return em
+        case "level":
+            em = Embed(
+                title=f"{user.display_name}'s level",
+                description=f"{user.display_name} is level `{user.level}`."
+            )
+            em.set_thumbnail(url=img_url(user.profile_image, True))
             em = finalize_embed(ctx, em)
             return em
 

@@ -17,7 +17,6 @@ def resolve_warnings(x: int):
 
 @dataclass
 class Room(BaseDataclass):
-    
     id: int
     is_dorm: bool
     max_player_calculation_mode: int
@@ -54,8 +53,6 @@ class Room(BaseDataclass):
     promo_external_content: list = field(default=None)
     images: list = field(default=None)
     events: list = field(default = None)
-
-
 
     async def patch_info(self, data = {}, includes = None):
         if data is not None:
