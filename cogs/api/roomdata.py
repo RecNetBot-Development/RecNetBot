@@ -19,7 +19,6 @@ async def roomdata(
     await ctx.interaction.response.defer()
     host = "https://rooms.rec.net"
     if room_input_type == "Id":
-        if not room.isdigit(): raise InvalidRoomId("Room id must be a digit!")  
         parsed_room_id = int(room)
         room_resp = await self.bot.rec_net.rec_net.rooms.rooms(parsed_room_id).get().fetch()
         endpoint = f"/rooms/{parsed_room_id}"
@@ -31,10 +30,3 @@ async def roomdata(
         content = host + endpoint,
         embed=json_embed(ctx, room_resp.data)
     )
-
-class InvalidRoomId(Error):
-    ...
-
-
-class RoomNotFound(Error):
-    ...

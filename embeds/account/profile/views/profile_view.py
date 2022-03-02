@@ -1,7 +1,7 @@
 import discord
-from ..components.rec_net_link_button import RecNetLinkButton
-from ..components.rec_net_post_button import RecNetPostButton
-from ..components.rec_net_feed_button import RecNetFeedButton
+from ....components.rec_net_link_button import RecNetLinkButton
+from ....components.rec_net_post_button import RecNetPostButton
+from ....components.rec_net_feed_button import RecNetFeedButton
 
 class Profile(discord.ui.View):
     def __init__(self, ctx, user):

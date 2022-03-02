@@ -15,7 +15,7 @@ class ImageManager(BaseManager):
         }
 
     @BaseManager.data_method
-    async def get_data(self, image, type):
+    def get_data(self, id, type = None):
         return {
             "bulk": self.rec_net.api.images.v3.bulk.post(),
             "id": self.rec_net.api.images.v4(id).get()
@@ -39,12 +39,12 @@ class ImageManager(BaseManager):
         return None
     
     @BaseManager.resolve_method("room", "room")
-    async def resolve_room(self, image, **options):
+    def resolve_room(self, image, **options):
         if isinstance(image.room, int): return image.room
         return None
 
     @BaseManager.resolve_method("event", "event")
-    async def resolve_event(self, image, **options):
+    def resolve_event(self, image, **options):
         if isinstance(image.event, int): return image.event
         return None
 

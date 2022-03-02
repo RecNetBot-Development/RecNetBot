@@ -2,15 +2,17 @@
 from .image.image_embed import image_embed
 from .image.stats_embed import stats_embed
 from .image.self_cheers import self_cheers_embed
-from .image.ui.image_browser import ImageUI
+from .image.views.image_browser import ImageUI
 
 # Room
 from .room.room_embed import room_embed
 
 # Account
-from .account.profile_embed import profile_embed
+from .account.profile.profile_embed import profile_embed
 from .account.account_data_embed import account_data_embed
-from .account.view import Profile
+from .account.profile.views.profile_view import Profile
+from .account.adjective_animal.aa_view import AdjectiveAnimal
+from .account.profile.views.random_account import RandomAccount
 
 # Other
 from .finalize_embed import finalize_embed

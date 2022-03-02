@@ -17,5 +17,5 @@ async def profile(
     specified: Option(str, "Choose specific information", choices=["Profile", "Profile Picture", "Banner", "Platforms", "Bio", "Junior", "Level"], required=False, default="Profile")
 ):
     await ctx.interaction.response.defer()
-    embed, content, view = await base_profile(self.bot.rec_net, ctx, username, specified)
-    await ctx.respond(embed=embed, content=content, view=view)
+    embed, view = await base_profile(self.bot.rec_net, ctx, username, specified)
+    await ctx.respond(embed=embed, view=view)

@@ -1,5 +1,5 @@
 import discord
-from ..image.ui.image_browser import ImageUI
+from ..image.views.image_browser import ImageUI
 
 class RecNetFeedButton(discord.ui.Button):
     def __init__(self, ctx, user):

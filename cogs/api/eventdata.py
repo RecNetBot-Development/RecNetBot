@@ -19,7 +19,6 @@ async def eventdata(
     await ctx.interaction.response.defer()
     host = "https://api.rec.net/api"
     if event_input_type == "Id":
-        if not event.isdigit(): raise InvalidEventId("Event id must be a digit!")  
         parsed_event_id = int(event)
         event_resp = await self.bot.rec_net.rec_net.api.playerevents.v1(parsed_event_id).get().fetch()
         endpoint = f"/playerevents/v1/{parsed_event_id}"
@@ -35,10 +34,3 @@ async def eventdata(
         content = host + endpoint,
         embed=json_embed(ctx, event_data)
     )
-
-class InvalidEventId(Error):
-    ...
-
-
-class EventNotFound(Error):
-    ...

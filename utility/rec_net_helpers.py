@@ -6,3 +6,12 @@ def img_url(image_name: str, crop_square: bool=False, resolution: int=720):
 
 def post_url(post_id: int): 
     return f"https://rec.net/image/{post_id}"
+
+def profile_url(username: str): 
+    return f"https://rec.net/user/{username}"
+
+def room_url(room_name: str):
+    return f"https://rec.net/room/{room_name}"
+
+def event_url(event_id: int):
+    return f"https://rec.net/event/{event_id}"

@@ -47,7 +47,7 @@ class RoomManager(BaseManager):
         params = {}
         params["take"] = options.pop("take", 64)
         params["skip"] = options.pop("skip", 0)
-        resp = await self.rec_net.api.playerevents.v1.room(id).fetch
+        resp = await self.rec_net.api.playerevents.v1.room(id).fetch()
         return resp.data
 
     @BaseManager.resolve_method("creator", "account")

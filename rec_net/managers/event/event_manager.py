@@ -14,7 +14,7 @@ class EventManager(BaseManager):
         }
 
     @BaseManager.data_method
-    async def get_data(self, id, type):
+    def get_data(self, id, type = None):
         return {
             "bulk": self.rec_net.api.playerevents.v1.bulk.post(),
             "id": self.rec_net.api.playerevents.v1(id).get()
@@ -40,12 +40,11 @@ class EventManager(BaseManager):
         pass
 
     @BaseManager.resolve_method("room", "room")
-    async def resolve_room(self, event, **options):
+    def resolve_room(self, event, **options):
         if isinstance(event.room, int): return event.room
         return None
         
-
     @BaseManager.resolve_method("creator", "account")
-    async def resolve_creator(self, event, **options):
+    def resolve_creator(self, event, **options):
         if isinstance(event.creator, int): return event.creator
         return None

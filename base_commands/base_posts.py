@@ -10,7 +10,7 @@ async def base_posts(rec_net, ctx, type, username=None, sort=None, in_rooms=None
 
     post_options = {
         "take": 2**16,
-        "includes": ["creator", "room"]           
+        #"includes": ["creator", "room"]           
     }
 
     async def get_user_and_posts(type, account, includes, options):
@@ -36,8 +36,16 @@ async def base_posts(rec_net, ctx, type, username=None, sort=None, in_rooms=None
             user, posts = await get_user_and_posts("feed", account, includes, options)
 
     post_filter = {}
-    if in_rooms: post_filter["rooms"] = Filter("In room(s)", in_rooms)
-    if not_in_rooms: post_filter["not_rooms"] = Filter("Not in room(s)", not_in_rooms)
+    if in_rooms:
+        rooms = await rec_net.room(name=handle_filters(in_rooms))
+        _in_rooms = [room.id for room in rooms]
+        room_names = [room.name for room in rooms]
+        post_filter["rooms"] = Filter("In room(s)", _in_rooms, room_names, False)
+    if not_in_rooms: 
+        rooms = await rec_net.room(name=handle_filters(not_in_rooms))
+        _not_in_rooms = [room.id for room in rooms]
+        room_names = [room.name for room in rooms]
+        post_filter["not_rooms"] = Filter("Not in room(s)", _not_in_rooms, room_names, False)
     if with_users: 
         users = await rec_net.account(name=handle_filters(with_users))
         _with_users = [user.id for user in users]
@@ -53,7 +61,7 @@ async def base_posts(rec_net, ctx, type, username=None, sort=None, in_rooms=None
     if minimum_cheers: post_filter["minimum_cheers"] = Filter("Minimum cheers", minimum_cheers, None, False)
     if minimum_comments: post_filter["minimum_comments"] = Filter("Minimum comments", minimum_comments, None, False)
 
-    view, embeds = await ImageUI(ctx=ctx, user=user, posts=posts, raw=raw, post_filter=post_filter, interaction=ctx.interaction, sort=sort).start()
+    view, embeds = await ImageUI(ctx=ctx, user=user, posts=posts, raw=raw, post_filter=post_filter, interaction=ctx.interaction, sort=sort, rec_net=rec_net).start()
     return view, embeds
 
 class Filter:

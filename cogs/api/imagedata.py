@@ -16,7 +16,6 @@ async def postdata(
     post: Option(str, "Enter the post's id", required=True)
 ):
     await ctx.interaction.response.defer()
-    if not post.isdigit(): raise InvalidPostId("post id must be a digit!")  
     parsed_post_id = int(post)
     post_resp = await self.bot.rec_net.rec_net.api.images.v4(parsed_post_id).get().fetch()
 
@@ -24,10 +23,3 @@ async def postdata(
         content = f"https://api.rec.net/api/images/v4/{parsed_post_id}",
         embed=json_embed(ctx, post_resp.data)
     )
-
-class InvalidPostId(Error):
-    ...
-
-
-class PostNotFound(Error):
-    ...

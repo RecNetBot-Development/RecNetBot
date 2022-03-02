@@ -22,9 +22,12 @@ class HTTPClient():
 
         async with self.__session.request(Request.method, Request.url, **kwargs) as res:
             ResponseData = await Response.parse_response(res)
+            
             if ResponseData.success:
                 return ResponseData
-            print(ResponseData)
+            
+            print(f"{ResponseData.status=}\n{Request.method=}\n{Request.url=}\n{kwargs=}\n\n")
+                
             #Possibly make these request more detailed (low priority addition)
             if ResponseData.status >= 400 and ResponseData.status < 500:
                 pass 

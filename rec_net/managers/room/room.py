@@ -10,7 +10,7 @@ from ..image import Image
 from ..event import Event
 
 def resolve_warnings(x: int):
-    warnings = [None, "Spooky/scary themes", "Mature themes", "Bright/flashing lights", "Intense motion", "Gore/violence", "Custom"]
+    warnings = ["Custom", "Spooky/scary themes", "Mature themes", "Bright/flashing lights", "Intense motion", "Gore/violence"]
     for index, warning in enumerate(warnings):
         if 1 << index & x:
             yield warning

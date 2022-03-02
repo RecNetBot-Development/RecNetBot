@@ -39,8 +39,3 @@ def remove_dupes_from_list(list_):
     pure = []
     [pure.append(x) for x in list_ if x not in pure]
     return pure
-
-def handle_filters(filters):
-    if type(filters) is not str: return [filters]
-    pure_filters = list(filter(None, filters.split(" ")))
-    return pure_filters

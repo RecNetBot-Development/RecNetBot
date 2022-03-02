@@ -4,7 +4,7 @@ from attr import dataclass
 class Score:
     visit_type: int
     score: float
-    backup_score: int
+    backup_score: float
 
     @classmethod
     def from_data(cls, data):

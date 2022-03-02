@@ -4,7 +4,6 @@ class APIRequest:
         self.method = method
         self.params = params
         self._client = client
-
         self.body = data
 
     async def fetch(self):

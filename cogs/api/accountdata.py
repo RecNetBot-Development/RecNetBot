@@ -19,7 +19,6 @@ async def accountdata(
     await ctx.interaction.response.defer()
     host = "https://accounts.rec.net"
     if account_input_type == "Id":
-        if not account.isdigit(): raise InvalidAccountId("Account id must be a digit!")  
         parsed_account_id = int(account)
         account_resp = await self.bot.rec_net.rec_net.accounts.account(parsed_account_id).get().fetch()
         endpoint = f"/account/{account}"
@@ -31,10 +30,3 @@ async def accountdata(
         content = host + endpoint,
         embed=account_data_embed(ctx, account_resp.data)
     )
-
-class InvalidAccountId(Error):
-    ...
-
-
-class AccountNotFound(Error):
-    ...

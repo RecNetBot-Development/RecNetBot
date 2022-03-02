@@ -49,9 +49,9 @@ Running on: {platform.system()} {platform.release()} ({os.name})
         #    self.add_view(ImageUI(None, None))
         #    self.persistent_views_added = True
 
-    async def on_interaction(self, interaction):
-        date = datetime.utcnow()
-        print(f"{date.hour}:{date.minute} UTC | {interaction.user} ran /{interaction.data['name']}")
+    #async def on_interaction(self, interaction):
+    #    date = datetime.utcnow()
+    #    print(f"{date.hour}:{date.minute} UTC | {interaction.user} ran /{interaction.data['name']}")
 
     def run(self):
         super().run(self.config['token'])
