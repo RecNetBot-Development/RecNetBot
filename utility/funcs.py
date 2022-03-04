@@ -2,12 +2,18 @@ import os
 import json
 import sys
 import time
-from datetime import datetime
+from datetime import date, datetime
+from rec_net.helpers import date_to_unix
 
 """This script contains global functions for all other scripts!"""
 
 def unix_timestamp(timestamp):
-    return f"<t:{timestamp}:f>"
+    if isinstance(timestamp, int):
+        return f"<t:{timestamp}:f>"
+    elif isinstance(timestamp, str):
+        return f"<t:{date_to_unix(timestamp)}:f>"
+    else:
+        return f"<t:{0}:f>"
 
 # Loads the local config file
 def load_cfg():

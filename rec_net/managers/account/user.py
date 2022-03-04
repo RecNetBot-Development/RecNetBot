@@ -3,12 +3,7 @@ from attr import dataclass, field
 from ...helpers import date_to_unix
 from ..base import BaseDataclass
 from .account_options import AccountOptions
-
-def resolve_platforms(x):
-    platforms = ['Steam', 'Oculus', 'PlayStation', 'Xbox', 'HeadlessBot', 'iOS', 'Android']
-    for index, platform in enumerate(platforms):
-        if 1 << index & x:
-            yield platform
+from utility.account.resolve_platforms import resolve_platforms
 
 @dataclass
 class User(BaseDataclass):

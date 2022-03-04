@@ -4,7 +4,7 @@ from embeds.finalize_embed import finalize_embed
 from utility import Emoji, unix_timestamp, img_url, profile_url
 
 """Makes an embed for a single room"""
-def room_embed(ctx, room, hot_rooms: dict = {}):
+def room_embed(ctx, room, hot_rooms = {}):
     accessibility = [
         {"mode": "`Screen`", "supported": 'screen' in room.supported_platforms, "icon": Emoji.screen},
         {"mode": "`Walk`", "supported": 'walk' in room.supported_platforms, "icon": Emoji.walk},
@@ -48,7 +48,11 @@ by [`@{room.creator.username}`]({profile_url(room.creator.username)})
     
     # Room hot placement
     placement = 0
-    if hot_rooms: placement = next((i for (i, _room) in enumerate(hot_rooms) if _room["RoomId"] == room.id), 0)
+    if hot_rooms: 
+        if isinstance(hot_rooms, dict):
+            placement = next((i for (i, _room) in enumerate(hot_rooms) if _room["RoomId"] == room.id), 0)
+        elif isinstance(hot_rooms, int):
+            placement = hot_rooms
             
     # Room engagement
     score = 0
@@ -66,7 +70,7 @@ by [`@{room.creator.username}`]({profile_url(room.creator.username)})
 {Emoji.favorite} `{room.favorite_count:,}` — Favorites
 {Emoji.visitors} `{room.visitor_count:,}` — Visitors
 {Emoji.visitor} `{room.visit_count:,}` — Visits
-{Emoji.hot} `#{placement if placement else '>1,000'}` — Hot Placement
+{Emoji.hot} `#{placement:, if placement else '>1,000'}` — Hot Placement
 {Emoji.engagement} `{score}%` — Engagement
     """
     

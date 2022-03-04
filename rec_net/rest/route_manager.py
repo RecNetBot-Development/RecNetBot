@@ -21,6 +21,10 @@ class APIRouteManager:
     @property
     def clubs(self):
         return APIRouteBuilder(self, "https://clubs.rec.net/")
+    
+    @property
+    def cdn(self):
+        return APIRouteBuilder(self, "https://cdn.rec.net/")
 
     async def terminate(self):
         await self.http_client.close()
