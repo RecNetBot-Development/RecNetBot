@@ -1,0 +1,7 @@
+{
+    "name": "Help",
+    "icon": "category_help",
+    "description": "Contains the help command for RecNetBot!",
+    "cog_group": false,
+    "scripts": ["help"]
+}

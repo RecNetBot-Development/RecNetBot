@@ -1,7 +1,6 @@
 # Config
 config.json
 .config.json
-config.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -138,4 +137,3 @@ dmypy.json
 
 # Log
 discord.log
-config.json

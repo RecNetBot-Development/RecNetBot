@@ -1,0 +1,6 @@
+{
+    "name": "Image",
+    "icon": "category_image",
+    "description": "Commands relating to shared posts on RecNet!",
+    "scripts": ["posts", "selfcheers", "data"]
+}

@@ -1,14 +1,12 @@
-import importlib
 import os
-import sys
+import json
 from modules.Cog import Cog
-from discord.commands import ApplicationCommand
 
 class CogManager:
     def __init__(self, bot, *args, **kwargs):
         self.bot = bot
         self._cogs = []
-
+            
     @property
     def cogDirs(self):
         dirName = './cogs'
@@ -19,4 +17,5 @@ class CogManager:
     def buildCogs(self):
         cogDirs = self.cogDirs
         for dir in cogDirs:
-            self.bot.add_cog(Cog(self, dir))
+            cog = Cog(self, dir)
+            if cog.get_commands(): self.bot.add_cog(cog)  # Only add the cog if it has commands.

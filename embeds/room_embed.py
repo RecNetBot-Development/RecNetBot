@@ -1,6 +1,6 @@
 import discord
-from scripts import date_to_unix
-from scripts import Emoji  # RNB Emojis
+from utility import date_to_unix
+from utility import Emoji  # RNB Emojis
 
 """Makes an embed for a single room"""
 async def room_embed(room_data: dict, icons: bool = True, explanations: bool = True):

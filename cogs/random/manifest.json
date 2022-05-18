@@ -1,0 +1,6 @@
+{
+    "name": "Random",
+    "icon": "category_random",
+    "description": "Find random stuff from the depths of RecNet!",
+    "scripts": ["randomaccount", "randomimage", "randomroom"]
+}
