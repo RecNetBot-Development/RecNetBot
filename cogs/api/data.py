@@ -24,10 +24,10 @@ class RawDataShowcase(discord.ui.View):
         self.variation = 0
         
         self.embeds = {
-            "Account": account_data_embed,
-            "Image": image_data_embed,
-            "Event": event_data_embed,
-            "Room": room_data_embed
+            "account": account_data_embed,
+            "image": image_data_embed,
+            "event": event_data_embed,
+            "room": room_data_embed
         }
         
     @discord.ui.button(label="Toggle Variations", style=discord.ButtonStyle.primary, row=0, custom_id="persistent:data_toggle_explanations")
@@ -67,7 +67,7 @@ class RawDataShowcase(discord.ui.View):
 async def data(
     self, 
     ctx, 
-    type: Option(str, "Enter what type of data you want", choices=["Account", "Room", "Event", "Image"], required=True),
+    type: Option(str, "Enter what type of data you want", choices=["account", "room", "event", "image"], required=True),
     name: Option(str, "Enter the unique name or id", required=True),
     is_id: Option(bool, "Is the name argument an id or not? If unspecified, it will be assumed. Images are always id's.", required=False)
 ):
@@ -77,22 +77,22 @@ async def data(
         is_id = True
     
     match type:
-        case "Account":
+        case "account":
             host = "https://accounts.rec.net"
             endpoint = f"/account?username={name}"
             request = self.bot.rec_net.rec_net.accounts.account(name).get() if is_id else self.bot.rec_net.rec_net.accounts.account().get({"username": name})
             exception = AccountNotFound(name)
-        case "Room":
+        case "room":
             host = "https://rooms.rec.net"  
             endpoint = f"/rooms/{name}" if is_id else f"/rooms?name={name}"
             request = self.bot.rec_net.rec_net.rooms.rooms(name).get() if is_id else self.bot.rec_net.rec_net.rooms.rooms().get({"name": name})
             exception = RoomNotFound(name)
-        case "Image":
+        case "image":
             host = "https://api.rec.net"
             endpoint = f"/api/images/v4/{name}"
             request = self.bot.rec_net.rec_net.api.images.v4(name).get()
             exception = ImageNotFound(name)
-        case "Event":
+        case "event":
             host = "https://api.rec.net"
             endpoint = f"/api/playerevents/v1/{name}" if is_id else f"/api/playerevents/v1/search?query={name}&take=1"
             request = self.bot.rec_net.rec_net.api.playerevents.v1(name).get() if is_id else self.bot.rec_net.rec_net.api.playerevents.v1.search().get({"query": name, "take": 1})

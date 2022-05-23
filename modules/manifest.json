@@ -1,8 +1,0 @@
-{
-    "cogs": {
-        "account": {
-            "scripts": ["profile"],
-            "command_groups": []
-        }
-    }
-}

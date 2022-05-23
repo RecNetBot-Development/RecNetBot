@@ -1,0 +1,14 @@
+#Ignore any possible virtual environment
+venv/
+
+# Ew Python cache
+__pycache__/
+
+# Git
+.git
+
+# No markdown here!!
+*.md
+
+# Config
+config.json

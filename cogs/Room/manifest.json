@@ -2,5 +2,5 @@
     "name": "Room",
     "icon": "category_room",
     "description": "Room related commands.",
-    "scripts": ["info", "data"]
+    "scripts": ["info", "data", "placement"]
 }

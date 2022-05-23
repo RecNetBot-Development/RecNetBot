@@ -13,13 +13,12 @@ cfg = load_cfg()
 async def info(
     self,
     ctx,
-    name: Option(str, "Enter the event's name", required=True),
-    is_id: Option(bool, "If it's an id, specify it here. If unspecified, it will be assumed", required=False)
+    event_id: Option(int, "Enter the event's id", required=True)
 ):
     await ctx.interaction.response.defer()
 
-    event = await self.bot.rec_net.event(name=name, includes=["creator", "room"])
-    if not event: raise EventNotFound(name)
+    event = await self.bot.rec_net.event(id=event_id, includes=["creator", "room"])
+    if not event: raise EventNotFound(event_id)
     
-    await respond(ctx, embed=event_embed(event[0]))
+    await respond(ctx, embed=event_embed(event))
     #room = await self.bot.rec_net.room(name=name, info=["tags", "subrooms", "roles", "scores"], includes=["roles", "creator"])

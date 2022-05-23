@@ -14,8 +14,8 @@ async def profile(
     self, 
     ctx, 
     username: Option(str, "Enter user's username", required=True),
-    specified: Option(str, "Choose specific information", choices=["Profile", "Profile Picture", "Banner", "Platforms", "Bio", "Junior", "Level", "Identities", "Pronouns"], required=False, default="Profile")
+    specified: Option(str, "Choose specific information", choices=["profile", "profile picture", "banner", "platforms", "bio", "junior", "level", "identities", "pronouns"], required=False, default="Profile")
 ):
     await ctx.interaction.response.defer()
-    embed, view = await base_profile(self.bot.rec_net, ctx, username, specified)
+    embed, view = await base_profile(self.bot.rec_net, ctx, username, specified.capitalize())
     await respond(ctx, embed=embed, view=view)

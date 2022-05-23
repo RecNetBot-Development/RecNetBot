@@ -1,5 +1,4 @@
 import discord
-from utility.image.finalize_embed import finalize_embed
 from utility import load_cfg, respond
 from discord.commands import slash_command, Option
 from discord.ext import commands
@@ -72,7 +71,6 @@ def create_command_help_page(command, ctx):
             inline=False
         )
     
-    embed = finalize_embed(ctx, embed)
     return embed
 
 class HelpCommandView(discord.ui.View):
@@ -170,8 +168,7 @@ def create_category_help_page(cog, ctx):
             value=commands, 
             inline=False
         )
-    
-    embed = finalize_embed(ctx, embed)
+
     return embed
         
 class HelpCategoryView(discord.ui.View):
@@ -225,7 +222,7 @@ def main_menu(ctx, bot):
             inline=False
         )
         
-    return finalize_embed(ctx, embed)
+    return embed
 
 class HelpMainNavigation(discord.ui.Select):
     def __init__(self, ctx, bot):

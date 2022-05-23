@@ -1,5 +1,4 @@
 from discord import Embed
-from utility.image.finalize_embed import finalize_embed
 from utility.emojis import get_emoji
 from utility.rec_net_helpers import img_url
 from utility.account.create_platform_section import create_platforms_section

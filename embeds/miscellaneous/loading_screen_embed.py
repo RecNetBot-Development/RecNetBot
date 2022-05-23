@@ -5,7 +5,7 @@ from utility.rec_net_helpers import img_url
 from utility.account.create_platform_section import create_platforms_section
 from utility.funcs import unix_timestamp
 
-def loading_screen_embed(ctx, loading_screen_data):
+def loading_screen_embed(loading_screen_data):
     lsd = loading_screen_data  # mhmm
     em = Embed(
         title=lsd['Title'],
@@ -27,5 +27,5 @@ def loading_screen_embed(ctx, loading_screen_data):
     
     if lsd['RoomNames']:
         em.add_field(name="Associated Room(s)", value=', '.join(lsd['RoomNames']))
-    em = finalize_embed(ctx, em)
+
     return em

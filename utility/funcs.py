@@ -7,13 +7,18 @@ from rec_net.helpers import date_to_unix
 
 """This script contains global functions for all other scripts!"""
 
-def unix_timestamp(timestamp):
+def unix_timestamp(timestamp, format="f"):
+    allowed_formats = ["", "t", "T", "d", "D", "f", "F", "R"]
+    if format not in allowed_formats:
+        format = "f"
+    format = f":{format}"
+    
     if isinstance(timestamp, int):
-        return f"<t:{timestamp}:f>"
+        return f"<t:{timestamp}{format}>"
     elif isinstance(timestamp, str):
-        return f"<t:{date_to_unix(timestamp)}:f>"
+        return f"<t:{date_to_unix(timestamp)}{format}>"
     else:
-        return f"<t:{0}:f>"
+        return f"<t:{0}{format}>"
 
 # Loads the local config file
 cached_config = {}

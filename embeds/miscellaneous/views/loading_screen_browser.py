@@ -50,7 +50,7 @@ class LoadingScreens(discord.ui.View):
         await interaction.response.edit_message(embed=embed, view=self)
         
     def create_embed(self):
-        return loading_screen_embed(self.ctx, self.loading_screens[self.index])
+        return loading_screen_embed(self.loading_screens[self.index])
     
     async def interaction_check(self, interaction):
         return self.ctx.user == interaction.user

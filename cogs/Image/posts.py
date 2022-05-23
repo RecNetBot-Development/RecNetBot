@@ -12,7 +12,7 @@ cfg = load_cfg()
 async def posts(
     self, 
     ctx, 
-    type: Option(str, choices=["Photos", "Feed"], required=True),
+    type: Option(str, choices=["photos", "feed"], required=True),
     username: Option(str, "Enter the username", required=False),
     sort: Option(str, "Sort options", choices=["Newest to Oldest", "Oldest to Newest", "Cheers: Highest to Lowest", "Cheers: Lowest to Highest", "Comments: Highest to Lowest", "Comments: Lowest to Highest"], required=False, default="Newest to Oldest"),
     in_rooms: Option(str, "Only show posts taken in specific room(s)", required=False, default=""),
@@ -26,5 +26,5 @@ async def posts(
     raw: Option(bool, "Send raw images", required=False, default=False)
 ):
     await ctx.interaction.response.defer()
-    view, embeds = await base_posts(self.bot.rec_net, ctx, type=type, username=username, sort=sort, in_rooms=in_rooms, not_in_rooms=not_in_rooms, with_users=with_users, without_users=without_users, during_event=during_event, exclude_events=exclude_events, minimum_cheers=minimum_cheers, minimum_comments=minimum_comments, raw=raw)
+    view, embeds = await base_posts(self.bot.rec_net, ctx, type=type.capitalize(), username=username, sort=sort, in_rooms=in_rooms, not_in_rooms=not_in_rooms, with_users=with_users, without_users=without_users, during_event=during_event, exclude_events=exclude_events, minimum_cheers=minimum_cheers, minimum_comments=minimum_comments, raw=raw)
     await respond(ctx, embeds=embeds, view=view)

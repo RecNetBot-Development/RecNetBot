@@ -16,6 +16,8 @@ class Event(BaseDataclass):
     subroom_id: int
     state: int
     accessibility: int
+    is_multi_instance: bool
+    supports_live_chat: bool
     responses: list = field(default=None)
     images: list = field(default=None)
 
@@ -37,5 +39,7 @@ class Event(BaseDataclass):
             room = data["RoomId"],
             subroom_id = data["SubRoomId"],
             state = data["State"],
-            accessibility = data["Accessibility"]
+            accessibility = data["Accessibility"],
+            is_multi_instance = bool(data["IsMultiInstance"]),
+            supports_live_chat = bool(data["SupportMultiInstanceRoomChat"])
         )
