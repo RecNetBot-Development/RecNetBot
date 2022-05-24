@@ -14,6 +14,6 @@ async def adjectiveanimal(
     ctx
 ):
     await ctx.interaction.response.defer()
-    view, embed = AdjectiveAnimal(ctx).start()
+    view, embed = AdjectiveAnimal().start()
     await respond(ctx, embed=embed, view=view)
     

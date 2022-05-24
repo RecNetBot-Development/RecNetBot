@@ -11,7 +11,6 @@ from .discord_helpers.helpers import *
 
 # image
 from .image.filter_posts import *
-from .image.finalize_embed import finalize_embed
 
 # room
 from .room.get_recent_room_id import *

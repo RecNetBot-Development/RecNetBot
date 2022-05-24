@@ -1,6 +1,5 @@
 import discord
 from embeds.image.stats_embed import stats_embed as img_stats_embed
-#from utility.discord_helpers.send import respond as __respond
 
 class NavigationButton(discord.ui.Button):
     def __init__(self, button_type, view):

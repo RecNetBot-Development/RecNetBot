@@ -72,6 +72,8 @@ class Cog(commands.Cog):
         if self.__categorize_commands: self.__cog_commands__.append(self.__command_group)
 
     def addCommand(self, command):
+        self.debugPrint(f"Adding command '{command.name}'...")
+        
         command.cog = self
         patched_command = command._update_copy(self.__cog_settings__)
         if self.__categorize_commands:
@@ -79,8 +81,6 @@ class Cog(commands.Cog):
             self.__command_group.subcommands.append(patched_command)
         else:
             self.__cog_commands__.append(command)
-            
-        self.debugPrint(f"Added command '{command.name}'")
 
     # Global error handling
     async def cog_command_error(self, ctx, error):

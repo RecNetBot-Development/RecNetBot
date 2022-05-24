@@ -1,5 +1,4 @@
 import discord
-from ...components.rec_net_link_button import RecNetLinkButton
 from ..room_embed import room_embed
 from utility.emojis import get_emoji
 from random import randint

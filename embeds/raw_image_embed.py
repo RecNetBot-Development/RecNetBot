@@ -1,5 +1,5 @@
-from discord import Embed, Colour
+from embeds.base.embed import DefaultEmbed as Embed
 
 def raw_image_embed(url):
-    em = Embed(colour=Colour.orange()).set_image(url=url)
+    em = Embed().set_image(url=url)
     return em

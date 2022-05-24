@@ -1,7 +1,6 @@
-from discord import Embed
-from utility.image.finalize_embed import finalize_embed
+from embeds.base.embed import DefaultEmbed as Embed
 
-def adjective_animal_embed(ctx, name):
+def adjective_animal_embed(name):
     # Define embed
     em = Embed(
         title="Your Animal Adjective name",
@@ -10,5 +9,4 @@ def adjective_animal_embed(ctx, name):
 *Generated from the official adjectives and nouns!*
         """
     )
-    em = finalize_embed(ctx, em)
     return em

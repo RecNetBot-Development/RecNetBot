@@ -1,4 +1,4 @@
-from discord import Embed
+from embeds.base.embed import DefaultEmbed as Embed
 
 def error_embed(error = "", custom_text = ""):
     # Define embed

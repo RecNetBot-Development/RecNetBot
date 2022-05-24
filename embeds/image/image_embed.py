@@ -1,10 +1,10 @@
-from discord import Embed
 from rec_net.managers.room.room import Room
 from rec_net.managers.event.event import Event
 from utility.emojis import get_emoji
 from utility.funcs import unix_timestamp
 from utility.rec_net_helpers import img_url, post_url, room_url, event_url, profile_url
 from rec_net.managers.account.user import User
+from embeds.base.embed import DefaultEmbed as Embed
 
 """Makes an embed for a single RecNet post"""
 def image_embed(image):

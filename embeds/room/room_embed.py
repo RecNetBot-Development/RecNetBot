@@ -1,6 +1,4 @@
-from re import I
-from discord import Embed
-from utility.image.finalize_embed import finalize_embed
+from embeds.base.embed import DefaultEmbed as Embed
 from utility.emojis import get_emoji
 from utility.funcs import unix_timestamp
 from utility.rec_net_helpers import img_url, profile_url

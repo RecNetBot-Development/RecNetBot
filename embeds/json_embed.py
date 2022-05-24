@@ -1,5 +1,4 @@
-from discord import Embed
-from utility.image.finalize_embed import finalize_embed
+from embeds.base.embed import DefaultEmbed as Embed
 
 def json_embed(json: dict, *args, **kwargs):
     if isinstance(json, list):

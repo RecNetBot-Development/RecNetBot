@@ -1,4 +1,4 @@
-from discord import Embed
+from embeds.base.embed import DefaultEmbed as Embed
 from utility.rec_net_helpers import img_url
 
 """Makes an embed for a single RecNet post"""

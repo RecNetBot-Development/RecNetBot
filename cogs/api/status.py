@@ -1,9 +1,8 @@
+import discord
+from embeds.base.embed import DefaultEmbed as Embed
 from aiohttp import ClientConnectorError
 from utility import load_cfg, respond, Emoji
-import discord
-from discord.commands import slash_command, Option  # Importing the decorator that makes slash commands.
-from rec_net.exceptions import Error
-from embeds import account_data_embed
+from discord.commands import slash_command # Importing the decorator that makes slash commands.
 
 cfg = load_cfg()
 
@@ -18,7 +17,7 @@ async def apistatus(
 ):
     await ctx.interaction.response.defer()
 
-    embed = discord.Embed(
+    embed = Embed(
         title="API Status Results"
     )
 

@@ -1,5 +1,5 @@
 from utility import handle_filters
-from rec_net.exceptions import APIFailure, AccountNotFound, NotFound, Error, RoomNotFound
+from rec_net.exceptions import AccountNotFound, Error
 from embeds import ImageUI
 
 class Filter:

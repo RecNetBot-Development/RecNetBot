@@ -1,5 +1,5 @@
 from embeds import profile_embed, Profile
-from rec_net.exceptions import APIFailure, AccountNotFound
+from rec_net.exceptions import AccountNotFound
 
 async def base_profile(rec_net, ctx, username, specified):
     options = {

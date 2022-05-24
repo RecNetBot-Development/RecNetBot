@@ -6,6 +6,8 @@ class Emoji:
     correct = "✅"  # "True"
     incorrect = "❌"  # "False"
     unknown = "<:unknown:962799809088086036>"  # "Unknown by Adrien Coquet from NounProject.com"
+    link = "<:link:978703397035315230>" # Link by Тимур Минвалеев from NounProject.com
+    default_link = "🔗"
     
     # Platforms
     walk = "<:walking:962792336725782608>"  # Walk locomotion icon  (Walking by Vectors Market from NounProject.com)

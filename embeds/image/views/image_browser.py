@@ -166,7 +166,7 @@ class ImageUI(discord.ui.View):
     async def goto_index(self, interaction):
         self.update_items()
         embeds = await self.create_embed(await self.get_post())
-        await edit_message(self.ctx, interaction, embeds=embeds, view=self)
+        await edit_message(interaction, embeds=embeds, view=self)
 
     async def create_embed(self, post):
         post_embed = None

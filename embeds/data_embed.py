@@ -1,4 +1,4 @@
-from discord import Embed
+from embeds.base.embed import DefaultEmbed as Embed
 
 def data_embed(formatting, data, explanations=False):
     em = Embed(

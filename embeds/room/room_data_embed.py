@@ -1,5 +1,3 @@
-from discord import Embed
-from utility.image.finalize_embed import finalize_embed
 from embeds.data_embed import data_embed
 
 formatting = {}

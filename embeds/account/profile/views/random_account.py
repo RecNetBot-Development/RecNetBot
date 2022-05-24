@@ -1,8 +1,6 @@
 import discord
-from ....components.rec_net_link_button import RecNetLinkButton
 from ..profile_embed import profile_embed
 from random import randint
-from utility import get_recent_account_id
 from utility.emojis import get_emoji
 
 class RandomAccount(discord.ui.View):

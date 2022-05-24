@@ -1,5 +1,4 @@
 from discord.errors import Forbidden
-from utility.image.finalize_embed import finalize_embed
 
 failure = f"""
 Hey, looks like I was unable to respond to your command! Please make sure my permissions are unchanged.
@@ -11,39 +10,29 @@ May you inform the server team about this issue? :slight_smile:
 """
 
 async def send(ctx, **kwargs):
-    if "embed" in kwargs: kwargs["embed"] = finalize_embed(kwargs["embed"])
-    if "embeds" in kwargs: kwargs["embeds"] = [finalize_embed(embed) for embed in kwargs["embeds"]]
-    
-    try:
-        await ctx.send(**kwargs)
-    except Forbidden:
-        try:
-            await ctx.send(failure)
-        except Forbidden:
-            await ctx.author.send(message_failure.format(channel=ctx.channel.name, guild=ctx.guild.name))
+    await push(ctx.send, context=ctx, **kwargs)
             
 async def respond(ctx, **kwargs):
-    if "embed" in kwargs: kwargs["embed"] = finalize_embed(kwargs["embed"])
-    if "embeds" in kwargs: kwargs["embeds"] = [finalize_embed(embed) for embed in kwargs["embeds"]]
-    
-    try:
-        await ctx.respond(**kwargs)
-    except Forbidden:
-        try:
-            await ctx.respond(failure)
-        except Forbidden:
-            await ctx.author.send(message_failure.format(channel=ctx.channel.name, guild=ctx.guild.name))
+    await push(ctx.respond, context=ctx, **kwargs)
             
-async def edit_message(ctx, interaction, **kwargs):
-    if "embed" in kwargs: kwargs["embed"] = finalize_embed(kwargs["embed"])
-    if "embeds" in kwargs: kwargs["embeds"] = [finalize_embed(embed) for embed in kwargs["embeds"]]
+async def edit_message(interaction, **kwargs):
+    await push(interaction.response.edit_message, interaction=interaction, **kwargs)
+            
+async def push(function, **kwargs):
+    context = kwargs.pop("interaction", None)
+    context = kwargs.pop("context", None)
     
     try:
-        await interaction.response.edit_message(**kwargs)
+        await function(**kwargs)
     except Forbidden:
         try:
-            await interaction.response.edit_message(failure)
+            await function(failure)
         except Forbidden:
-            await ctx.author.send(message_failure.format(channel=ctx.channel.name, guild=ctx.guild.name))
+            channel, guild = "UNKNOWN", "UNKNOWN"
+            if context:
+                channel = context.channel.name
+                guild = context.guild.name
+            
+            await function(message_failure.format(channel=channel, guild=guild))
             
 

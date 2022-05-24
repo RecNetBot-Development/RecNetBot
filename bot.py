@@ -40,6 +40,11 @@ class RecNetBot(commands.Bot):
         pass 
 
     async def on_ready(self):
+        await self.change_presence(
+            status=discord.Status.online,
+            activity=discord.Game(name="/help")
+        )
+        
         print(f"""
 RNB ONLINE
 Logged in as {self.user.name}

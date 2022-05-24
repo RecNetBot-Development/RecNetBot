@@ -1,7 +1,8 @@
 import discord
+from utility.discord_helpers.helpers import edit_message
+from embeds.base.embed import DefaultEmbed as Embed
 from utility import load_cfg, respond
-from discord.commands import slash_command, Option
-from discord.ext import commands
+from discord.commands import slash_command
 from utility.emojis import get_emoji  # Importing the decorator that makes slash commands.
 
 cfg = load_cfg()
@@ -18,10 +19,12 @@ class MainMenuButton(discord.ui.Button):
         )
         
     async def callback(self, interaction: discord.Interaction):
-        embed = main_menu(self._ctx, self._bot)
+        embed = main_menu(self._bot)
         view = HelpMainView(self._ctx, self._bot)
-                                              
-        await interaction.response.edit_message(
+                                            
+        await edit_message(
+            self._ctx, 
+            interaction, 
             embed=embed,
             view=view
         )
@@ -41,7 +44,9 @@ class CategoryButton(discord.ui.Button):
         embed = create_category_help_page(self._cog, self._ctx)
         view = HelpCategoryView(self._cog, self._ctx, self._bot)
         
-        await interaction.response.edit_message(
+        await edit_message(
+            self._ctx, 
+            interaction, 
             embed=embed,
             view=view
         )
@@ -51,19 +56,23 @@ class CategoryButton(discord.ui.Button):
 def create_command_help_page(command, ctx):
     name = f"/{command.parent.name + ' ' if command.parent else ''}{command.name}"
 
-    embed = discord.Embed(
+    embed = Embed(
         title=f"{name} (from {command.cog.icon} {command.cog.qualified_name})",
         description=command.description if command.description else "No description provided!"  
     )
     
+    def parse_choices(choice):
+        return f"`{choice.name}`"
+    
     if command.options:
-        params = '\r'.join([
-    f"""
-    `{param.name}` {'*Required*' if param.required else '*Optional*'}
-    {param.description}
-    """
+        params = '\r\r'.join([  # Each parameter
+                '\r'.join([  # Parameter information
+                    f"`{param.name}` {'*Required*' if param.required else '*Optional*'}",
+                    f"{param.description}",
+                    f"*Options* ({', '.join(map(parse_choices, param.choices))})" if param.choices else '',
+                ])
             for param in command.options
-        ])
+            ])
         
         embed.add_field(
             name="Parameters", 
@@ -138,13 +147,16 @@ class HelpCategoryNavigation(discord.ui.Select):
             embed = create_command_help_page(option['command'], self._ctx)
             view = HelpCommandView(self._cog, self._ctx, self._bot)
             
-            await interaction.response.edit_message(
+            await edit_message(
+                self._ctx, 
+                interaction, 
                 embed=embed,
                 view=view
             )
+        
             
 def create_category_help_page(cog, ctx):
-    embed = discord.Embed(
+    embed = Embed(
         title=f"{cog.icon} {cog.qualified_name}",
         description=cog.description + " View more details of a command by selecting it on the dropdown component."
     )
@@ -185,10 +197,10 @@ class HelpCategoryView(discord.ui.View):
  
  
 """MAIN MENU"""
-def main_menu(ctx, bot):
+def main_menu(bot):
     cogs = bot.cogs
     
-    embed = discord.Embed(
+    embed = Embed(
         title='RecNetBot',
         description="Navigate the categories and view command details with the dropdown component!"
     )
@@ -222,6 +234,15 @@ def main_menu(ctx, bot):
             inline=False
         )
         
+    embed.add_field(
+        name="Where is V2?",
+        value=
+        "As you might have noticed, RecNetBot is not what it used to be.\r"
+        "Unfortunately, RecNetBot's second iteration, V2, broke recently. This means we're forced to rework the bot.\r"
+        "As you might have noticed, some commands may be missing. Don't worry, we're doing our best to port all previous commands over.\r"
+        "Thank you for understanding!\r"
+    )
+        
     return embed
 
 class HelpMainNavigation(discord.ui.Select):
@@ -252,17 +273,23 @@ class HelpMainNavigation(discord.ui.Select):
             embed = create_category_help_page(option['cog'], self._ctx)
             view = HelpCategoryView(option['cog'], self._ctx, self._bot)
             
-            await interaction.response.edit_message(
+            await edit_message(
+                self._ctx, 
+                interaction, 
                 embed=embed,
                 view=view
             )
+        
         else:
-            embed = main_menu(self._ctx, self._bot)
+            embed = main_menu(self._bot)
                                               
-            await interaction.response.edit_message(
-                embed=embed
+            await edit_message(
+                self._ctx, 
+                interaction, 
+                embed=embed,
+                view=view
             )
-
+    
 class HelpMainView(discord.ui.View):
     def __init__(self, ctx, bot):
         super().__init__()
@@ -284,6 +311,6 @@ async def help(
     ctx
 ):
     await ctx.interaction.response.defer()
-    embed = main_menu(ctx, self.bot)
+    embed = main_menu(self.bot)
     view = HelpMainView(ctx, self.bot)
     await respond(ctx, embed=embed, view=view)

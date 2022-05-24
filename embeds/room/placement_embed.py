@@ -1,5 +1,5 @@
-from email.mime import image
-from discord import Embed
+from embeds.base.embed import DefaultEmbed as Embed
+from embeds.headers.room_header import room_header
 from utility.emojis import get_emoji
 from utility.rec_net_helpers import img_url, room_url
 
@@ -12,5 +12,6 @@ Tags: `{tags}`
 Keywords: `{keywords}`
         """
     )
-    em.set_author(name=f"^{room.name}", url=room_url(room.name), icon_url=img_url(room.image_name, crop_square=True))
+    
+    em = room_header(room, em)
     return em

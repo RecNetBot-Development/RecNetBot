@@ -1,4 +1,4 @@
-from discord import Embed
+from embeds.base.embed import DefaultEmbed as Embed
 
 def filter_embed(filters, sort, original_length, new_length):
     # Define embed
