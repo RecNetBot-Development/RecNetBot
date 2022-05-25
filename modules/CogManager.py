@@ -19,7 +19,8 @@ class CogManager:
         for dir in cogDirs:
             try:
                 cog = Cog(self, dir)
+                if cog.get_commands(): self.bot.add_cog(cog)  # Only add the cog if it has commands.
             except Exception as e:
                 print(e)
                 print(f"{dir} failed to load")
-            if cog.get_commands(): self.bot.add_cog(cog)  # Only add the cog if it has commands.
+            
