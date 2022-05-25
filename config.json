@@ -1,10 +1,10 @@
 {
     "prefix": "RNB!",
-    "discord_token": "NzkzMTE0MjkyNDEzMDA1ODU1.X-njPg.7Ijp57IffiHFU1BYDcVx_k-9VEk",
+    "discord_token": "Nzg4NjMyMDMxODM1MzI0NDU2.X9mU0A.MwSM-Lv64xDKe2JqgFWeC81esWQ",
     "owners": [
         
     ],
-    "test_guild_ids": [962811082479640576],
+    "test_guild_ids": null,
     "dev_role": "Jegarde",
     "redis_url": "redis://:p294e59fb9fdc443e2ea3acfb8d261aa7a33b5672d635dc5248a95b7f4ded831b@ec2-3-219-32-86.compute-1.amazonaws.com:29019",
     "bot_invite_link": "https://discord.com/api/oauth2/authorize?client_id=788632031835324456&permissions=322624&scope=bot%20applications.commands",
