@@ -10,5 +10,6 @@
     "bot_invite_link": "https://discord.com/api/oauth2/authorize?client_id=788632031835324456&permissions=322624&scope=bot%20applications.commands",
     "server_link": "https://discord.gg/GPVdhMa2zK",
     "github_link": "https://github.com/RecNetBot-Development/RecNetBot",
+    "status_message": "/help | bit.ly/RecNetBot",
     "error_log_channel": 962811082479640579
 }

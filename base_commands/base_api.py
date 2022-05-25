@@ -65,7 +65,9 @@ async def base_api(
     if name.isdigit() and is_id == None:
         is_id = True
     
-    match type.lower():
+    type = type.lower()
+    
+    match type:
         case "account":
             host = "https://accounts.rec.net"
             endpoint = f"/account?username={name}"
