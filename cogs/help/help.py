@@ -23,7 +23,6 @@ class MainMenuButton(discord.ui.Button):
         view = HelpMainView(self._ctx, self._bot)
                                             
         await edit_message(
-            self._ctx, 
             interaction, 
             embed=embed,
             view=view
@@ -45,7 +44,6 @@ class CategoryButton(discord.ui.Button):
         view = HelpCategoryView(self._cog, self._ctx, self._bot)
         
         await edit_message(
-            self._ctx, 
             interaction, 
             embed=embed,
             view=view
@@ -148,7 +146,6 @@ class HelpCategoryNavigation(discord.ui.Select):
             view = HelpCommandView(self._cog, self._ctx, self._bot)
             
             await edit_message(
-                self._ctx, 
                 interaction, 
                 embed=embed,
                 view=view
@@ -274,7 +271,6 @@ class HelpMainNavigation(discord.ui.Select):
             view = HelpCategoryView(option['cog'], self._ctx, self._bot)
             
             await edit_message(
-                self._ctx, 
                 interaction, 
                 embed=embed,
                 view=view
@@ -284,7 +280,6 @@ class HelpMainNavigation(discord.ui.Select):
             embed = main_menu(self._bot)
                                               
             await edit_message(
-                self._ctx, 
                 interaction, 
                 embed=embed,
                 view=view
