@@ -9,6 +9,3 @@ __pycache__/
 
 # No markdown here!!
 *.md
-
-# Config
-config.json
