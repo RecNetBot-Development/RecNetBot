@@ -1,87 +1,66 @@
 from embeds.base.embed import DefaultEmbed as Embed
-from utility.emojis import get_emoji
-from utility.rec_net_helpers import img_url, post_url
+from utility.emojis import get_emoji, get_icon
+from utility.rec_net_helpers import post_url
+from embeds.headers.profile_header import profile_header
 
 """Makes an embed for RecNet post stats"""
-def stats_embed(ctx, user):
-    # Embed description stats
-    info = f"""
-Pictures shared `{len(user.posts):,}`
-Posts tagged in `{len(user.feed):,}`
-    """
-
+def stats_embed(user):
     # Define embed  
     em = Embed(
-        title = f"RecNet shared post statistics of {user.display_name}",
-        description = info
+        title = f"{user.display_name}'s RecNet statistics",
+        description = "Statistics of public shared posts on RecNet."
     )
-
-    # GATHER STATS
-    total_cheers, total_comments, unique_cheered_posts, unique_commented_posts, most_cheered_post, most_commented_post = 0, 0, 0, 0, None, None
-    for post in user.posts:
-        if not user.posts: break
-
-        if post.cheer_count: unique_cheered_posts += 1  # Unique cheered posts
-        if post.comment_count: unique_commented_posts += 1  # Unique commented posts
-
-        if not hasattr(most_cheered_post, 'cheer_count') or post.cheer_count > most_cheered_post.cheer_count:
-            most_cheered_post = post  # Most cheered post
-
-        if not hasattr(most_commented_post, 'comment_count') or post.comment_count > most_commented_post.comment_count:
-            most_commented_post = post  # Most commented post
-
-        total_cheers += post.cheer_count  # Total cheers
-        total_comments += post.comment_count  # Total comments
-
-    if user.posts:
-        em.add_field(name=f"{get_emoji('cheer')} Cheers", value=create_cheer_section(total_cheers, unique_cheered_posts, most_cheered_post), inline=True)
-        em.add_field(name=f"{get_emoji('comment')} Comments", value=create_comment_section(total_comments, unique_commented_posts, most_commented_post), inline=True)
-        if user.feed:
-            em.add_field(name="Posts", value=create_important_posts_section(user.posts, user.feed), inline=False)
-
-    # Set the image as the post
-    em.set_thumbnail(url=img_url(user.profile_image, crop_square=True))  # Just in case it somehow doesn't exist.
-
-    return em  # Return the embed.
-
-def create_important_posts_section(posts, feed):
-    return f"""
-[First post]({post_url(posts[0].id)}) | [Latest post]({post_url(posts[-1].id)})
-[First post tagged in]({post_url(feed[0].id)}) | [Latest post tagged in]({post_url(feed[-1].id)})
-    """
-
-def create_comment_section(total_comments, unique_commented_posts, most_commented_post):
-    if total_comments: avg_comments = round(total_comments / unique_commented_posts, 1)
-    else: avg_comments = 0
-
-    if most_commented_post.comment_count > 0:
-        most_commented_post_section = f"""
-[Most commented post]({post_url(most_commented_post.id)})
-{get_emoji('cheer')} `{most_commented_post.cheer_count:,}` {get_emoji('comment')} `{most_commented_post.comment_count:,}`
-        """
-    else: most_commented_post_section = ""
-
-    return f"""
-Total comments `{total_comments:,}`
-Total commented posts `{unique_commented_posts:,}`
-Average comments per commented posts `{avg_comments:,}`
-{most_commented_post_section}
-    """
+    em.set_thumbnail(url=get_icon("photo")) # Add slick photo icon
+    em = profile_header(user, em)
     
-def create_cheer_section(total_cheers, unique_cheered_posts, most_cheered_post):
-    if total_cheers: avg_cheers = round(total_cheers / unique_cheered_posts, 1)
-    else: avg_cheers = 0
+    # Get stats
+    total_shared_photos = len(user.posts)
+    total_tagged_photos = len(user.feed)
+    total_cheers = get_total_cheers(user.posts)
+    total_comments = get_total_comments(user.posts)
+    
+    em.add_field(
+        name="Total Stats",
+        value=
+        f"{get_emoji('cheer')} `{total_cheers:,}` — Cheers\n"
+        f"{get_emoji('comment')} `{total_comments:,}` — Comments\n"
+        f"{get_emoji('image')} `{total_shared_photos:,}` — Photos Shared\n"
+        f"{get_emoji('visitors')} `{total_tagged_photos:,}` — Photos Tagged In",
+        inline=False
+    )
+    
+    # Return it if no shared posts because remaining fields require posts
+    if not total_shared_photos:  return em
+    
+    most_cheered_post = get_most_cheered_post(user.posts)
+    most_commented_post = get_most_commented_post(user.posts)
+    
+    em.add_field(
+        name="Most Cheered Post",
+        value=
+        f"{get_emoji('cheer')} `{total_cheers:,}` — Cheers\n"
+        f"{get_emoji('link')} [RecNet Link]({post_url(most_cheered_post.id)})",
+        inline=True
+    )
+    
+    em.add_field(
+        name="Most Commented Post",
+        value=
+        f"{get_emoji('comment')} `{total_cheers:,}` — Comments\n"
+        f"{get_emoji('link')} [RecNet Link]({post_url(most_commented_post.id)})",
+        inline=True
+    )
+    
+    return em
 
-    if most_cheered_post.cheer_count > 0:
-        most_cheered_post_section = f"""
-[Most cheered post]({post_url(most_cheered_post.id)})
-{get_emoji('cheer')} `{most_cheered_post.cheer_count:,}` {get_emoji('comment')} `{most_cheered_post.comment_count:,}`
-        """
-    else: most_cheered_post_section = ""
+def get_most_cheered_post(posts):
+    return max(posts, key=lambda post: post.cheer_count)
 
-    return f"""
-Total cheers `{total_cheers:,}`
-Total cheered posts `{unique_cheered_posts:,}`
-Average cheers per cheered posts `{avg_cheers:,}`
-{most_cheered_post_section}
-    """
+def get_most_commented_post(posts):
+    return max(posts, key=lambda post: post.comment_count)
+
+def get_total_cheers(posts):
+    return sum(map(lambda post: post.cheer_count, posts))
+
+def get_total_comments(posts):
+    return sum(map(lambda post: post.cheer_count, posts))

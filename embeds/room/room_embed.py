@@ -1,7 +1,8 @@
 from embeds.base.embed import DefaultEmbed as Embed
-from utility.emojis import get_emoji
+from embeds.headers.profile_header import profile_header
+from utility.emojis import get_emoji, get_icon
 from utility.funcs import unix_timestamp
-from utility.rec_net_helpers import img_url, profile_url
+from utility.rec_net_helpers import img_url, profile_url, room_url
 
 """Makes an embed for a single room"""
 def room_embed(room, hot_rooms = {}):
@@ -39,17 +40,14 @@ def room_embed(room, hot_rooms = {}):
     
     role_pieces = []
     
-    if role_counts['co-owner']: role_pieces.append(f"`{role_counts['co-owner']}` — Co-Owners")
-    if role_counts['moderator']: role_pieces.append(f"`{role_counts['moderator']}` — Moderators")
-    if role_counts['host']: role_pieces.append(f"`{role_counts['host']}` — Hosts")
+    if role_counts['co-owner']: role_pieces.append(f"{get_emoji('role_owner')} `{role_counts['co-owner']}` — Co-Owners")
+    if role_counts['moderator']: role_pieces.append(f"{get_emoji('role_mod')} `{role_counts['moderator']}` — Moderators")
+    if role_counts['host']: role_pieces.append(f"{get_emoji('role_host')} `{role_counts['host']}` — Hosts")
     
     supported = ', '.join(supported_list) if supported_list else None
     unsupported = ', '.join(unsupported_list) if unsupported_list else None
     
-    description = f"""
-by [`@{room.creator.username}`]({profile_url(room.creator.username)})
-```{room.description}```
-    """
+    description = f"```{room.description}```"
     
     # Room hot placement
     placement = 0
@@ -98,9 +96,9 @@ by [`@{room.creator.username}`]({profile_url(room.creator.username)})
     
     # Define embed
     em = Embed(
-        title = f"^{room.name} {'(RRO)' if room.is_rro else ''}",
+        title = f"^{room.name}",
         description = description,
-        url=f"https://rec.net/room/{room.name}"
+        url=room_url(room.name)
     )
     
     if details: em.add_field(name="Details", value=details, inline=False)
@@ -113,7 +111,10 @@ by [`@{room.creator.username}`]({profile_url(room.creator.username)})
 
     # Set the room's thumbnail as image
     em.set_image(url=img_url(room.image_name))
-    # Set the creator's pfp as thumbnail
-    em.set_thumbnail(url=img_url(room.creator.profile_image, True, 180))
+    # Set creator's profile as header
+    em = profile_header(room.creator, em)
+    # Show if UGC or RRO
+    thumbnail_url = get_icon("rro") if room.is_rro else get_icon("ugc")
+    em.set_thumbnail(url=thumbnail_url)
     
     return em  # Return the embed.

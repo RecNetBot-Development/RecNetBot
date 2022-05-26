@@ -48,12 +48,15 @@ class Emoji:
     favorite = "<:level:962027535007354901>"  # Favorites (Star by Elvn Sands from NounProject.com)
     subrooms = "<:subrooms:962794308128354395>"  # Subrooms (Rooms by Smalllike from NounProject.com)
     limit = "<:subscribers:962027535095439371>"  # Player limit (Group Of People by Icon Box from NounProject.com)
+    role_mod = "<:role_mod:979021125092777994>"
+    role_owner = "<:role_owner:979021060957683722>"
+    role_host = "<:role_host:978988495622242365>"
         
     # Help Embed
     discord = "<:discord:963430619684163644>"
     questions = comment
     stats = engagement
-    information = "<:info:963877676337201224>"  # (Info by rosannavergara5@gmail.com from NounProject.com)
+    informatio = "<:info:963877676337201224>"  # (Info by rosannavergara5@gmail.com from NounProject.com)
     github = "<:github:963428573476192356>"
     
     category_api = "<:category_api:963878518960291903>"  # (Api by Larea from NounProject.com)
@@ -92,6 +95,17 @@ class Emoji:
     pansexual = "<:pansexual:962801321570877491>"
     transgender = "<:transgender:962801321990320238>"
     intersex = "<:intersex:962801322124521633>"
+
+class Icons:
+    rro = "https://i.imgur.com/vqIv7fU.png"
+    ugc = "https://i.imgur.com/SUowLzO.png"
+    unknown = "https://i.imgur.com/paO6CDA.png"
+    photo = "https://i.imgur.com/NCoPFNq.png"
+
+def get_icon(icon_name):
+    if not icon_name: return Icons.unknown
+    icon = getattr(Icons, icon_name) if hasattr(Icons, icon_name) else Icons.unknown
+    return icon
 
 def get_emoji(emoji_name, client = None):
     if not emoji_name: return Emoji.unknown

@@ -24,6 +24,6 @@ async def stats(
     }
     user = await self.bot.rec_net.account(name=username, includes=["posts", "feed"], options={"posts": post_options, "feed": feed_options})
     if not user: raise AccountNotFound(username)
-    await respond(ctx, embed=stats_embed(ctx, user))
+    await respond(ctx, embed=stats_embed(user))
     
 

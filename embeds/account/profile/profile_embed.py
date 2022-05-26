@@ -1,4 +1,5 @@
 from embeds.base.embed import DefaultEmbed as Embed
+from embeds.headers.profile_header import profile_header
 from utility.emojis import get_emoji
 from utility.rec_net_helpers import img_url
 from utility.account.create_platform_section import create_platforms_section
@@ -97,5 +98,5 @@ def profile_embed(user, specify = ""):
     # Add the banner
     if user.banner_image: em.set_image(url=img_url(user.banner_image))
     # em.set_image(url=img_url(user.banner_image) if user.banner_image else 'https://cdn.rec.net/static/banners/default_player.png')
-
+    
     return em  # Return the embed.

@@ -234,10 +234,10 @@ def main_menu(bot):
     embed.add_field(
         name="Where is V2?",
         value=
-        "As you might have noticed, RecNetBot is not what it used to be.\r"
-        "Unfortunately, RecNetBot's second iteration, V2, broke recently. This means we're forced to rework the bot.\r"
-        "As you might have noticed, some commands may be missing. Don't worry, we're doing our best to port all previous commands over.\r"
-        "Thank you for understanding!\r"
+        "As you might have noticed, RecNetBot is not what it used to be.\n"
+        "Unfortunately, RecNetBot's second iteration, V2, broke recently. This means we're forced to rework the bot.\n"
+        "As you might have noticed, some commands may be missing. Don't worry, we're doing our best to port all previous commands over.\n"
+        "Thank you for understanding!\n"
     )
         
     return embed

@@ -27,16 +27,13 @@ async def selfcheers(
     user = await self.bot.rec_net.account(name=username, includes=["posts"], options={"posts": posts_options})
     if not user: raise AccountNotFound(username)
     
-    self_cheers, self_cheered_posts = 0, []
-    for post in user.posts:
-        if user.id in post.cheers: 
-            self_cheers += 1
-            self_cheered_posts.append(post)
+    self_cheered_posts = list(filter(lambda post: user.id in post.cheers, user.posts))  # Find self cheered posts
+    
     end_time = time.perf_counter()
     
     image_ui_view = MISSING
     if self_cheered_posts:
-        image_ui_view, embeds = await ImageUI(ctx=ctx, user=user, posts=self_cheered_posts, interaction=ctx.interaction, original_embeds=[self_cheers_embed(ctx, user, self_cheers)], rec_net=self.bot.rec_net).start()
+        image_ui_view, embeds = await ImageUI(ctx=ctx, user=user, posts=self_cheered_posts, interaction=ctx.interaction, original_embeds=[self_cheers_embed(ctx, user, len(self_cheered_posts))], rec_net=self.bot.rec_net).start()
     else:
-        embeds = [self_cheers_embed(ctx, user, self_cheers)]
+        embeds = [self_cheers_embed(ctx, user, len(self_cheered_posts))]
     await respond(ctx, content=f"Time elapsed: `{round(end_time-start_time, 2)}s`", embeds=embeds, view=image_ui_view)
