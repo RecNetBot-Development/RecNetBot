@@ -161,6 +161,7 @@ def create_category_help_page(cog, ctx):
     uncategorized_commands = []
     for command in cog.get_commands():
         if isinstance(command, discord.SlashCommandGroup):
+            command.subcommands.sort(key=lambda cmd: cmd.name)
             embed.add_field(
                 name=f"/{command.name}",
                 value=", ".join([f"`{subcommand.name}`" for subcommand in command.subcommands]),
@@ -168,9 +169,10 @@ def create_category_help_page(cog, ctx):
             )
             continue
 
-        uncategorized_commands.append(command)
+        uncategorized_commands.append(command)  
             
     if uncategorized_commands:
+        uncategorized_commands.sort(key=lambda cmd: cmd.name)
         commands = ", ".join([f"`/{command.name}`" for command in uncategorized_commands])
         embed.add_field(
             name="Uncategorized Commands", 

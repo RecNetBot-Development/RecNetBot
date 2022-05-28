@@ -6,10 +6,10 @@ cfg = load_cfg()
 
 @slash_command(
     debug_guilds=cfg['test_guild_ids'],
-    name="posts",
+    name="filter",
     description="The base command for advanced RecNet post filtering and sorting."
 )
-async def posts(
+async def filter(
     self, 
     ctx, 
     type: Option(str, choices=["photos", "feed"], required=True),
