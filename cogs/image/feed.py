@@ -15,5 +15,5 @@ async def feed(
     username: Option(str, "Enter the username", required=True)
 ):
     await ctx.interaction.response.defer()
-    view, embeds = await base_posts(self.bot.rec_net, ctx, type="Feed", username=username)
+    view, embeds = await base_posts(self.bot.rec_net, ctx, type="Feed", username=username, sort="Newest to Oldest")
     await respond(ctx, embeds=embeds, view=view)

@@ -6,14 +6,14 @@ cfg = load_cfg()
 
 @slash_command(
     debug_guilds=cfg['test_guild_ids'],
-    name="photos",
-    description="Browse a user's shared RecNet photos."
+    name="together",
+    description="Get all posts where certain users are tagged together."
 )
-async def photos(
+async def filter(
     self, 
     ctx,
-    username: Option(str, "Enter the username", required=True)
+    with_users: Option(str, "Tagged users (separate by a space)", required=True)
 ):
     await ctx.interaction.response.defer()
-    view, embeds = await base_posts(self.bot.rec_net, ctx, type="Photos", username=username, sort="Newest to Oldest")
+    view, embeds = await base_posts(self.bot.rec_net, ctx, type="Feed", with_users=with_users, sort="Newest to Oldest")
     await respond(ctx, embeds=embeds, view=view)
