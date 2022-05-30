@@ -79,7 +79,7 @@ def room_embed(room, hot_rooms = {}):
     
     roles = None
     if role_pieces:
-        roles = "\r".join(role_pieces)
+        roles = "\n".join(role_pieces)
     
     warnings_str_list, warnings, custom_warning = [], "", f"```{room.custom_warning}```"
     warning_icons = {

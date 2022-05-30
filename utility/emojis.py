@@ -8,6 +8,9 @@ class Emoji:
     unknown = "<:unknown:962799809088086036>"  # "Unknown by Adrien Coquet from NounProject.com"
     link = "<:link:978703397035315230>" # Link by Тимур Минвалеев from NounProject.com
     default_link = "🔗"
+    first_place = "🥇"
+    second_place = "🥈" 
+    third_place = "🥉"
     
     # Platforms
     walk = "<:walking:962792336725782608>"  # Walk locomotion icon  (Walking by Vectors Market from NounProject.com)
@@ -101,6 +104,7 @@ class Icons:
     ugc = "https://i.imgur.com/SUowLzO.png"
     unknown = "https://i.imgur.com/paO6CDA.png"
     photo = "https://i.imgur.com/NCoPFNq.png"
+    room = "https://i.imgur.com/8o1oFRn.png"
 
 def get_icon(icon_name):
     if not icon_name: return Icons.unknown

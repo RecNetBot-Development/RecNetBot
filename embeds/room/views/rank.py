@@ -22,11 +22,32 @@ class RankRoomSelect(discord.ui.Select):
     async def callback(self, interaction):
         room_chosen = self.values[0]
         await self.rank_view.display_room(room_chosen, interaction)
+        
+class RankRoomRankingSelect(discord.ui.Select):
+    def __init__(self, rank_view):
+        super().__init__(
+            row=1, 
+            placeholder="Ranking Method", 
+            custom_id="persistent:room_rank_method", 
+            options=
+                [   
+                    discord.SelectOption(label="Popularity", description="RecNet's Ranking Method"),
+                    discord.SelectOption(label="Cheers", description="Rank by Cheers"),
+                    discord.SelectOption(label="Favorites", description="Rank by Favorites"),
+                    discord.SelectOption(label="Visits", description="Rank by Visits"),
+                    discord.SelectOption(label="Visitors", description="Rank by Visitors")
+                ]
+        )
+        self.rank_view = rank_view
 
+    async def callback(self, interaction):
+        method_chosen = self.values[0]
+        await self.rank_view.update_ranking(method_chosen, interaction)
+        
 class RankBackButton(discord.ui.Button):
     def __init__(self, rank_view):
         super().__init__(
-            row=1,
+            row=2,
             label="Go Back"
         )
         self.rank_view = rank_view
@@ -43,22 +64,49 @@ class Rank(discord.ui.View):
         self.keywords = keywords
         self.rec_net = rec_net
         self.rooms = rooms
+        self.default_rooms_ranking = self.rooms
         self.main_embed = None
+        self.saved_room_embeds = {}
         
         # Add dropdown menu for rooms
-        self.add_item(RankRoomSelect(self, self.rooms))
-        self.add_item(RankBackButton(self))
+        self.update_items()
+            
+    async def update_ranking(self, method, interaction):
+        match method:
+            case "Popularity":
+                self.rooms = self.default_rooms_ranking
+            case "Cheers":
+                self.rooms.sort(key=lambda room: room["Stats"]["CheerCount"], reverse=True)
+            case "Favorites":
+                self.rooms.sort(key=lambda room: room["Stats"]["FavoriteCount"], reverse=True)
+            case "Visits":
+                self.rooms.sort(key=lambda room: room["Stats"]["VisitCount"], reverse=True)
+            case "Visitors":
+                self.rooms.sort(key=lambda room: room["Stats"]["VisitorCount"], reverse=True)
+        
+        self.main_embed = room_rank_embed(self.rooms, self.tags, self.keywords, method)
+        await self.go_back(interaction)
             
     async def display_room(self, room_name, interaction):
-        room = await self.rec_net.room(name=room_name, info=["tags", "subrooms", "roles", "scores"], includes=["roles", "creator"])
-        embed = room_embed(room)
-        await edit_message(interaction, embed=embed, view=self)
+        self.update_items(displaying_room=True)
+        if room_name not in self.saved_room_embeds:
+            room = await self.rec_net.room(name=room_name, info=["tags", "subrooms", "roles", "scores"], includes=["roles", "creator"])
+            self.saved_room_embeds[room_name] = room_embed(room)
+        await edit_message(interaction, embed=self.saved_room_embeds[room_name], view=self)
         
     async def go_back(self, interaction):
-        if not self.main_embed: self.main_embed = room_rank_embed(self.rooms, self.tags, self.keywords)
+        self.update_items()
         await edit_message(interaction, embed=self.main_embed, view=self)
             
     async def respond(self, ctx):
+        self.update_items()
         if not self.main_embed: self.main_embed = room_rank_embed(self.rooms, self.tags, self.keywords)
         await _respond(ctx, embed=self.main_embed, view=self)
+        
+    def update_items(self, displaying_room=False):
+        self.clear_items()
+        self.add_item(RankRoomSelect(self, self.rooms))
+        if displaying_room: self.add_item(RankBackButton(self))
+        if not displaying_room: self.add_item(RankRoomRankingSelect(self))
+        
     
