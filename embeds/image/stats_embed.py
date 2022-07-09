@@ -38,7 +38,7 @@ def stats_embed(user):
     em.add_field(
         name="Most Cheered Post",
         value=
-        f"{get_emoji('cheer')} `{total_cheers:,}` — Cheers\n"
+        f"{get_emoji('cheer')} `{most_cheered_post.cheer_count:,}` — Cheers\n"
         f"{get_emoji('link')} [RecNet Link]({post_url(most_cheered_post.id)})",
         inline=True
     )
@@ -46,7 +46,7 @@ def stats_embed(user):
     em.add_field(
         name="Most Commented Post",
         value=
-        f"{get_emoji('comment')} `{total_cheers:,}` — Comments\n"
+        f"{get_emoji('comment')} `{most_commented_post.comment_count:,}` — Comments\n"
         f"{get_emoji('link')} [RecNet Link]({post_url(most_commented_post.id)})",
         inline=True
     )
