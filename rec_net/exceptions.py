@@ -51,6 +51,11 @@ class NoTaggedPosts(Exception):
             "User hasn't been tagged in a single post!"
         )
 
+class NameServerUnavailable(Exception):
+    def __init__(self):
+        super().__init__(
+            "Name Server cannot be reached at this time!"
+        )
 
 """REQUESTOR"""
 class APIFailure(Error):

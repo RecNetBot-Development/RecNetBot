@@ -1,6 +1,7 @@
 import discord
 from embeds.base.embed import DefaultEmbed as Embed
 from aiohttp import ClientConnectorError
+from rec_net.exceptions import NameServerUnavailable
 from utility import load_cfg, respond, Emoji
 from discord.commands import slash_command # Importing the decorator that makes slash commands.
 
@@ -22,6 +23,7 @@ async def apistatus(
     )
 
     namespace_resp = await self.bot.rec_net.rec_net.namespace.get().fetch()
+    if not namespace_resp.data: raise NameServerUnavailable()
     namespace = namespace_resp.data
     healthy_count = 0
     health_list = []
