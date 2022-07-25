@@ -96,9 +96,11 @@ class Cog(commands.Cog):
         ]
         
         if error.original.__class__ in ignored_errors:
+            # Ignore any already handled error
             em = error_embed(error.original)
             await respond(ctx, embed=em, ephemeral=True)
         else:
+            # Error for developers
             error_message = f"""
 **Unexpected error occurred!**
 {unix_timestamp(int(time.mktime(datetime.now().timetuple())))}
@@ -110,6 +112,12 @@ Command `/{ctx.command.name}`
 ```
             """
             em = error_embed(custom_text=error_message)
-            await self.bot.get_channel(cfg['error_log_channel']).send(embed=em)
-            await respond(ctx, embed=em, ephemeral=True)
+            await self.bot.get_channel(cfg['error_log_channel']).send(embed=em)  # Send it to the developer error log channel
+            
+            # Error for users
+            friendly_error_message = f"**Something unexpected occurred!**\n" \
+                                     f"Unable to process the request. I may be malfunctioning or Rec Room's servers are down."
+                            
+            em = error_embed(custom_text=friendly_error_message)
+            await respond(ctx, embed=em, ephemeral=True)  # Send it to chat
             raise error
