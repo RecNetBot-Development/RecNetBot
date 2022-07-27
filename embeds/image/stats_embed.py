@@ -63,4 +63,4 @@ def get_total_cheers(posts):
     return sum(map(lambda post: post.cheer_count, posts))
 
 def get_total_comments(posts):
-    return sum(map(lambda post: post.cheer_count, posts))
+    return sum(map(lambda post: post.comment_count, posts))
