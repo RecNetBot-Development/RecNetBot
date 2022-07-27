@@ -1,8 +1,8 @@
 from attr import dataclass
+from ...helpers import date_to_unix
 
 @dataclass
 class SubRoom:
-
     replication_id: str
     supports_join_in_progress: bool
     match_making: list
@@ -12,6 +12,7 @@ class SubRoom:
     is_sandbox: bool
     max_players: int
     accessibilty: int
+    saved_at: int
 
     @classmethod
     def from_data(cls, data):
@@ -29,5 +30,6 @@ class SubRoom:
             name = data["Name"],
             is_sandbox = data["IsSandbox"],
             max_players = data["MaxPlayers"],
-            accessibilty = data["Accessibility"]
+            accessibilty = data["Accessibility"],
+            saved_at = date_to_unix(data.get("DataSavedAt", 0))
         ) 

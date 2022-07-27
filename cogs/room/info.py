@@ -15,8 +15,11 @@ async def info(
     ctx,
     name: Option(str, "Enter the room's name", required=True)
 ):
+    includes = ["roles", "creator", "images"]
+    options = {"images": {"take": 1000}}
+    
     await ctx.interaction.response.defer()
-    room = await self.bot.rec_net.room(name=name, info=["tags", "subrooms", "roles", "scores"], includes=["roles", "creator"])
+    room = await self.bot.rec_net.room(name=name, info=["tags", "subrooms", "roles", "scores"], includes=includes, options=options)
     if not room: raise RoomNotFound(name)
     hot_rooms = await self.bot.rec_net.rec_net.rooms.rooms.hot.get(params={"take": 1000}).fetch()
     await respond(ctx, embed=room_embed(room, hot_rooms.data['Results']))

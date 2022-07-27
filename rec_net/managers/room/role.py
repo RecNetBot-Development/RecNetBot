@@ -14,6 +14,7 @@ class Role:
         role = data["Role"]
         role_id = data["Role"]
         if role_id == 255: role = "owner"
+        if role_id == 31: role = "dev_co-owner"
         if role_id == 30: role = "co-owner"
         if role_id == 20: role =  "moderator"
         if role_id == 10: role = "host"

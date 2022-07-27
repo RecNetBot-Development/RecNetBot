@@ -20,7 +20,12 @@ def room_embed(room, hot_rooms = {}):
     subroom_list = [subroom.name for subroom in room.sub_rooms[:10]] if room.sub_rooms else ["None!"]
     if len(room.sub_rooms) > 10:
         subroom_list.append("...")
-
+        
+    latest_updated_subroom = None
+    for subroom in room.sub_rooms:
+        if not latest_updated_subroom or latest_updated_subroom.saved_at < subroom.saved_at:
+            latest_updated_subroom = subroom
+        
     # Supported
     supported_list, unsupported_list = [], []
     for mode in accessibility:  # Goes through all accessibility options
@@ -61,21 +66,27 @@ def room_embed(room, hot_rooms = {}):
     score = 0
     if room.scores: score = round((sum([i.score for i in room.scores]) / len(room.scores)) * 100)
     
-    details = f"""
-{get_emoji('date')} {unix_timestamp(room.created_at)} — Created At
-{get_emoji('tag')} `{', '.join(room.tags) if room.tags else '...'}` ({len(room.tags)}) — Tags
-{get_emoji('subrooms')} `{", ".join(subroom_list)}` ({len(room.sub_rooms)}) — Subrooms
-{get_emoji('limit')} `{room.max_players}` — Player Limit
-    """
+    details = [
+        f"{get_emoji('date')} {unix_timestamp(room.created_at)} — Created At",
+        f"{get_emoji('tag')} `{', '.join(room.tags) if room.tags else '...'}` ({len(room.tags)}) — Tags",
+        f"{get_emoji('subrooms')} `{', '.join(subroom_list)}` ({len(room.sub_rooms)}) — Subrooms",
+        f"{get_emoji('limit')} `{room.max_players}` — Player Limit",
+        f"{get_emoji('update')} In `{latest_updated_subroom.name}` at {unix_timestamp(latest_updated_subroom.saved_at if latest_updated_subroom.saved_at else room.created_at)} — Latest Update",
+    ]
     
-    statistics = f"""
-{get_emoji('cheer')} `{room.cheer_count:,}` — Cheers
-{get_emoji('favorite')} `{room.favorite_count:,}` — Favorites
-{get_emoji('visitors')} `{room.visitor_count:,}` — Visitors
-{get_emoji('visitor')} `{room.visit_count:,}` — Visits
-{get_emoji('hot')} `#{placement if placement else '>1,000'}` — Hot Placement
-{get_emoji('engagement')} `{score}%` — Engagement
-    """
+    # Add photo count if it exists
+    total_images = f"{len(room.images):,}"
+    if room.images: details.insert(3, f"{get_emoji('image')} `{total_images if len(room.images) < 1000 else '<1,000'}` — Photos Taken")
+    if room.voice_moderated: details.insert(-1, f"{get_emoji('toxmod')} Voice Moderation enabled!")
+    
+    statistics = [
+        f"{get_emoji('cheer')} `{room.cheer_count:,}` — Cheers",
+        f"{get_emoji('favorite')} `{room.favorite_count:,}` — Favorites",
+        f"{get_emoji('visitors')} `{room.visitor_count:,}` — Visitors",
+        f"{get_emoji('visitor')} `{room.visit_count:,}` — Visits",
+        f"{get_emoji('hot')} `#{placement if placement else '>1,000'}` — Hot Placement",
+        f"{get_emoji('engagement')} `{score}%` — Engagement"
+    ]
     
     roles = None
     if role_pieces:
@@ -101,13 +112,13 @@ def room_embed(room, hot_rooms = {}):
         url=room_url(room.name)
     )
     
-    if details: em.add_field(name="Details", value=details, inline=False)
+    if details: em.add_field(name="Details", value="\n".join(details), inline=False)
     if supported: em.add_field(name="Supported Modes", value=supported, inline=False)
     if unsupported: em.add_field(name="Unsupported Modes", value=unsupported, inline=False)
     if warnings: em.add_field(name="Warnings", value=warnings, inline=False)
     if room.custom_warning: em.add_field(name="Custom Warning", value=custom_warning, inline=False)
     if roles: em.add_field(name="Roles", value=roles, inline=False)
-    if statistics: em.add_field(name="Statistics", value=statistics, inline=False)
+    if statistics: em.add_field(name="Statistics", value="\n".join(statistics), inline=False)
 
     # Set the room's thumbnail as image
     em.set_image(url=img_url(room.image_name))

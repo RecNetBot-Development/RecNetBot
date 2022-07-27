@@ -54,7 +54,9 @@ class Emoji:
     role_mod = "<:role_mod:979021125092777994>"
     role_owner = "<:role_owner:979021060957683722>"
     role_host = "<:role_host:978988495622242365>"
-        
+    toxmod = "<:toxmod:1001125831910891600>"  # https://www.flaticon.com/free-icons/moderator mModerator icons created by Pixel perfect - Flaticon
+    update = "<:update:1001125861514289233>" # https://www.flaticon.com/free-icons/refresh Refresh icons created by Dave Gandy - Flaticon
+    
     # Help Embed
     discord = "<:discord:963430619684163644>"
     questions = comment

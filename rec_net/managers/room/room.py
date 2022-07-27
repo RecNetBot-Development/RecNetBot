@@ -45,6 +45,7 @@ class Room(BaseDataclass):
     favorite_count: int
     visitor_count: int
     visit_count: int
+    voice_moderated: bool
     sub_rooms: list = field(default=None)
     roles: list = field(default=None)
     tags: list = field(default=None)
@@ -116,7 +117,8 @@ class Room(BaseDataclass):
                cheer_count = stats["CheerCount"],
                favorite_count = stats["FavoriteCount"],
                visitor_count = stats["VisitorCount"],
-               visit_count = stats["VisitCount"]
+               visit_count = stats["VisitCount"],
+               voice_moderated = data["ToxmodEnabled"]
         )
         await room.patch_info(data=data, includes=kwargs.get('includes', 0))
         return room
