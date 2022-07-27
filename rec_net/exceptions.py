@@ -54,7 +54,7 @@ class NoTaggedPosts(Exception):
 class NameServerUnavailable(Exception):
     def __init__(self):
         super().__init__(
-            "Name Server cannot be reached at this time!"
+            "Name Server cannot be reached at this time!\nThe servers may be under maintenance."
         )
 
 """REQUESTOR"""
