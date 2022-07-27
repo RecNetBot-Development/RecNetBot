@@ -75,8 +75,9 @@ def room_embed(room, hot_rooms = {}):
     ]
     
     # Add photo count if it exists
-    total_images = f"{len(room.images):,}"
-    if room.images: details.insert(3, f"{get_emoji('image')} `{total_images if len(room.images) < 1000 else '<1,000'}` — Photos Taken")
+    if room.images: 
+        total_images = f"{len(room.images):,}"
+        details.insert(3, f"{get_emoji('image')} `{total_images if len(room.images) < 1000 else '<1,000'}` — Photos Taken")
     if room.voice_moderated: details.insert(-1, f"{get_emoji('toxmod')} Voice Moderation enabled!")
     
     statistics = [

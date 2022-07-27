@@ -1,7 +1,7 @@
 from embeds import profile_embed, Profile
 from rec_net.exceptions import AccountNotFound
 
-async def base_profile(rec_net, ctx, username, specified):
+async def base_profile(rec_net, ctx, username, specified="Profile", owo=False):
     options = {
         "posts": {
             "take": 2**16           
@@ -24,6 +24,6 @@ async def base_profile(rec_net, ctx, username, specified):
     user = await rec_net.account(name=username, includes=includes, options=options)
     if not user: raise AccountNotFound(username)
         
-    embed = profile_embed(user, specified)
+    embed = profile_embed(user, specified, owo=owo)
     view = Profile(ctx, user)
     return embed, view  # Embed, View
