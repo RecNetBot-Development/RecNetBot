@@ -90,14 +90,15 @@ def profile_embed(user, specify = "", owo = False):
     {get_emoji('subscribers')} Subscwibews `{user.subscriber_count:,}`
     {get_emoji('pronouns')} {f"Pwonyouns OwO {pronouns_section if pronouns_section else 'nyot set!'}"}
     {get_emoji('identities')} {f"I-Identities {identity_section if identity_section else 'nyot set!'}"}
-    ```{owoify(user.bio, Owoness.Uvu)}```
+    ```{owoify(user.bio if user.bio else 'Nothing! UwU', Owoness.Uvu)}```
     {get_emoji('junior') if user.is_junior else get_emoji('mature')} {'Junyiow a-account (*￣з￣)!' if user.is_junior else 'Aduwt accwound (*￣з￣)!'}
     {get_emoji('controller')} {f'hehe Pwatfowms OwO {platforms_section}' if platforms_section else 'Nyo knyown pwatfowms!'}
     {get_emoji('date')} Joinyed {unix_timestamp(user.created_at)}
         """
 
     # Define embed 
-    em.title = owoify(user.username, Owoness.Uvu)
+    em.title = user.display_name
+    if owo: em.title = owoify(em.title, Owoness.Uvu)
     em.description = profile_desc
 
     # Add the pfp
