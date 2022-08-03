@@ -77,6 +77,6 @@ class Invention(BaseDataclass):
             is_certified = data["IsCertifiedInvention"],
             price = data["Price"],
             is_trial_allowed = data["AllowTrial"],
-            is_hidden_from_player = data["HideFromPlayer"]
+            is_hidden_from_player = data["HideFromPlayer"],
             **kwargs
         )

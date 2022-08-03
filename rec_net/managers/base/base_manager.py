@@ -14,7 +14,8 @@ class BaseManager(metaclass=ABCMeta):
             "account": self.client.account,
             "image": self.client.image, 
             "event": self.client.event, 
-            "room": self.client.room 
+            "room": self.client.room,
+            "invention": self.client.invention
         }
         
     async def create_builder(self, id = None, name = None, data = None, includes = None, options = {}, **kwargs):

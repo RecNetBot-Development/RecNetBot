@@ -1,3 +1,4 @@
+from rec_net.managers.invention.invention_manager import InventionManager
 from .rest import APIRouteManager
 from .managers import AccountManager, EventManager, ImageManager, RoomManager
 
@@ -8,6 +9,7 @@ class Client:
         self.events = EventManager(self)
         self.images = ImageManager(self)
         self.rooms = RoomManager(self)
+        self.inventions = InventionManager(self)
 
     async def account(self, *args, **kwargs):
         return await self.accounts.create_builder(*args, **kwargs)
@@ -20,6 +22,9 @@ class Client:
 
     async def room(self, *args, **kwargs):
         return await self.rooms.create_builder(*args, **kwargs)
+    
+    async def invention(self, *args, **kwargs):
+        return await self.inventions.create_builder(*args, **kwargs)
 
     async def end(self):
         await self.rec_net.terminate()
