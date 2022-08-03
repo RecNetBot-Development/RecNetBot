@@ -3,7 +3,6 @@ from ...helpers import date_to_unix
 
 @dataclass
 class EventResponse:
-
     id: int
     player: int
     created_at: int
