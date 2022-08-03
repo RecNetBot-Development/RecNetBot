@@ -9,10 +9,24 @@ from ..room.room import Room
 class CurrentVersion:
     id: int # InventionId
     version: int # VersionNumber
-    ink: int # InstantationCost
+    ink: int # InstantiationCost	
     lights_ink: int # LightsCost
     chips_cost: int # ChipsCost
     cloud_variables: int # CloudVariablesCost
+    
+    @classmethod
+    def from_data(cls, data, **kwargs):
+        if isinstance(data, list): return [*map(CurrentVersion.from_data, data)]
+        
+        return cls(
+            id = data["InventionId"],
+            version = data["VersionNumber"],
+            ink = data["InstantiationCost"],
+            lights_ink = data["LightsCost"],
+            chips_cost = data["ChipsCost"],
+            cloud_variables = data["CloudVariablesCost"],
+            **kwargs
+        )
 
 @dataclass
 class Invention(BaseDataclass):
@@ -51,10 +65,15 @@ class Invention(BaseDataclass):
     def from_data(cls, data, **kwargs):
         if isinstance(data, list): return [*map(Invention.from_data, data)]
         
+        # Turn dates to unix timestamps
         unix_modified_at = date_to_unix(data["ModifiedAt"])
         unix_created_at = date_to_unix(data["CreatedAt"])
         unix_published_at = date_to_unix(data["FirstPublishedAt"])
         
+        # Create CurrentVersion dataclass
+        current_version = CurrentVersion.from_data(data["CurrentVersion"])
+        
+        # Return the filled dataclass
         return cls(
             id = data["InventionId"],
             creator = data["CreatorPlayerId"],
@@ -62,7 +81,7 @@ class Invention(BaseDataclass):
             description = data["Description"],
             image_name = data["ImageName"],
             version = data["CurrentVersionNumber"],
-            current_version = data["CurrentVersion"],
+            current_version = current_version,
             is_featured = data["IsFeatured"],
             modified_at = unix_modified_at,
             created_at = unix_created_at,

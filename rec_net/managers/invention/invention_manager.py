@@ -6,7 +6,8 @@ class InventionManager(BaseManager):
     def __init__(self, client):
         super().__init__(client, Invention)
         self.configurables = {
-            "creator": self.get_creator,
+            "creator": self.resolve_creator,
+            "room": self.resolve_room
         }
 
     @BaseManager.data_method
@@ -15,15 +16,15 @@ class InventionManager(BaseManager):
             "id": self.rec_net.api.inventions.v1.get(params={"inventionId": id}),
             "name": self.rec_net.api.inventions.v2.search.get(params={"value": id})
         }
-
-    @BaseManager.get_method("creator")
-    async def get_creator(self, id, **options):
-        resp = await self.rec_net.accounts.account(id).get().fetch()
-        return resp.data
     
-    @BaseManager.get_method("room")
-    async def get_room(self, id, **options):
-        resp = await self.rec_net.rooms.room(id).get().fetch()
-        return resp.data
+    @BaseManager.resolve_method("creator", "account")
+    def resolve_creator(self, invention, **options):
+        if isinstance(invention.creator, int): return invention.creator
+        return None
+    
+    @BaseManager.resolve_method("room", "room")
+    def resolve_room(self, invention, **options):
+        if isinstance(invention.room, int): return invention.room
+        return None
 
 
