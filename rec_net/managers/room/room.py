@@ -27,7 +27,6 @@ class Room(BaseDataclass):
     disable_room_comments: bool
     encrypt_voice_chat: bool
     load_screen_lock: bool
-    version: int
     name: str
     description: str
     created_at: int
@@ -100,7 +99,6 @@ class Room(BaseDataclass):
                disable_room_comments = data["DisableRoomComments"],
                encrypt_voice_chat = data["EncryptVoiceChat"],
                load_screen_lock = data["LoadScreenLocked"],
-               version = data["Version"],
                name = data["Name"],
                description = data["Description"],
                image_name = data["ImageName"],
