@@ -23,7 +23,7 @@ async def apistatus(
     )
 
     namespace_resp = await self.bot.rec_net.rec_net.namespace.get().fetch()
-    if not namespace_resp.data: raise NameServerUnavailable()
+    if not isinstance(namespace_resp.data, dict): raise NameServerUnavailable()
     namespace = namespace_resp.data
     healthy_count = 0
     health_list = []
