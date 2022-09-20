@@ -8,6 +8,7 @@ from utility import load_cfg
 from rec_net import Client
 from modules import CogManager
 from database import DatabaseManager
+from googleapiclient import discovery
 
 class RecNetBot(commands.Bot):
     def __init__(self, *args, **kwargs):
@@ -28,6 +29,13 @@ class RecNetBot(commands.Bot):
         self.rec_net = Client()
         self.cog_manager = CogManager(self)
         self.database = DatabaseManager()
+        self.discovery = discovery.build(
+            "commentanalyzer",
+            "v1alpha1",
+            developerKey=self.config.get("perspective_api_key"),
+            discoveryServiceUrl="https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1",
+            static_discovery=False,
+        )
 
         # Initialize
         self.cog_manager.buildCogs()
