@@ -10,6 +10,13 @@ class NotFound(Exception):
         super().__init__(
             f"{name} not found! Make sure you spelled it right."
         )
+ 
+class InvalidBioForPerspective(Exception):
+    def __init__(self, name = "", bio = ""):
+        self._name = f"`@{name}`"
+        super().__init__(
+            f"{get_emoji('username')} {self._name if name else 'User'}'s bio can't be evaluated for toxicity!\n```{bio if bio else 'User has not written a bio!'}```" 
+        )
         
 class AccountNotFound(NotFound):
     def __init__(self, name = ""):

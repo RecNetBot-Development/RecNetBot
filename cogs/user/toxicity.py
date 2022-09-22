@@ -1,8 +1,9 @@
 from utility import load_cfg, respond
 from discord.commands import slash_command, Option # Importing the decorator that makes slash commands.
 from base_commands.base_profile import base_profile
-from rec_net.exceptions import AccountNotFound
+from rec_net.exceptions import AccountNotFound, InvalidBioForPerspective
 from embeds.account.profile.toxicity_embed import toxicity_embed
+from googleapiclient.http import HttpError
 import json
 
 cfg = load_cfg()
@@ -36,7 +37,11 @@ async def cringe(
         }
     }
 
-    response = self.bot.discovery.comments().analyze(body=analyze_request).execute()
+    try:
+        response = self.bot.discovery.comments().analyze(body=analyze_request).execute()
+    except HttpError:
+        raise InvalidBioForPerspective(username, user.bio)
+        
     results_raw, results = response["attributeScores"], []
     
     # Sort toxicity ratings

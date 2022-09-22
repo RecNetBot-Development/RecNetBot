@@ -4,7 +4,7 @@ import time
 from discord.ext import commands
 from base_commands.base_posts import MissingArguments
 from embeds.image.views.image_browser import MissingPosts
-from rec_net.exceptions import AccountNotFound, EventNotFound, ImageNotFound, NameServerUnavailable, NoSharedPosts, NoTaggedPosts, RoomNotFound
+from rec_net.exceptions import *
 from utility.ModuleCollector import ModuleCollector
 from discord.commands import ApplicationCommand, SlashCommand, SlashCommandGroup
 from embeds import error_embed
@@ -93,7 +93,8 @@ class Cog(commands.Cog):
             MissingPosts,
             NoTaggedPosts,
             NoSharedPosts,
-            NameServerUnavailable
+            NameServerUnavailable,
+            InvalidBioForPerspective
         ]
         
         if error.original.__class__ in ignored_errors:
