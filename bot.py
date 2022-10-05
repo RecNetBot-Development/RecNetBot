@@ -2,21 +2,20 @@ import discord
 import platform
 import os
 import logging
-from datetime import datetime
+import json
 from discord.ext import commands
-from utility import load_cfg
-from rec_net import Client
+from recnetpy import Client
 from modules import CogManager
-from database import DatabaseManager
-from googleapiclient import discovery
 
 class RecNetBot(commands.Bot):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, production: bool):
+        super().__init__()
 
-        # Setup Persistent Views
-        self.persistent_views_added = False
-
+        # Load config
+        path = "./config/{}.json"
+        with open(path.format("production" if production else "development"), 'r') as cfg_json:
+            self.config = json.load(cfg_json)
+    
         # Setup logger
         self.logger = logging.getLogger('discord')
         self.logger.setLevel(logging.DEBUG)
@@ -25,51 +24,44 @@ class RecNetBot(commands.Bot):
         self.logger.addHandler(handler)
 
         # Add Modules
-        self.config = load_cfg()
-        self.rec_net = Client()
+        self.rec_net = None
         self.cog_manager = CogManager(self)
-        self.database = DatabaseManager()
-        self.discovery = discovery.build(
-            "commentanalyzer",
-            "v1alpha1",
-            developerKey=self.config.get("perspective_api_key"),
-            discoveryServiceUrl="https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1",
-            static_discovery=False,
-        )
 
         # Initialize
         self.cog_manager.buildCogs()
-        
-        self.http.bulk_upsert_command_permissions = self.dummy
 
-        #TODO: add config validation & address module dependencies
-
-    async def dummy(self, *args, **kwargs):
-        pass 
 
     async def on_ready(self):
+        """
+        Do asynchronous setup here
+        """
+        self.rec_net = Client()
+        
         await self.change_presence(
             status=discord.Status.online,
             activity=discord.Game(name=self.config.get("status_message", "/help"))
         )
         
-        print(f"""
-RNB ONLINE
-Logged in as {self.user.name}
-PyCord version: {discord.__version__}
-Python version: {platform.python_version()}
-Running on: {platform.system()} {platform.release()} ({os.name})
+        print(
+            "RNB ONLINE",
+            f"Logged in as {self.user.name}",
+            f"PyCord version: {discord.__version__}",
+            f"Python version: {platform.python_version()}",
+            f"Running on: {platform.system()} {platform.release()} ({os.name})",
+            sep="\n"
+        )
+        
+    async def on_command_error(ctx, exception):
+        logging.basicConfig(level=logging.WARNING, filename="error.log", filemode="a+",
+                        format="%(asctime)-15s %(levelname)-8s %(message)s")
+        logging.error(str(exception))
+        await ctx.send(str(exception))
 
-        """)
 
-        # Add persistent views
-        #if not self.persistent_views_added:
-        #    self.add_view(ImageUI(None, None))
-        #    self.persistent_views_added = True
-
-    #async def on_interaction(self, interaction):
-    #    date = datetime.utcnow()
-    #    print(f"{date.hour}:{date.minute} UTC | {interaction.user} ran /{interaction.data['name']}")
+    async def on_error(event, *args, **kwargs):
+        logging.basicConfig(level=logging.WARNING, filename="error.log", filemode="a+",
+                            format="%(asctime)-15s %(levelname)-8s %(message)s")
+        logging.error(event + " -> " + str(args) + " " + str(kwargs))
 
     def run(self):
         super().run(self.config['discord_token'])

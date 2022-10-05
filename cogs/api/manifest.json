@@ -2,5 +2,5 @@
     "name": "API",
     "icon": "category_api",
     "description": "Commands related to RecNet's API!",
-    "scripts": ["status", "data"]
+    "scripts": []
 }

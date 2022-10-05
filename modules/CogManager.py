@@ -1,6 +1,5 @@
 import os
-import json
-from modules.Cog import Cog
+from .Cog import Cog
 
 class CogManager:
     def __init__(self, bot, *args, **kwargs):

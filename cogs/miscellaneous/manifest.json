@@ -2,6 +2,5 @@
     "name": "Miscellaneous",
     "icon": "category_misc",
     "description": "Contains all uncategorized commands!",
-    "cog_group": false,
-    "scripts": ["adjectiveanimal", "loadingscreens"]
+    "scripts": []
 }

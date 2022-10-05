@@ -1,8 +1,7 @@
-import sys, os
+import sys
 from bot import RecNetBot
-sys.path.append(".")
 
-bot = RecNetBot()
+bot = RecNetBot(production=False)
 
 # Run the bot
 bot.run()
