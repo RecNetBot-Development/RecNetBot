@@ -8,7 +8,7 @@ class ConnectionNotFound(RNBException):
     
     def __init__(self):
         em = get_default_embed()
-        em.description = "This Discord user hasn't linked their Rec Room account!"
+        em.description = "This Discord user hasn't linked their Rec Room account! </set_profile:1027713516095946842>"
         
         super().__init__(
             message=em.description, 
