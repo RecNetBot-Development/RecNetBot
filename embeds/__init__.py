@@ -1,1 +1,1 @@
-from .default import DEFAULT_EMBED
+from .default import get_default_embed
