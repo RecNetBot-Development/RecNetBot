@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from discord.ext import commands
 from discord import ApplicationCommandError
 from .ModuleCollector import ModuleCollector
-from discord.commands import ApplicationCommand, SlashCommand, SlashCommandGroup
+from discord.commands import ApplicationCommand, SlashCommand, SlashCommandGroup, UserCommand
 from exceptions import RNBException
 
 if TYPE_CHECKING:
@@ -48,7 +48,7 @@ class Cog(commands.Cog):
                     it doesn't accept subcommands (not mod.is_subcommand)
                     nor does it accept subcommand groups (not mod.parent (checks if the group has a parent group))
                     """
-                    if isinstance(mod, SlashCommand) and not mod.is_subcommand or isinstance(mod, SlashCommandGroup) and not mod.parent:
+                    if isinstance(mod, SlashCommand) and not mod.is_subcommand or isinstance(mod, SlashCommandGroup) and not mod.parent or isinstance(mod, UserCommand):
                         self.addCommand(mod)
                         
         self.initializeCog()
@@ -83,7 +83,6 @@ class Cog(commands.Cog):
         if hasattr(original, "embed"):
             await ctx.respond(embed=original.embed)
         else:
-            print("BrUH")
             logging.basicConfig(level=logging.WARNING, filename="error.log", filemode="a+",
                             format="%(asctime)-15s %(levelname)-8s %(message)s")
             logging.error(str(exception))
