@@ -2,5 +2,5 @@
     "name": "User",
     "icon": "category_user",
     "description": "User related commands.",
-    "scripts": []
+    "scripts": ["profile"]
 }

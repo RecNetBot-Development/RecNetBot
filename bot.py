@@ -15,6 +15,8 @@ class RecNetBot(commands.Bot):
         path = "./config/{}.json"
         with open(path.format("production" if production else "development"), 'r') as cfg_json:
             self.config = json.load(cfg_json)
+            
+        self.debug_guilds = self.config.get("debug_guilds", [])
     
         # Setup logger
         self.logger = logging.getLogger('discord')

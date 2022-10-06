@@ -17,7 +17,7 @@ class Cog(commands.Cog):
         self.__cog_commands__ = []
         #self.__command_group = SlashCommandGroup(name=self.__cog_name__, description="No description provided!", debug_guilds=cfg['test_guild_ids'])
         self.__manifest = self.__getManifest
-        #self.__categorize_commands = self.__manifest.get('cog_group', True)
+        self.__categorize_commands = False
         self.buildCog()
 
     @property
@@ -49,7 +49,7 @@ class Cog(commands.Cog):
                         
         self.initializeCog()
         
-    def debugPrint(self, text):
+    def debugPrint(self, text: str) -> None:
         print(f"{self.__cog_name__}: {text}")
         
     def initializeCog(self):
