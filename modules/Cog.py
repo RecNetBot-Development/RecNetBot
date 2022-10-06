@@ -1,10 +1,14 @@
 import os
 import json
 import time
+import discord
+import logging
 from typing import TYPE_CHECKING
 from discord.ext import commands
+from discord import ApplicationCommandError
 from .ModuleCollector import ModuleCollector
 from discord.commands import ApplicationCommand, SlashCommand, SlashCommandGroup
+from exceptions import RNBException
 
 if TYPE_CHECKING:
     from .CogManager import CogManager
@@ -68,3 +72,21 @@ class Cog(commands.Cog):
             self.__command_group.subcommands.append(patched_command)
         else:
             self.__cog_commands__.append(command)
+            
+        
+    async def cog_command_error(self, ctx: discord.ApplicationContext, exception: ApplicationCommandError):
+        """
+        Global error handling for all cogs
+        """
+        
+        original = exception.original
+        if hasattr(original, "embed"):
+            await ctx.respond(embed=original.embed)
+        else:
+            print("BrUH")
+            logging.basicConfig(level=logging.WARNING, filename="error.log", filemode="a+",
+                            format="%(asctime)-15s %(levelname)-8s %(message)s")
+            logging.error(str(exception))
+            return await ctx.respond(f"An unknown error occurred! {str(original)}")
+            
+        
