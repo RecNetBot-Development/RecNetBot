@@ -1,29 +1,25 @@
 import discord
 from resources import get_emoji
-from utils import unix_timestamp, img_url, format_platforms, format_identities, format_pronouns, sanitize_bio
+from utils import unix_timestamp, img_url, format_platforms, format_identities, format_pronouns, sanitize_bio, get_linked_account
+from utils.converters import FetchAccount
 from embeds import get_default_embed
 from recnetpy.dataclasses.account import Account
-from exceptions import AccountNotFound, ConnectionNotFound
 from discord.commands import slash_command, Option
 
 @slash_command(
     name="profile",
-    description="View someone's Rec Room profile."
+    description="View someone's Rec Room profile.",
+    
 )
 async def profile(
-    self, 
-    ctx: discord.ApplicationContext, 
-    username: Option(str, "Enter RR username", default="", required=False)
+    self,   
+    ctx: discord.ApplicationContext,
+    account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False)
 ):
     await ctx.interaction.response.defer()
     
-    if not username:  # Check for a linked RR account
-        connection = self.bot.cm.get_discord_connection(ctx.author.id)
-        if not connection: raise ConnectionNotFound
-        account: Account = await self.bot.RecNet.accounts.fetch(connection.rr_id)
-    else:  # Go with specified username
-        account: Account = await self.bot.RecNet.accounts.get(username)
-    if not account: raise AccountNotFound
+    if not account:  # Check for a linked RR account
+        account = await get_linked_account(self.bot.cm, self.bot.RecNet, ctx.author.id)
     
     await account.get_subscriber_count()
     await account.get_level()

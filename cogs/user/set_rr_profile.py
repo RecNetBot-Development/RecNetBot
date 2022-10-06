@@ -29,10 +29,13 @@ async def set_rr_profile(
     cheer_list = await post.get_cheers(force=True)
     
     # Create connection if needed
-    status = self.bot.cm.get_connection_status(ctx.author.id)
-    if status == -1:
+    connection = self.bot.cm.get_discord_connection(ctx.author.id, require_done=False)
+    if not connection or user.id != connection.rr_id:
+        self.bot.cm.delete_connection(ctx.author.id)
         status = 2 if user.id in cheer_list else 1
         self.bot.cm.create_connection(ctx.author.id, user.id, 2 if user.id in cheer_list else status)
+    else:
+        status = connection.status
         
     # Check the status
     em = get_default_embed()
