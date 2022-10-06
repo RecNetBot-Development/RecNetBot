@@ -1,1 +1,3 @@
 from .AccountNotFound import AccountNotFound
+from .ConnectionNotFound import ConnectionNotFound
+from .ConnectionAlreadyDone import ConnectionAlreadyDone

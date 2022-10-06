@@ -1,14 +1,14 @@
 from embeds import get_default_embed
 from .RNBException import RNBException
 
-class AccountNotFound(RNBException):
+class ConnectionAlreadyDone(RNBException):
     """
-    Exception for when a user searches for a RR account that doesn't exist
+    Exception for when someone tries to link to an already linked RR account
     """
     
     def __init__(self):
         em = get_default_embed()
-        em.description = "Could not find the Rec Room account you were looking for."
+        em.description = "This Rec Room account is already linked to someone!"
         
         super().__init__(
             message=em.description, 
