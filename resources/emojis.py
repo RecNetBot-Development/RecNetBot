@@ -101,7 +101,7 @@ def get_icon(icon_name: str) -> str:
     """
     Used to safely acquire icons from the data class
     """
-    
+    icon_name = icon_name.lower()
     if not icon_name: return Icons.unknown
     icon = getattr(Icons, icon_name) if hasattr(Icons, icon_name) else Icons.unknown
     return icon
@@ -110,7 +110,7 @@ def get_emoji(emoji_name: str) -> str:
     """
     Used to safely acquire emojis from the data class
     """
-    
+    emoji_name = emoji_name.lower()
     if not emoji_name: return Emoji.unknown
     emoji = getattr(Emoji, emoji_name) if hasattr(Emoji, emoji_name) else Emoji.unknown
     return emoji
