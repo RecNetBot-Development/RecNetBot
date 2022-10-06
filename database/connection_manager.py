@@ -24,14 +24,14 @@ class ConnectionManager():
         """
         self.c.execute(f"""CREATE TABLE IF NOT EXISTS linked_accounts (discord_id integer PRIMARY KEY, rr_id integer, status integer)""")
         
-    def get_discord_connection(self, discord_id: int) -> Optional[Connections]:
-        self.c.execute(f"""SELECT * FROM linked_accounts WHERE discord_id = :discord_id AND status = 0""", {"discord_id": discord_id})
+    def get_discord_connection(self, discord_id: int, require_done: bool = True) -> Optional[Connections]:
+        self.c.execute(f"""SELECT * FROM linked_accounts WHERE discord_id = :discord_id {'AND status = 0' if require_done else ''}""", {"discord_id": discord_id})
         data = self.c.fetchone()
         if not data: return
         return Connections(*data)
     
-    def get_rec_room_connection(self, rr_id: int) -> Optional[Connections]:
-        self.c.execute(f"""SELECT * FROM linked_accounts WHERE rr_id = :rr_id AND status = 0""", {"rr_id": rr_id})
+    def get_rec_room_connection(self, rr_id: int, require_done: bool = True) -> Optional[Connections]:
+        self.c.execute(f"""SELECT * FROM linked_accounts WHERE rr_id = :rr_id {'AND status = 0' if require_done else ''}""", {"rr_id": rr_id})
         data = self.c.fetchone()
         if not data: return
         return Connections(*data)
