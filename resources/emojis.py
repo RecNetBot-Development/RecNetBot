@@ -20,7 +20,8 @@ class Emoji:
     mobile = "<:mobile:962726376820047943>"  # General mobile icon (Phone by andriwidodo from NounProject.com)
     junior = "<:junior:962728467055669278>"  # Junior icon (Pacifier by Danishicon from NounProject.com)
     screen = "<:screen:962725264209629205>"  # Screenie icon (Screen by DinosoftLab from NounProject.com  )
-    oculus = "<:oculus:962812488552939530>"  # Oculus icon
+    standalone = "<:screen:962725264209629205>"  # Screenie icon (Screen by DinosoftLab from NounProject.com  )
+    meta = "<:oculus:962812488552939530>"  # Oculus icon
     playstation = "<:playstation:962813043094462556>"  # PlayStation icon
     steam = "<:steam:962810906478260264>"  # Steam icon
     xbox = "<:xbox:962813430761406464>"  # Xbox icon
@@ -97,20 +98,20 @@ class Icons:
     photo = "https://i.imgur.com/NCoPFNq.png"
     room = "https://i.imgur.com/8o1oFRn.png"
 
-def get_icon(icon_name: str) -> str:
+def get_icon(name: str) -> str:
     """
     Used to safely acquire icons from the data class
     """
-    icon_name = icon_name.lower()
-    if not icon_name: return Icons.unknown
+    if not name: return Icons.unknown
+    icon_name = name.lower()
     icon = getattr(Icons, icon_name) if hasattr(Icons, icon_name) else Icons.unknown
     return icon
 
-def get_emoji(emoji_name: str) -> str:
+def get_emoji(name: str) -> str:
     """
     Used to safely acquire emojis from the data class
     """
-    emoji_name = emoji_name.lower()
-    if not emoji_name: return Emoji.unknown
+    if not name: return Emoji.unknown
+    emoji_name = name.lower()
     emoji = getattr(Emoji, emoji_name) if hasattr(Emoji, emoji_name) else Emoji.unknown
     return emoji
