@@ -31,6 +31,9 @@ class RecNetBot(commands.Bot):
         self.RecNet = None
         self.cog_manager = CogManager(self)
 
+        # Verify post for RR account links
+        self.verify_post = None
+
         # Initialize database
         self.db = sqlite3.connect(self.config.get("sqlite_database", "rnb.db"))
         self.cm = ConnectionManager(self.db)
@@ -44,6 +47,7 @@ class RecNetBot(commands.Bot):
         Do asynchronous setup here
         """
         self.RecNet = Client()
+        self.verify_post = await self.RecNet.images.fetch(self.config["verify_post"])
         
         await self.change_presence(
             status=discord.Status.online,

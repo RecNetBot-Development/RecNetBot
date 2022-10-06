@@ -7,6 +7,7 @@ from sqlite3 import Connection
 class Connections:
     discord_id: int = None
     rr_id: int = None
+    status: int = None # (0/1/2) - (done / pending cheer / pending uncheer)
 
 class ConnectionManager():
     def __init__(self, database: Connection):
@@ -15,17 +16,39 @@ class ConnectionManager():
         self.create_table()
         
     def create_table(self):
-        self.c.execute(f"""CREATE TABLE IF NOT EXISTS linked_accounts (discord_id integer PRIMARY KEY, rr_id integer)""")
+        """
+        Creates the linked_accounts table
+            - discord_id integer: a Discord account's id
+            - rr_id integer: a Rec Room account's id
+            - status integer: (0/1/2) - (done / pending cheer / pending uncheer)
+        """
+        self.c.execute(f"""CREATE TABLE IF NOT EXISTS linked_accounts (discord_id integer PRIMARY KEY, rr_id integer, status integer)""")
         
     def get_discord_connection(self, discord_id: int) -> Optional[Connections]:
-        self.c.execute(f"""SELECT * FROM linked_accounts WHERE discord_id = :discord_id""", {"discord_id": discord_id})
+        self.c.execute(f"""SELECT * FROM linked_accounts WHERE discord_id = :discord_id AND status = 0""", {"discord_id": discord_id})
         data = self.c.fetchone()
         if not data: return
         return Connections(*data)
     
-    def create_connection(self, discord_id: int, rr_id: int):
+    def get_rec_room_connection(self, rr_id: int) -> Optional[Connections]:
+        self.c.execute(f"""SELECT * FROM linked_accounts WHERE rr_id = :rr_id AND status = 0""", {"rr_id": rr_id})
+        data = self.c.fetchone()
+        if not data: return
+        return Connections(*data)
+    
+    def get_connection_status(self, discord_id: int) -> int:
+        self.c.execute(f"""SELECT * FROM linked_accounts WHERE discord_id = :discord_id""", {"discord_id": discord_id})
+        data = self.c.fetchone()
+        if not data: return -1
+        return data[2]
+    
+    def create_connection(self, discord_id: int, rr_id: int, status: int):
         with self.conn:
-            self.c.execute(f"""INSERT OR IGNORE INTO linked_accounts VALUES (:discord_id, :rr_id)""", {"discord_id": discord_id, "rr_id": rr_id})
+            self.c.execute(f"""INSERT OR IGNORE INTO linked_accounts VALUES (:discord_id, :rr_id, :status)""", {"discord_id": discord_id, "rr_id": rr_id, "status": status})
+            
+    def update_connection(self, discord_id: int, rr_id: int, status: int):
+        with self.conn:
+            self.c.execute(f"""UPDATE linked_accounts SET rr_id = :rr_id, status = :status WHERE discord_id = :discord_id""", {"rr_id": rr_id, "discord_id": discord_id, "status": status})
             
     def delete_connection(self, discord_id: int):
         with self.conn:
