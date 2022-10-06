@@ -3,9 +3,11 @@ import platform
 import os
 import logging
 import json
+import sqlite3
 from discord.ext import commands
 from recnetpy import Client
 from modules import CogManager
+from database import ConnectionManager
 
 class RecNetBot(commands.Bot):
     def __init__(self, production: bool):
@@ -29,6 +31,10 @@ class RecNetBot(commands.Bot):
         self.RecNet = None
         self.cog_manager = CogManager(self)
 
+        # Initialize database
+        self.db = sqlite3.connect(self.config.get("sqlite_database", "rnb.db"))
+        self.cm = ConnectionManager(self.db)
+
         # Initialize
         self.cog_manager.buildCogs()
 
@@ -45,7 +51,7 @@ class RecNetBot(commands.Bot):
         )
         
         print(
-            "RNB ONLINE",
+            f"RNB ONLINE",
             f"Logged in as {self.user.name}",
             f"PyCord version: {discord.__version__}",
             f"Python version: {platform.python_version()}",
