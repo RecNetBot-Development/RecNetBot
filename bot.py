@@ -26,7 +26,7 @@ class RecNetBot(commands.Bot):
         self.logger.addHandler(handler)
 
         # Add Modules
-        self.rec_net = None
+        self.RecNet = None
         self.cog_manager = CogManager(self)
 
         # Initialize
@@ -37,7 +37,7 @@ class RecNetBot(commands.Bot):
         """
         Do asynchronous setup here
         """
-        self.rec_net = Client()
+        self.RecNet = Client()
         
         await self.change_presence(
             status=discord.Status.online,
