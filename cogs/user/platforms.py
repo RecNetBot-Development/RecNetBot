@@ -1,5 +1,6 @@
 import discord
-from utils import format_platforms, get_linked_account, profile_url
+from utils import get_linked_account, profile_url
+from utils.formatters import format_platforms
 from utils.converters import FetchAccount
 from embeds import get_default_embed
 from discord.commands import slash_command, Option

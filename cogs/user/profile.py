@@ -1,6 +1,7 @@
 import discord
 from resources import get_emoji
-from utils import unix_timestamp, img_url, format_platforms, format_identities, format_pronouns, sanitize_bio, get_linked_account
+from utils import unix_timestamp, img_url, sanitize_bio, get_linked_account
+from utils.formatters import format_platforms, format_identities, format_pronouns
 from utils.converters import FetchAccount
 from embeds import get_default_embed
 from recnetpy.dataclasses.account import Account
@@ -8,7 +9,7 @@ from discord.commands import slash_command, Option
 
 @slash_command(
     name="profile",
-    description="View someone's Rec Room profile.",
+    description="View a Rec Room profile with additional information.",
     
 )
 async def profile(
