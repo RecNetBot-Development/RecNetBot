@@ -18,6 +18,6 @@ def format_platforms(platforms: List[str]) -> List[str]:
     if not platforms: return []
     formatted = []
     for ele in platforms:
-        formatted.append(f"{get_emoji(ele)} [`{ele}`]({PLATFORM_URLS.get(ele.lower(), 'standalone')})")
+        formatted.append(f"{get_emoji(ele)} [`{ele}`](<{PLATFORM_URLS.get(ele.lower(), 'standalone')}>)")
         
     return formatted
