@@ -2,8 +2,6 @@ import discord
 from utils import sanitize_bio, get_linked_account, profile_url
 from utils.converters import FetchAccount
 from embeds import get_default_embed
-from recnetpy.dataclasses.account import Account
-from exceptions import AccountNotFound, ConnectionNotFound
 from discord.commands import slash_command, Option
 
 @slash_command(

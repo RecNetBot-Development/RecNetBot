@@ -1,4 +1,3 @@
-import discord
 from discord import ApplicationContext
 from discord.commands import slash_command, Option
 from exceptions import AccountNotFound, ConnectionAlreadyDone

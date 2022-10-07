@@ -2,7 +2,6 @@ import discord
 from discord import ApplicationContext
 from discord.commands import user_command
 from utils import get_linked_account
-from exceptions import ConnectionNotFound, AccountNotFound
 
 @user_command(name="Rec Room Profile")
 async def get_rr_profile(self, ctx: ApplicationContext, member: discord.Member):
