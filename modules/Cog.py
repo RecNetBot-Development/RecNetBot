@@ -86,6 +86,8 @@ class Cog(commands.Cog):
             logging.basicConfig(level=logging.WARNING, filename="error.log", filemode="a+",
                             format="%(asctime)-15s %(levelname)-8s %(message)s")
             logging.error(str(exception))
-            return await ctx.respond(f"An unknown error occurred! {str(original)}")
+            
+            await ctx.respond(f"An unknown error occurred! {str(original)}")
+            raise original
             
         
