@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
-from discord import ApplicationContext
-from exceptions import ConnectionNotFound, AccountNotFound
+from exceptions import AccountNotFound
 
 class FetchAccount(commands.Converter):
     """
