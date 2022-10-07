@@ -64,10 +64,10 @@ class RecNetBot(commands.Bot):
         )
 
 
-    async def on_error(self, event, *args, **kwargs):
-        logging.basicConfig(level=logging.WARNING, filename="error.log", filemode="a+",
-                            format="%(asctime)-15s %(levelname)-8s %(message)s")
-        logging.error(event + " -> " + str(args) + " " + str(kwargs))
+    #async def on_error(self, event, *args, **kwargs):
+    #    logging.basicConfig(level=logging.WARNING, filename="error.log", filemode="a+",
+    #                        format="%(asctime)-15s %(levelname)-8s %(message)s")
+    #    logging.error(event + " -> " + str(args) + " " + str(kwargs))
 
 
     def run(self):
