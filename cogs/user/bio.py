@@ -1,5 +1,5 @@
 import discord
-from utils import sanitize_bio, get_linked_account
+from utils import sanitize_bio, get_linked_account, profile_url
 from utils.converters import FetchAccount
 from embeds import get_default_embed
 from recnetpy.dataclasses.account import Account
@@ -19,18 +19,19 @@ async def bio(
     
     if not account:
         account = await get_linked_account(self.bot.cm, self.bot.RecNet, ctx.author.id)
-    print(account)
     
     bio = await account.get_bio()
-    if bio: 
-        await ctx.respond(
-            content=sanitize_bio(bio)
-        )
-    else:
+    
+    if not bio: # Check if the user has a bio
         em = get_default_embed()
-        em.description = f"{account.display_name} hasn't written a bio!"
-        await ctx.respond(
+        em.description = f"[{account.display_name}]({profile_url(account.username)}) hasn't written a bio!"
+        return await ctx.respond(
             embed=em
         )
+
+    await ctx.respond(
+        content=sanitize_bio(bio)
+    )
+        
 
         
