@@ -106,7 +106,7 @@ class Dropdown(discord.ui.Select):
 
 @slash_command(
     name="search",
-    descriptions="Search for all things RecNet!"
+    description="Search for all things RecNet!"
 )
 async def search(
     self,   
