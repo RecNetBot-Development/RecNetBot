@@ -1,0 +1,6 @@
+{
+    "name": "Test",
+    "icon": "category_test",
+    "description": "Test related commands.",
+    "scripts": []
+}
