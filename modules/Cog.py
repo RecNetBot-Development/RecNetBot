@@ -3,7 +3,8 @@ import json
 import time
 import discord
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
+from resources import CategoryIcons
 from discord.ext import commands
 from discord import ApplicationCommandError
 from .ModuleCollector import ModuleCollector
@@ -32,6 +33,15 @@ class Cog(commands.Cog):
                 return json.load(manifest_json)
         else:
             return 
+        
+    @property
+    def icon(self) -> Optional[discord.Emoji]:
+        if icon_name := self.__manifest.get("icon", None):
+            if hasattr(CategoryIcons, icon_name):
+                return self.bot.get_emoji(getattr(CategoryIcons, icon_name))
+        
+        return None    
+        
 
     def buildCog(self):
         scripts = self.__manifest.get('scripts', None)

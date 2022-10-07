@@ -56,14 +56,6 @@ class Emoji:
     stats = engagement
     information = "<:info:963877676337201224>"  # (Info by rosannavergara5@gmail.com from NounProject.com)
     github = "<:github:963428573476192356>"
-    category_api = "<:category_api:963878518960291903>"  # (Api by Larea from NounProject.com)
-    category_event = event
-    category_help = "<:category_help:963878068378800268>"  # (Help by Cayner Curitana from NounProject.com)
-    category_image = image
-    category_misc = "<:category_misc:963877141936746507>"  # (Other by Adrien Coquet from NounProject.com)
-    category_random = "<:category_random:963876641883431013>"  # (Random by Ananth from NounProject.com)
-    category_room = room
-    category_user = visitor
     spooky = "<:spooky:962798979509280838>"  # Spooky warning (Ghost by Andres Flores from NounProject.com)
     mature = "<:mature:962796110575964202>"  # Mature warning
     bright = "<:brightness:962796571710357615>"  # Bright lights warning (Brightness by Chinnaking from NounProject.com)
@@ -86,6 +78,17 @@ class Emoji:
     pansexual = "<:pansexual:962801321570877491>"
     transgender = "<:transgender:962801321990320238>"
     intersex = "<:intersex:962801322124521633>"
+    arrow = "<:arrow:1027953376824135740>"
+
+class CategoryIcons:
+    category_api = 963878518960291903  # (Api by Larea from NounProject.com)
+    category_event = 962027535049293865
+    category_help = 963878068378800268  # (Help by Cayner Curitana from NounProject.com)
+    category_image = 962808860433870998
+    category_misc = 963877141936746507  # (Other by Adrien Coquet from NounProject.com)
+    category_random = 963876641883431013 # (Random by Ananth from NounProject.com)
+    category_room = 962027535196098570
+    category_user = 962793028026777640
 
 class Icons:
     """

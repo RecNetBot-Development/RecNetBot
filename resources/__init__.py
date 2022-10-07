@@ -1,1 +1,1 @@
-from .emojis import get_emoji, get_icon
+from .emojis import get_emoji, get_icon, CategoryIcons
