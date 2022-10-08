@@ -6,10 +6,10 @@ from embeds import get_default_embed
 from discord.commands import slash_command, Option
 
 @slash_command(
-    name="platfroms",
+    name="platforms",
     description="See what platforms a Rec Room user has played on."
 )
-async def platfroms(
+async def platforms(
     self,   
     ctx: discord.ApplicationContext,
     account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False)
