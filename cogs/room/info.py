@@ -91,7 +91,7 @@ def room_embed(room: Room) -> discord.Embed:
     if details: em.add_field(name="Details", value="\n".join(details), inline=False)
     if supported: em.add_field(name="Supported Modes", value=supported, inline=False)
     if unsupported: em.add_field(name="Unsupported Modes", value=unsupported, inline=False)
-    if warnings: em.add_field(name="Warnings", value=warnings, inline=False)
+    if warnings: em.add_field(name="Warnings", value=" ".join(warnings), inline=False)
     if room.custom_warning: em.add_field(name="Custom Warning", value=custom_warning, inline=False)
     if roles: em.add_field(name="Roles", value=roles, inline=False)
     if statistics: em.add_field(name="Statistics", value="\n".join(statistics), inline=False)
