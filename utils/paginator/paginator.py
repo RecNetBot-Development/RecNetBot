@@ -5,7 +5,8 @@ from discord.ext.pages import Page, PaginatorButton
 from resources import get_emoji
 from recnetpy.dataclasses.account import Account
 from recnetpy.dataclasses.room import Room
-from embeds import profile_embed, room_embed
+from recnetpy.dataclasses.event import Event
+from embeds import event_embed, profile_embed, room_embed
 from typing import List, Optional, Union
 from discord.ext.bridge import BridgeContext
 from discord.ext.commands import Context
@@ -32,6 +33,10 @@ class RNBPage(Page):
         elif isinstance(self.content, Room):
             room = await self.data.client.rooms.fetch(self.data.id, 78)
             self.embeds = [room_embed(room)]
+            self.content = None
+            
+        elif isinstance(self.content, Event):
+            self.embeds = [event_embed(self.data)]
             self.content = None
             
         self.embeds[-1].set_footer(text=f"{self.index}/{self.page_count}")

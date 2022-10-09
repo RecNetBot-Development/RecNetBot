@@ -43,6 +43,7 @@ class Emoji:
     tag = "<:tag:962723300654600202>"  # Room tags (Tag by Julynn B. from NounProject.com)
     visitor = "<:visitor:962793028026777640>"  # Visitor (People by Adrien Coquet from NounProject.com)
     visitors = "<:visitors:962793039397552220>"  # Visitors (People by Adrien Coquet from NounProject.com)
+    user = "<:visitor:962793028026777640>"  # Visitor (People by Adrien Coquet from NounProject.com)
     favorite = "<:level:962027535007354901>"  # Favorites (Star by Elvn Sands from NounProject.com)
     subrooms = "<:subrooms:962794308128354395>"  # Subrooms (Rooms by Smalllike from NounProject.com)
     limit = "<:subscribers:962027535095439371>"  # Player limit (Group Of People by Icon Box from NounProject.com)

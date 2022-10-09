@@ -4,7 +4,7 @@ from embeds import get_default_embed
 from discord.commands import slash_command, Option
 from discord.ext.pages import PaginatorButton
 from resources import get_emoji
-from utils import profile_url, room_url, sanitize_text
+from utils import profile_url, room_url, sanitize_text, event_url
 from utils.paginator import RNBPaginator, RNBPage
 
         
@@ -39,7 +39,8 @@ class SearchView(discord.ui.View):
         self.query = query
         self.results = {
             "Account": [],
-            "Room": []
+            "Room": [],
+            "Event": []
         }
         self.search_type = search_type
         self.embed = None
@@ -57,7 +58,7 @@ class SearchView(discord.ui.View):
         em.description = "\n".join(formatted)
         em.set_footer(text=f"Results: {len(self.results[self.search_type])}")
         if len(self.results[self.search_type]) > 10: em.description += "\n..."  # Indicate that there's more truncated results
-        em.description = f"Search results for `{self.query}`\n\n" + sanitize_text(em.description)
+        em.description = f"Search results for `{self.query}`\nSearching for {self.search_type.lower()}s.\n\n" + sanitize_text(em.description)
         self.embed = em
         
     
@@ -70,6 +71,9 @@ class SearchView(discord.ui.View):
                 
             case "Room":
                 await self.fetch_rooms()
+                
+            case "Event":
+                await self.fetch_events()
                 
         self.create_embed()
         
@@ -92,7 +96,7 @@ class SearchView(discord.ui.View):
     async def fetch_rooms(self) -> None:
         if self.results["Room"]: return
         
-        rooms = await self.bot.RecNet.rooms.search(self.query)
+        rooms = await self.bot.RecNet.rooms.search(self.query, take=50)
         
         results = []
         for ele in rooms:
@@ -102,6 +106,23 @@ class SearchView(discord.ui.View):
             results.append(item)
         
         self.results["Room"] = results
+        
+        
+    async def fetch_events(self) -> None:
+        if self.results["Event"]: return
+        
+        events = await self.bot.RecNet.events.search(self.query, take=50)
+        
+        results = []
+        for ele in events:
+            creator = await ele.get_creator_player()
+            room = await ele.get_room(include=0)
+            formatted = f"[{ele.name}]({event_url(ele.id)})\n{get_emoji('arrow')} @{creator.username}"
+            if room: formatted += f" at ^{room.name}"
+            item = {"name": ele.name, "formatted": formatted, "dataclass": ele}
+            results.append(item)
+        
+        self.results["Event"] = results
     
 
     async def refresh(self, interaction: discord.Interaction):
@@ -116,10 +137,16 @@ class Dropdown(discord.ui.Select["SearchView"]):
         
         options = [
             discord.SelectOption(
-                label="Account"
+                label="Account",
+                emoji=get_emoji('user')
             ),
             discord.SelectOption(
-                label="Room"
+                label="Room",
+                emoji=get_emoji('room')
+            ),
+            discord.SelectOption(
+                label="Event",
+                emoji=get_emoji('event')
             )
         ]
         super().__init__(
@@ -160,7 +187,7 @@ async def search(
     self,   
     ctx: discord.ApplicationContext,
     query: Option(str, name="query", description="Search term", required=True),
-    search_type: Option(str, choices=["Account", "Room"], name="type", description="What are you looking for?", required=False, default="Account")
+    search_type: Option(str, choices=["Account", "Room", "Event"], name="type", description="What are you looking for?", required=False, default="Account")
 ):
     await ctx.interaction.response.defer(invisible=True)
     
