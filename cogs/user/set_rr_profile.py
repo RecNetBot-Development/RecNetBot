@@ -1,11 +1,9 @@
 import discord
-from typing import List
 from discord import ApplicationContext
 from discord.commands import slash_command, Option
 from exceptions import AccountNotFound, ConnectionAlreadyDone
-from embeds import get_default_embed
-from utils import post_url, profile_url, img_url
-from .profile import profile_embed
+from embeds import get_default_embed, profile_embed
+from utils import post_url, profile_url
 
 # For prompting the user whether or not to link the account
 class Confirm(discord.ui.View):
