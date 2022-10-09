@@ -1,8 +1,9 @@
 import discord
-from utils import get_linked_account, img_url, profile_url
+from utils import img_url, profile_url
 from embeds import get_default_embed
 from utils.converters import FetchAccount
 from discord.commands import slash_command, Option
+from exceptions import ConnectionNotFound
 
 @slash_command(
     name="banner",
@@ -16,7 +17,8 @@ async def banner(
     await ctx.interaction.response.defer()
     
     if not account:  # Check for a linked RR account
-        account = await get_linked_account(self.bot.cm, self.bot.RecNet, ctx.author.id)
+        account = await self.bot.cm.get_linked_account(self.bot.RecNet, ctx.author.id)
+        if not account: raise ConnectionNotFound
         
     em = get_default_embed()
         

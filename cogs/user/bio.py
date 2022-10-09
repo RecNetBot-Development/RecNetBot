@@ -1,5 +1,6 @@
 import discord
-from utils import sanitize_bio, get_linked_account, profile_url
+from exceptions import ConnectionNotFound
+from utils import sanitize_bio, profile_url
 from utils.converters import FetchAccount
 from embeds import get_default_embed
 from discord.commands import slash_command, Option
@@ -16,7 +17,8 @@ async def bio(
     await ctx.interaction.response.defer()
     
     if not account:
-        account = await get_linked_account(self.bot.cm, self.bot.RecNet, ctx.author.id)
+        account = await self.bot.cm.get_linked_account(self.bot.RecNet, ctx.author.id)
+        if not account: raise ConnectionNotFound
     
     bio = await account.get_bio()
     

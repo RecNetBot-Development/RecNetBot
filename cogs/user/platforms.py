@@ -1,9 +1,10 @@
 import discord
-from utils import get_linked_account, profile_url
+from utils import profile_url
 from utils.formatters import format_platforms
 from utils.converters import FetchAccount
 from embeds import get_default_embed
 from discord.commands import slash_command, Option
+from exceptions import ConnectionNotFound
 
 @slash_command(
     name="platforms",
@@ -17,7 +18,8 @@ async def platforms(
     await ctx.interaction.response.defer()
     
     if not account:  # Check for a linked RR account
-        account = await get_linked_account(self.bot.cm, self.bot.RecNet, ctx.author.id)
+        account = await self.bot.cm.get_linked_account(self.bot.RecNet, ctx.author.id)
+        if not account: raise ConnectionNotFound
     
     if not account.platforms:
         em = get_default_embed()

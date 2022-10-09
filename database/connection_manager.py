@@ -2,6 +2,8 @@ from dataclasses import dataclass
 import sqlite3
 from typing import Optional
 from sqlite3 import Connection
+from recnetpy.dataclasses.account import Account
+from recnetpy import Client
 
 @dataclass
 class Connections:
@@ -45,7 +47,17 @@ class ConnectionManager():
     def delete_connection(self, discord_id: int):
         with self.conn:
             self.c.execute(f"""DELETE FROM linked_accounts WHERE discord_id = :discord_id""", {"discord_id": discord_id})
-       
+            
+    async def get_linked_account(self, RecNet: Client, discord_id: int) -> Optional[Account]:
+        """
+        Fetches the linked Rec Room account of a Discord account
+        """
+
+        connection = self.get_discord_connection(discord_id)
+        if not connection: return None
+        account = await RecNet.accounts.fetch(connection.rr_id)
+        return account
+    
 if __name__ == "__main__":
      db = sqlite3.connect(":memory:")
      cm = ConnectionManager(db)

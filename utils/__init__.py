@@ -4,5 +4,3 @@ from .date_to_unix import date_to_unix
 
 from .sanitize_bio import sanitize_bio
 from .sanitize_text import sanitize_text
-
-from .get_linked_account import get_linked_account
