@@ -1,17 +1,12 @@
-import asyncio
 import discord
 from typing import Optional
-from discord.commands import slash_command
-from discord.ext import commands, pages
+from discord.ext import pages
 from discord.ext.pages import Page, PaginatorButton
 from resources import get_emoji
 from recnetpy.dataclasses.account import Account
 from recnetpy.dataclasses.room import Room
-from cogs.user.profile import profile_embed
-from cogs.room.info import room_embed
-
-from typing import Dict, List, Optional, Union
-
+from embeds import profile_embed, room_embed
+from typing import List, Optional, Union
 from discord.ext.bridge import BridgeContext
 from discord.ext.commands import Context
         
