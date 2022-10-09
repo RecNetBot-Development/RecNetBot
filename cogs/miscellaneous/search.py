@@ -1,11 +1,14 @@
 import discord
 from discord.ext import commands
-from embeds import get_default_embed
+from embeds import get_default_embed, profile_embed, room_embed, event_embed
 from discord.commands import slash_command, Option
 from discord.ext.pages import PaginatorButton
 from resources import get_emoji
 from utils import profile_url, room_url, sanitize_text, event_url
 from utils.paginator import RNBPaginator, RNBPage
+from recnetpy.dataclasses.account import Account
+from recnetpy.dataclasses.event import Event
+from recnetpy.dataclasses.room import Room
 
         
 class Send(PaginatorButton):
@@ -30,12 +33,9 @@ class Send(PaginatorButton):
         
 
 class SearchView(discord.ui.View):
-    def __init__(self, bot: commands.Bot, query: str, search_type: str):
+    def __init__(self, bot: commands.Bot, query: str, search_type: str, lock: bool = False):
         super().__init__()
         self.bot = bot
-        self.add_item(Dropdown(self))
-        self.add_item(Browse(self))
-        
         self.query = query
         self.results = {
             "Account": [],
@@ -44,20 +44,31 @@ class SearchView(discord.ui.View):
         }
         self.search_type = search_type
         self.embed = None
+        self.max_count = 10
+        self.lock = lock
 
 
     async def initialize(self):
         await self.register_selection(self.search_type)
         self.create_embed()
         return self.embed
+    
+
+    def update_items(self):
+        self.clear_items()
+        if not self.lock: self.add_item(DropdownSearch(self))
+        if self.results[self.search_type]:
+            self.add_item(Browse(self))
+            self.add_item(DropdownSelection(self))
+        self.add_item(Delete(self))
 
 
     def create_embed(self) -> None:
         em = get_default_embed()
-        formatted = map(lambda ele: ele["formatted"], self.results[self.search_type][:10])
+        formatted = map(lambda ele: ele["formatted"], self.results[self.search_type][:self.max_count])
         em.description = "\n".join(formatted)
         em.set_footer(text=f"Results: {len(self.results[self.search_type])}")
-        if len(self.results[self.search_type]) > 10: em.description += "\n..."  # Indicate that there's more truncated results
+        if len(self.results[self.search_type]) > self.max_count: em.description += "\n..."  # Indicate that there's more truncated results
         em.description = f"Search results for `{self.query}`\nSearching for {self.search_type.lower()}s.\n\n" + sanitize_text(em.description)
         self.embed = em
         
@@ -75,6 +86,7 @@ class SearchView(discord.ui.View):
             case "Event":
                 await self.fetch_events()
                 
+        self.update_items()
         self.create_embed()
         
         
@@ -130,7 +142,7 @@ class SearchView(discord.ui.View):
         
 
 
-class Dropdown(discord.ui.Select["SearchView"]):
+class DropdownSearch(discord.ui.Select["SearchView"]):
     def __init__(self, view: SearchView):
         self.search_view = view
         self.bot = self.search_view.bot
@@ -162,13 +174,62 @@ class Dropdown(discord.ui.Select["SearchView"]):
         await self.search_view.register_selection(self.values[0])
         await self.search_view.refresh(interaction)
         
+        
+class DropdownSelection(discord.ui.Select["SearchView"]):
+    def __init__(self, view: SearchView):
+        self.search_view = view
+        self.bot = self.search_view.bot
+        self.results = self.search_view.results[self.search_view.search_type][:self.search_view.max_count]
+        self.sent = [] 
+            
+        options = []
+        for ele in self.results:
+            option = discord.SelectOption(
+                label=ele["name"]
+            )
+            options.append(option)
+            
+        super().__init__(
+            placeholder="View result",
+            min_values=1,
+            max_values=int(self.search_view.max_count / 2),
+            options=options,
+            row=1
+        )
+
+    async def callback(self, interaction: discord.Interaction):
+        embeds = []
+        for ele in self.values:
+            # Find the result with the name property
+            item = next((item for item in self.results if item['name'] == ele), None)["dataclass"]
+            if item in self.sent: continue  # Spam prevention
+            self.sent.append(item)  # Spam prevention
+            
+            if isinstance(item, Account):
+                await item.get_bio()
+                await item.get_level()
+                await item.get_subscriber_count()
+                embeds.append(profile_embed(item))
+                
+            elif isinstance(item, Room):
+                room = await item.client.rooms.fetch(item.id, 78)
+                embeds.append(room_embed(room))
+                
+            elif isinstance(item, Event):
+                embeds.append(event_embed(item))
+        
+        if not embeds:
+            return await interaction.response.send_message("You can't send the same results more than once to prevent spam.", ephemeral=True)
+        
+        await interaction.response.send_message(embeds=embeds)
+        
 
 class Browse(discord.ui.Button["SearchView"]):
     def __init__(self, view: SearchView):
         self.search_view = view
         
         super().__init__(
-            style=discord.ButtonStyle.secondary, label="Browse", row=1
+            style=discord.ButtonStyle.secondary, label="Browse", row=2
         )
 
     async def callback(self, interaction: discord.Interaction):
@@ -177,6 +238,19 @@ class Browse(discord.ui.Button["SearchView"]):
         paginator = RNBPaginator(pages=pages, trigger_on_display=True, show_indicator=False, author_check=True)
         paginator.add_button(Send())
         await paginator.respond(interaction, ephemeral=True)
+        
+        
+class Delete(discord.ui.Button["SearchView"]):
+    def __init__(self, view: SearchView):
+        self.search_view = view
+        
+        super().__init__(
+            style=discord.ButtonStyle.danger, label="Delete", row=2
+        )
+
+    async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer()
+        await interaction.delete_original_response()
 
 
 @slash_command(
