@@ -7,7 +7,7 @@ import sqlite3
 from discord.ext import commands
 from recnetpy import Client
 from modules import CogManager
-from database import ConnectionManager
+from database import ConnectionManager, RoomCacheManager
 
 class RecNetBot(commands.Bot):
     def __init__(self, production: bool):
@@ -38,8 +38,9 @@ class RecNetBot(commands.Bot):
         self.bug_channel = None
 
         # Initialize database
-        self.db = sqlite3.connect(self.config.get("sqlite_database", "rnb.db"))
+        self.db = sqlite3.connect(self.config.get("sqlite_database", "rnb.db"), detect_types=sqlite3.PARSE_DECLTYPES)
         self.cm = ConnectionManager(self.db)
+        self.rcm = RoomCacheManager(self.db)
 
         # Initialize
         self.cog_manager.buildCogs()
