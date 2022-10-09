@@ -9,5 +9,6 @@ class FetchRoom(commands.Converter):
     async def convert(self, ctx: discord.ApplicationContext, room_name: str):
         room = await ctx.bot.RecNet.rooms.get(room_name, 78)
         if not room: raise RoomNotFound
+        #ctx.bot.rcm.cache_stats(ctx.author.id, room.id, room)
         return room
     
