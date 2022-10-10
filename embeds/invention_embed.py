@@ -3,8 +3,9 @@ from embeds import get_default_embed
 from resources import get_emoji
 from utils import invention_url, img_url, unix_timestamp
 from recnetpy.dataclasses.invention import Invention
+from database import InventionStats
 
-def invention_embed(invention: Invention) -> discord.Embed:
+def invention_embed(invention: Invention, cached_stats: InventionStats = "None") -> discord.Embed:
     em = get_default_embed()
     em.title = invention.name
     em.url = invention_url(invention.id)
@@ -28,11 +29,24 @@ def invention_embed(invention: Invention) -> discord.Embed:
     if tags: details.insert(1,  
         f"{get_emoji('tag')} `{', '.join(tags)}` ({len(invention.tags)}) — Tags")
     
+    
+    used_in_room_dif, downloads_dif, cheer_dif, last_check = 0, 0, 0, 0
+    if cached_stats not in ("None", None):
+        used_in_room_dif = invention.num_players_have_used_in_room - cached_stats.num_used_in_room if invention.num_players_have_used_in_room != cached_stats.num_used_in_room else 0
+        downloads_dif = invention.num_downloads - cached_stats.num_downloads if invention.num_downloads != cached_stats.num_downloads else 0
+        cheer_dif = invention.cheer_count - cached_stats.cheer_count if invention.cheer_count - cached_stats.cheer_count else 0
+        last_check = cached_stats.cached_timestamp
+    
     statistics = [
-        f"{get_emoji('download')} `{invention.num_downloads:,}` — Downloads",
-        f"{get_emoji('room')} `{invention.num_players_have_used_in_room:,}` — Used In Rooms",
-        f"{get_emoji('cheer')} `{invention.cheer_count:,}` — Cheers",
+        f"{get_emoji('download')} `{invention.num_downloads:,}`{f' *(+{downloads_dif})*' if downloads_dif else ''} — Downloads",
+        f"{get_emoji('room')} `{invention.num_players_have_used_in_room:,}`{f' *(+{used_in_room_dif})*' if used_in_room_dif else ''} — Used In Rooms",
+        f"{get_emoji('cheer')} `{invention.cheer_count:,}`{f' *(+{cheer_dif})*' if cheer_dif else ''} — Cheers",
     ]
+    
+    if last_check:
+        statistics.append(f"\nYou last checked this invention out {unix_timestamp(last_check, 'R')}!")
+    elif cached_stats != "None":
+        statistics.append(f"\nYou can see the statistical difference the next time you view this invention!")
     
     # Only add if it exists at all
     version = []
@@ -59,3 +73,12 @@ def invention_embed(invention: Invention) -> discord.Embed:
     em.add_field(name="Statistics", value="\n".join(statistics), inline=False)
     
     return em
+
+
+async def fetch_invention_embed(invention: Invention, *args, **kwargs) -> discord.Embed:
+    """
+    Fetches the necessary embed required for the embed
+    """
+    
+    await invention.get_tags()
+    return invention_embed(invention, *args, **kwargs)

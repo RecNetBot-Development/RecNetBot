@@ -1,14 +1,16 @@
 import discord
 from discord.ext import commands
-from embeds import get_default_embed, profile_embed, room_embed, event_embed
+from embeds import get_default_embed, fetch_profile_embed, room_embed, event_embed
 from discord.commands import slash_command, Option
 from discord.ext.pages import PaginatorButton
+from embeds.invention_embed import invention_embed
 from resources import get_emoji
-from utils import profile_url, room_url, sanitize_text, event_url
+from utils import profile_url, room_url, sanitize_text, event_url, invention_url
 from utils.paginator import RNBPaginator, RNBPage
 from recnetpy.dataclasses.account import Account
 from recnetpy.dataclasses.event import Event
 from recnetpy.dataclasses.room import Room
+from recnetpy.dataclasses.invention import Invention
 
         
 class Send(PaginatorButton):
@@ -40,7 +42,8 @@ class SearchView(discord.ui.View):
         self.results = {
             "Account": [],
             "Room": [],
-            "Event": []
+            "Event": [],
+            "Invention": []
         }
         self.search_type = search_type
         self.embed = None
@@ -86,6 +89,9 @@ class SearchView(discord.ui.View):
             case "Event":
                 await self.fetch_events()
                 
+            case "Invention":
+                await self.fetch_inventions()
+                
         self.update_items()
         self.create_embed()
         
@@ -96,10 +102,14 @@ class SearchView(discord.ui.View):
         accounts = await self.bot.RecNet.accounts.search(self.query)
         
         results = []
-        for ele in accounts:
+        for i, ele in enumerate(accounts, start=1):
+            if len(results) >= self.max_count:
+                results.append(None)
+                continue
+            
             level = await ele.get_level()
             formatted = f"[{ele.display_name}]({profile_url(ele.username)})\n{get_emoji('arrow')} {get_emoji('level')} {level.level} @{ele.username}"
-            item = {"name": ele.username, "formatted": formatted, "dataclass": ele}
+            item = {"name": f"{i}. {ele.username}", "formatted": formatted, "dataclass": ele}
             results.append(item)
         
         self.results["Account"] = results
@@ -111,10 +121,14 @@ class SearchView(discord.ui.View):
         rooms = await self.bot.RecNet.rooms.search(self.query, take=50)
         
         results = []
-        for ele in rooms:
+        for i, ele in enumerate(rooms, start=1):
+            if len(results) >= self.max_count:
+                results.append(None)
+                continue
+            
             creator = await ele.get_creator_account()
             formatted = f"[^{ele.name}]({room_url(ele.name)})\n{get_emoji('arrow')} @{creator.username}"
-            item = {"name": ele.name, "formatted": formatted, "dataclass": ele}
+            item = {"name": f"{i}. {ele.name}", "formatted": formatted, "dataclass": ele}
             results.append(item)
         
         self.results["Room"] = results
@@ -126,15 +140,38 @@ class SearchView(discord.ui.View):
         events = await self.bot.RecNet.events.search(self.query, take=50)
         
         results = []
-        for ele in events:
+        for i, ele in enumerate(events, start=1):
+            if len(results) >= self.max_count:
+                results.append(None)
+                continue
+            
             creator = await ele.get_creator_player()
             room = await ele.get_room(include=0)
             formatted = f"[{ele.name}]({event_url(ele.id)})\n{get_emoji('arrow')} @{creator.username}"
             if room: formatted += f" at ^{room.name}"
-            item = {"name": ele.name, "formatted": formatted, "dataclass": ele}
+            item = {"name": f"{i}. {ele.name}", "formatted": formatted, "dataclass": ele}
             results.append(item)
         
         self.results["Event"] = results
+        
+    
+    async def fetch_inventions(self) -> None:
+        if self.results["Invention"]: return
+        
+        inventions = await self.bot.RecNet.inventions.search(self.query)
+        
+        results = []
+        for i, ele in enumerate(inventions, start=1):
+            if len(results) >= self.max_count:
+                results.append(None)
+                continue
+            
+            creator = await ele.get_creator_player()
+            formatted = f"[{ele.name}]({invention_url(ele.id)})\n{get_emoji('arrow')} {get_emoji('cheer')} {ele.cheer_count} · @{creator.username}"
+            item = {"name": f"{i}. {ele.name}", "formatted": formatted, "dataclass": ele}
+            results.append(item)
+        
+        self.results["Invention"] = results
     
 
     async def refresh(self, interaction: discord.Interaction):
@@ -159,6 +196,10 @@ class DropdownSearch(discord.ui.Select["SearchView"]):
             discord.SelectOption(
                 label="Event",
                 emoji=get_emoji('event')
+            ),
+            discord.SelectOption(
+                label="Invention",
+                emoji=get_emoji('light')
             )
         ]
         super().__init__(
@@ -206,10 +247,7 @@ class DropdownSelection(discord.ui.Select["SearchView"]):
             self.sent.append(item)  # Spam prevention
             
             if isinstance(item, Account):
-                await item.get_bio()
-                await item.get_level()
-                await item.get_subscriber_count()
-                embeds.append(profile_embed(item))
+                embeds.append(await fetch_profile_embed(item))
                 
             elif isinstance(item, Room):
                 room = await item.client.rooms.fetch(item.id, 78)
@@ -217,6 +255,9 @@ class DropdownSelection(discord.ui.Select["SearchView"]):
                 
             elif isinstance(item, Event):
                 embeds.append(event_embed(item))
+                
+            elif isinstance(item, Invention):
+                embeds.append(invention_embed(item))
         
         if not embeds:
             return await interaction.response.send_message("You can't send the same results more than once to prevent spam.", ephemeral=True)
@@ -261,7 +302,7 @@ async def search(
     self,   
     ctx: discord.ApplicationContext,
     query: Option(str, name="query", description="Search term", required=True),
-    search_type: Option(str, choices=["Account", "Room", "Event"], name="type", description="What are you looking for?", required=False, default="Account")
+    search_type: Option(str, choices=["Account", "Room", "Event", "Invention"], name="type", description="What are you looking for?", required=False, default="Account")
 ):
     await ctx.interaction.response.defer(invisible=True)
     
