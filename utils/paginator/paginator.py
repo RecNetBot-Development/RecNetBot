@@ -6,7 +6,8 @@ from resources import get_emoji
 from recnetpy.dataclasses.account import Account
 from recnetpy.dataclasses.room import Room
 from recnetpy.dataclasses.event import Event
-from embeds import event_embed, profile_embed, room_embed
+from recnetpy.dataclasses.invention import Invention
+from embeds import event_embed, fetch_profile_embed, fetch_invention_embed, room_embed
 from typing import List, Optional, Union
 from discord.ext.bridge import BridgeContext
 from discord.ext.commands import Context
@@ -24,10 +25,7 @@ class RNBPage(Page):
         """
     
         if isinstance(self.content, Account):
-            await self.data.get_bio()
-            await self.data.get_level()
-            await self.data.get_subscriber_count()
-            self.embeds = [profile_embed(self.data)]
+            self.embeds = [await fetch_profile_embed(self.data)]
             self.content = None
             
         elif isinstance(self.content, Room):
@@ -37,6 +35,10 @@ class RNBPage(Page):
             
         elif isinstance(self.content, Event):
             self.embeds = [event_embed(self.data)]
+            self.content = None
+            
+        elif isinstance(self.content, Invention):
+            self.embeds = [await fetch_invention_embed(self.data)]
             self.content = None
             
         self.embeds[-1].set_footer(text=f"{self.index}/{self.page_count}")
