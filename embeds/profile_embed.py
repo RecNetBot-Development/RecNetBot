@@ -38,3 +38,15 @@ def profile_embed(account: Account) -> discord.Embed:
         em.set_image(url=img_url(account.banner_image))
     
     return em
+
+
+async def fetch_profile_embed(account: Account) -> discord.Embed:
+    """
+    Fetches the necessary data and returns the embed
+    """
+    
+    await account.get_subscriber_count()
+    await account.get_level()
+    await account.get_bio()
+    
+    return profile_embed(account)

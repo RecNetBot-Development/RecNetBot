@@ -1,7 +1,7 @@
 import discord
 from discord.commands import slash_command, Option
 from utils.converters import FetchAccount
-from embeds import profile_embed
+from embeds import fetch_profile_embed
 from exceptions import ConnectionNotFound
 
 @slash_command(
@@ -20,11 +20,9 @@ async def profile(
         account = await self.bot.cm.get_linked_account(self.bot.RecNet, ctx.author.id)
         if not account: raise ConnectionNotFound
     
-    await account.get_subscriber_count()
-    await account.get_level()
-    await account.get_bio()
+    em = await fetch_profile_embed(account)
     await ctx.respond(
-        embed=profile_embed(account)
+        embed=em
     )
 
         

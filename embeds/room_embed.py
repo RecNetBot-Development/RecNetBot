@@ -109,3 +109,11 @@ def room_embed(room: Room, cached_stats: RoomStats = "None", hide_details: bool 
     if statistics: em.add_field(name="Statistics", value="\n".join(statistics), inline=False)
     
     return em
+
+
+async def fetch_room_embed(room: Room, *args, **kwargs) -> discord.Embed:
+    """
+    Fetches the necessary data and returns the embed
+    """
+    
+    return room_embed(room, *args, **kwargs)
