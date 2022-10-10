@@ -4,7 +4,7 @@ from cogs.miscellaneous.search import SearchView
 
 @slash_command(
     name="event",
-    description="View a Rec Room event's details."
+    description="Search and view a Rec Room event's details."
 )
 async def info(
     self, 
