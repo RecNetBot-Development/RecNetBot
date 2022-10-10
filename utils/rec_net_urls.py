@@ -15,3 +15,6 @@ def room_url(room_name: str) -> str:
 
 def event_url(event_id: int) -> str:
     return f"https://rec.net/event/{event_id}"
+
+def invention_url(invention_id: int) -> str:
+    return f"https://rec.net/invention/{invention_id}"

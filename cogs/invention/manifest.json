@@ -1,0 +1,6 @@
+{
+    "name": "Invention",
+    "icon": "category_invention",
+    "description": "Invention related commands.",
+    "scripts": ["info"]
+}

@@ -80,6 +80,13 @@ class Emoji:
     transgender = "<:transgender:962801321990320238>"
     intersex = "<:intersex:962801322124521633>"
     arrow = "<:arrow:1027953376824135740>"
+    light = "<:light:1029082660217307286> "  # https://www.flaticon.com/free-icons/idea" Idea icons created by Freepik - Flaticon
+    download = "<:download:1029083430056632370>"  # https://www.flaticon.com/free-icons/download Pixel perfect - Flaticon
+    cloud = "<:cloud:1029083952784363530>" #  https://www.flaticon.com/free-icons/cloud" Cloud icons created by Freepik - Flaticon
+    permission = "<:permission:1029084761584578722>"  # https://www.flaticon.com/free-icons/shield" Shield icons created by Freepik - Flaticon
+    ink = "<:ink:1029085539737026681>"  #  https://www.flaticon.com/free-icons/splatter Splatter icons created by Smashicons - Flaticon
+    cv2 = "<:cv2:1029120796880285747>"
+    token = "<:token:1029126503499309068>"
 
 class CategoryIcons:
     category_api = 963878518960291903  # (Api by Larea from NounProject.com)
