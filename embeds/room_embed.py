@@ -67,7 +67,6 @@ def room_embed(room: Room, cached_stats: RoomStats = "None", hide_details: bool 
         if warnings: em.add_field(name="Warnings", value=" ".join(warnings), inline=False)
         if room.custom_warning: em.add_field(name="Custom Warning", value=custom_warning, inline=False)
         if roles: em.add_field(name="Roles", value=roles, inline=False)
-        if statistics: em.add_field(name="Statistics", value="\n".join(statistics), inline=False)
         
         # Voice moderation check
         #if room.voice_moderated: details.insert(-1, f"{get_emoji('toxmod')} Voice Moderation enabled!")
@@ -106,5 +105,7 @@ def room_embed(room: Room, cached_stats: RoomStats = "None", hide_details: bool 
         statistics.append(f"\nYou last checked this room out {unix_timestamp(last_check, 'R')}!")
     elif cached_stats != "None":
         statistics.append(f"\nYou can see the statistical difference the next time you view this room!")
+        
+    if statistics: em.add_field(name="Statistics", value="\n".join(statistics), inline=False)
     
     return em
