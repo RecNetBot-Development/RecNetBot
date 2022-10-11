@@ -1,4 +1,3 @@
-from email.policy import default
 import discord
 from utils.converters import FetchRoom
 from discord.commands import slash_command, Option
