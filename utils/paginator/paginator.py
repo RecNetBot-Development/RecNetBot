@@ -1,7 +1,7 @@
 import discord
 from typing import Optional
 from discord.ext import pages
-from discord.ext.pages import Page, PaginatorButton
+from discord.ext.pages import Page, PaginatorButton, PageGroup
 from resources import get_emoji
 from recnetpy.dataclasses.account import Account
 from recnetpy.dataclasses.room import Room
@@ -14,7 +14,7 @@ from discord.ext.commands import Context
         
 class RNBPage(Page):
     def __init__(self, *args, **kwargs):
-        self.data = args[0]
+        if args: self.data = args[0]
         self.index = kwargs.pop("index", 0)
         self.page_count = kwargs.pop("page_count", 0)
         super().__init__(*args, **kwargs)
@@ -367,3 +367,102 @@ class RNBPaginator(pages.Paginator):
         ]
         for button in default_buttons:
             self.add_button(button)
+            
+            
+    async def update(
+        self,
+        pages: Optional[
+            Union[
+                List[PageGroup],
+                List[Page],
+                List[str],
+                List[Union[List[discord.Embed], discord.Embed]],
+            ]
+        ] = None,
+        show_disabled: Optional[bool] = None,
+        show_indicator: Optional[bool] = None,
+        show_menu: Optional[bool] = None,
+        author_check: Optional[bool] = None,
+        menu_placeholder: Optional[str] = None,
+        disable_on_timeout: Optional[bool] = None,
+        use_default_buttons: Optional[bool] = None,
+        default_button_row: Optional[int] = None,
+        loop_pages: Optional[bool] = None,
+        custom_view: Optional[discord.ui.View] = None,
+        timeout: Optional[float] = None,
+        custom_buttons: Optional[List[PaginatorButton]] = None,
+        trigger_on_display: Optional[bool] = None,
+        interaction: Optional[discord.Interaction] = None,
+    ):
+
+        # Update pages and reset current_page to 0 (default)
+        self.pages: Union[
+            List[PageGroup],
+            List[str],
+            List[Page],
+            List[Union[List[discord.Embed], discord.Embed]],
+        ] = (
+            pages if pages is not None else self.pages
+        )
+        self.show_menu = show_menu if show_menu is not None else self.show_menu
+        if pages is not None and all(isinstance(pg, PageGroup) for pg in pages):
+            self.page_groups = self.pages if self.show_menu else None
+            if sum(pg.default is True for pg in self.page_groups) > 1:
+                raise ValueError("Only one PageGroup can be set as the default.")
+            for pg in self.page_groups:
+                if pg.default:
+                    self.default_page_group = self.page_groups.index(pg)
+                    break
+            self.pages: List[Page] = self.get_page_group_content(
+                self.page_groups[self.default_page_group]
+            )
+        self.page_count = max(len(self.pages) - 1, 0)
+        
+        # For indicator
+        for i, page in enumerate(self.pages, start=1):
+            page.index, page.page_count = i, self.page_count + 1
+        
+        self.current_page = 0
+        # Apply config changes, if specified
+        self.show_disabled = (
+            show_disabled if show_disabled is not None else self.show_disabled
+        )
+        self.show_indicator = (
+            show_indicator if show_indicator is not None else self.show_indicator
+        )
+        self.usercheck = author_check if author_check is not None else self.usercheck
+        self.menu_placeholder = (
+            menu_placeholder if menu_placeholder is not None else self.menu_placeholder
+        )
+        self.disable_on_timeout = (
+            disable_on_timeout
+            if disable_on_timeout is not None
+            else self.disable_on_timeout
+        )
+        self.use_default_buttons = (
+            use_default_buttons
+            if use_default_buttons is not None
+            else self.use_default_buttons
+        )
+        self.default_button_row = (
+            default_button_row
+            if default_button_row is not None
+            else self.default_button_row
+        )
+        self.loop_pages = loop_pages if loop_pages is not None else self.loop_pages
+        self.custom_view: discord.ui.View = None if custom_view is None else custom_view
+        self.timeout: float = timeout if timeout is not None else self.timeout
+        self.trigger_on_display = (
+            trigger_on_display
+            if trigger_on_display is not None
+            else self.trigger_on_display
+        )
+        if custom_buttons and not self.use_default_buttons:
+            self.buttons = {}
+            for button in custom_buttons:
+                self.add_button(button)
+        else:
+            self.buttons = {}
+            self.add_default_buttons()
+
+        await self.goto_page(self.current_page, interaction=interaction)

@@ -4,6 +4,8 @@ from discord.commands import slash_command
 from embeds import get_default_embed
 from resources import get_emoji
 from typing import List
+from utils import chunks
+from utils.paginator import RNBPaginator, RNBPage
 
 
 class HelpView(discord.ui.View):
@@ -13,7 +15,8 @@ class HelpView(discord.ui.View):
         self.ctx = context
         self.cogs = list(filter(lambda ele: ele.get_commands(), self.bot.cogs.values()))  # Only include cogs with commands
         self.commands = []
-        self.embed = None
+        self.embeds = []
+        self.paginator = None
         
         self.add_item(Dropdown(self))
         
@@ -23,10 +26,10 @@ class HelpView(discord.ui.View):
         """
         
         self.register_selections(self.cogs)
-        return self.embed
+        return self.embeds
         
         
-    def register_selections(self, selections: List[commands.Cog]):
+    def register_selections(self, selections: List[List[commands.Cog]]):
         """
         Takes in selected cogs and creates the command list
         """
@@ -34,35 +37,42 @@ class HelpView(discord.ui.View):
         self.commands = []
         
         # List all commands from commands to a single list
+        commands = []
         for cog in selections:
             for cmd in cog.walk_commands():
                 if not isinstance(cmd, discord.SlashCommand): continue  # Only allow slash commands for now
-                self.commands.append(cmd)
+                commands.append(cmd)
                 
         # Sort in alphabetical order
-        self.commands.sort(key=lambda cmd: cmd.name)
+        commands.sort(key=lambda cmd: cmd.name)
         
-        self.embed = self.create_embed()
+        # Make pages of n commands
+        self.commands = chunks(commands, 8)
+        self.embeds = self.create_embeds()
         
         
-    def create_embed(self) -> discord.Embed:
+    def create_embeds(self) -> discord.Embed:
         """
-        Creates a help page embed
+        Creates help page embeds
         """
         
-        em = get_default_embed()
-        pieces = []
-        
-        for cmd in self.commands:
-            pieces.append(f"{cmd.mention}\n{get_emoji('arrow')} {cmd.description}")
+        embeds = []
+        for page in self.commands:
+            pieces = []
+            em = get_default_embed()
+            for cmd in page:
+                pieces.append(f"{cmd.mention}\n{get_emoji('arrow')} {cmd.description}")
             
-        em.description = "\n".join(pieces)
+            em.description = "\n".join(pieces)
+            embeds.append(RNBPage(embeds=[em]))
         
-        return em
+        return embeds
         
         
     async def refresh(self, interaction: discord.Interaction):
-        await interaction.response.edit_message(embed=self.embed, view=self)
+        #await interaction.response.edit_message(embed=self.embed, view=self)
+        await interaction.response.defer(invisible=True)
+        await self.paginator.update(pages=self.embeds, custom_view=self)
         
         
 class Dropdown(discord.ui.Select):
@@ -113,5 +123,7 @@ class Dropdown(discord.ui.Select):
 )
 async def help(self, ctx: discord.ApplicationContext):
     view = HelpView(self.bot, context=ctx)
-    em = view.initialize()
-    await ctx.respond(view=view, embed=em)
+    embeds = view.initialize()
+    paginator = RNBPaginator(pages=embeds, custom_view=view, show_indicator=False, show_disabled=False, trigger_on_display=True)
+    view.paginator = paginator
+    await paginator.respond(ctx.interaction)

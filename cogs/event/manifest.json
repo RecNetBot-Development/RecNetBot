@@ -1,6 +1,6 @@
 {
     "name": "Event",
     "description": "Event related commands.",
-    "icon": "event",
+    "icon": "category_event",
     "scripts": ["info"]
 }
