@@ -8,6 +8,7 @@ from discord.ext import commands
 from recnetpy import Client
 from modules import CogManager
 from database import ConnectionManager, RoomCacheManager, InventionCacheManager
+from googleapiclient import discovery
 
 class RecNetBot(commands.Bot):
     def __init__(self, production: bool):
@@ -30,6 +31,13 @@ class RecNetBot(commands.Bot):
         # Add Modules
         self.RecNet = None
         self.cog_manager = CogManager(self)
+        self.perspective = discovery.build(
+            "commentanalyzer",
+            "v1alpha1",
+            developerKey=self.config.get("perspective_api_key"),
+            discoveryServiceUrl="https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1",
+            static_discovery=False,
+        )
 
         # Verify post for RR account links
         self.verify_post = None
