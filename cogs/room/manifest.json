@@ -2,5 +2,9 @@
     "name": "Room",
     "icon": "category_room",
     "description": "Room related commands.",
-    "scripts": ["info"]
+    "scripts": [
+        "info",
+        "get_showcased_rooms",
+        "showcased"
+    ]
 }
