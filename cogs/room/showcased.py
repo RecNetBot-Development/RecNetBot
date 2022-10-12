@@ -5,7 +5,7 @@ from discord.ext import commands
 from embeds import get_default_embed, room_embed
 from discord.ext.pages import PaginatorButton
 from resources import get_emoji
-from utils import profile_url, room_url, sanitize_text
+from utils import profile_url, room_url, sanitize_text, img_url
 from utils.paginator import RNBPaginator, RNBPage
 from recnetpy.dataclasses.room import Room
 from recnetpy.dataclasses.account import Account
@@ -61,6 +61,7 @@ class ShowcaseView(discord.ui.View):
         em = get_default_embed()
         em.title = f"{self.account.display_name}'s Showcased Rooms"
         em.url = profile_url(self.account.username)
+        em.set_thumbnail(url=img_url(self.account.profile_image, crop_square=True))
         formatted = map(lambda ele: ele["formatted"], self.showcased)
         em.description = sanitize_text("\n".join(formatted))
         return em
@@ -69,7 +70,6 @@ class ShowcaseView(discord.ui.View):
     async def register_rooms(self, rooms: List[Room]) -> List[dict]:
         results = []
         for i, ele in enumerate(rooms, start=1):
-            creator = await ele.get_creator_player()
             formatted = f"[^{ele.name}]({room_url(ele.name)})\n{get_emoji('arrow')} {get_emoji('cheer')} {ele.cheer_count}"
             item = {"name": f"{i}. {ele.name}", "formatted": formatted, "dataclass": ele}
             results.append(item)
@@ -108,7 +108,11 @@ class DropdownSelection(discord.ui.Select["ShowcaseView"]):
             self.sent.append(item)  # Spam prevention
             
             room = await item.client.rooms.fetch(item.id, 78)
-            embeds.append(room_embed(room))
+            
+            cached_stats = self.bot.rcm.get_cached_stats(interaction.user.id, room.id)
+            self.bot.rcm.cache_stats(interaction.user.id, room.id, room)
+            
+            embeds.append(room_embed(room, cached_stats))
         
         if not embeds:
             return await interaction.response.send_message("You can't send the same results more than once to prevent spam.", ephemeral=True)
