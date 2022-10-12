@@ -104,7 +104,7 @@ class SearchView(discord.ui.View):
         results = []
         for i, ele in enumerate(accounts, start=1):
             if len(results) >= self.max_count:
-                results.append(None)
+                results.append({"dataclass": ele})
                 continue
             
             level = await ele.get_level()
@@ -123,10 +123,10 @@ class SearchView(discord.ui.View):
         results = []
         for i, ele in enumerate(rooms, start=1):
             if len(results) >= self.max_count:
-                results.append(None)
+                results.append({"dataclass": ele})
                 continue
             
-            creator = await ele.get_creator_account()
+            creator = await ele.get_creator_player()
             formatted = f"[^{ele.name}]({room_url(ele.name)})\n{get_emoji('arrow')} @{creator.username}"
             item = {"name": f"{i}. {ele.name}", "formatted": formatted, "dataclass": ele}
             results.append(item)
@@ -142,7 +142,7 @@ class SearchView(discord.ui.View):
         results = []
         for i, ele in enumerate(events, start=1):
             if len(results) >= self.max_count:
-                results.append(None)
+                results.append({"dataclass": ele})
                 continue
             
             creator = await ele.get_creator_player()
@@ -163,7 +163,7 @@ class SearchView(discord.ui.View):
         results = []
         for i, ele in enumerate(inventions, start=1):
             if len(results) >= self.max_count:
-                results.append(None)
+                results.append({"dataclass": ele})
                 continue
             
             creator = await ele.get_creator_player()
@@ -251,13 +251,20 @@ class DropdownSelection(discord.ui.Select["SearchView"]):
                 
             elif isinstance(item, Room):
                 room = await item.client.rooms.fetch(item.id, 78)
-                embeds.append(room_embed(room))
+                
+                cached_stats = self.bot.rcm.get_cached_stats(interaction.user.id, room.id)
+                self.bot.rcm.cache_stats(interaction.user.id, room.id, room)
+                
+                embeds.append(room_embed(room, cached_stats))
                 
             elif isinstance(item, Event):
                 embeds.append(event_embed(item))
                 
             elif isinstance(item, Invention):
-                embeds.append(invention_embed(item))
+                cached_stats = self.bot.icm.get_cached_stats(interaction.user.id, item.id)
+                self.bot.icm.cache_stats(interaction.user.id, item.id, item)
+                
+                embeds.append(invention_embed(item, cached_stats))
         
         if not embeds:
             return await interaction.response.send_message("You can't send the same results more than once to prevent spam.", ephemeral=True)
