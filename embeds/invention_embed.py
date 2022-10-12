@@ -38,9 +38,9 @@ def invention_embed(invention: Invention, cached_stats: InventionStats = "None")
         last_check = cached_stats.cached_timestamp
     
     statistics = [
-        f"{get_emoji('download')} `{invention.num_downloads:,}`{f' *(+{downloads_dif})*' if downloads_dif else ''} — Downloads",
-        f"{get_emoji('room')} `{invention.num_players_have_used_in_room:,}`{f' *(+{used_in_room_dif})*' if used_in_room_dif else ''} — Used In Rooms",
-        f"{get_emoji('cheer')} `{invention.cheer_count:,}`{f' *(+{cheer_dif})*' if cheer_dif else ''} — Cheers",
+        f"{get_emoji('download')} `{invention.num_downloads:,}`{f' *(+{downloads_dif:,})*' if downloads_dif else ''} — Downloads",
+        f"{get_emoji('room')} `{invention.num_players_have_used_in_room:,}`{f' *(+{used_in_room_dif:,})*' if used_in_room_dif else ''} — Used In Rooms",
+        f"{get_emoji('cheer')} `{invention.cheer_count:,}`{f' *(+{cheer_dif:,})*' if cheer_dif else ''} — Cheers",
     ]
     
     if last_check:

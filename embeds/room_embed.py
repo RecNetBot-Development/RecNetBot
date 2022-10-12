@@ -93,10 +93,10 @@ def room_embed(room: Room, cached_stats: RoomStats = "None", hide_details: bool 
         last_check = cached_stats.cached_timestamp
     
     statistics = [
-        f"{get_emoji('cheer')} `{room.cheer_count:,}`{f' *(+{cheer_dif})*' if cheer_dif else ''} — Cheers",
-        f"{get_emoji('favorite')} `{room.favorite_count:,}`{f' *(+{favorite_dif})*' if favorite_dif else ''} — Favorites",
-        f"{get_emoji('visitors')} `{room.visitor_count:,}`{f' *(+{visitor_dif})*' if visitor_dif else ''} — Visitors",
-        f"{get_emoji('visitor')} `{room.visit_count:,}`{f' *(+{visit_dif})*' if visit_dif else ''} — Visits",
+        f"{get_emoji('cheer')} `{room.cheer_count:,}`{f' *(+{cheer_dif:,})*' if cheer_dif else ''} — Cheers",
+        f"{get_emoji('favorite')} `{room.favorite_count:,}`{f' *(+{favorite_dif:,})*' if favorite_dif else ''} — Favorites",
+        f"{get_emoji('visitors')} `{room.visitor_count:,}`{f' *(+{visitor_dif:,})*' if visitor_dif else ''} — Visitors",
+        f"{get_emoji('visitor')} `{room.visit_count:,}`{f' *(+{visit_dif:,})*' if visit_dif else ''} — Visits",
         #f"{get_emoji('hot')} `#{placement if placement else '>1,000'}` — Hot Placement",
         f"{get_emoji('engagement')} `{score}%` — Engagement"
     ]
