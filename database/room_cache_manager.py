@@ -52,15 +52,9 @@ class RoomCacheManager():
         stats = self.create_stats_dataclass(room)
         
         with self.conn:
-            self.c.execute(f"""INSERT OR IGNORE INTO room_cache VALUES (:discord_id, :room_id, :room_stats)""", 
+            self.c.execute(f"""REPLACE INTO room_cache VALUES (:discord_id, :room_id, :room_stats)
+                           """, 
                            {"discord_id": discord_id, "room_id": room_id, "room_stats": stats})
-            
-    def update_cached_stats(self, discord_id: int, room_id: int, room: Room):
-        stats = self.create_stats_dataclass(room)
-        
-        with self.conn:
-            self.c.execute(f"""UPDATE room_cache SET room_stats = :room_stats WHERE discord_id = :discord_id AND room_id = :room_id""", 
-                           {"room_stats": stats, "discord_id": discord_id, "room_id": room_id})
             
     def delete_cached_stats(self, discord_id: int):
         with self.conn:

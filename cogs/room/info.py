@@ -15,12 +15,8 @@ async def info(
 ):
     await ctx.interaction.response.defer()
     
-    # Get and cache stats
     cached_stats = self.bot.rcm.get_cached_stats(ctx.author.id, room.id)
-    if cached_stats:
-        self.bot.rcm.update_cached_stats(ctx.author.id, room.id, room)
-    else:
-        self.bot.rcm.cache_stats(ctx.author.id, room.id, room)
+    self.bot.rcm.cache_stats(ctx.author.id, room.id, room)
 
     await ctx.respond(embed=room_embed(room, cached_stats, only_stats))
 

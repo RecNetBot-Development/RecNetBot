@@ -17,10 +17,7 @@ async def info(
     #view = SearchView(self.bot, invention, "Invention", lock=True)
     #em = await view.initialize()
     cached_stats = self.bot.icm.get_cached_stats(ctx.author.id, invention.id)
-    if cached_stats:
-        self.bot.icm.update_cached_stats(ctx.author.id, invention.id, invention)
-    else:
-        self.bot.icm.cache_stats(ctx.author.id, invention.id, invention)
+    self.bot.icm.cache_stats(ctx.author.id, invention.id, invention)
         
     em = await fetch_invention_embed(invention, cached_stats)
         

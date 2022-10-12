@@ -51,15 +51,8 @@ class InventionCacheManager():
         stats = self.create_stats_dataclass(invention)
         
         with self.conn:
-            self.c.execute(f"""INSERT OR IGNORE INTO invention_cache VALUES (:discord_id, :invention_id, :invention_stats)""", 
+            self.c.execute(f"""REPLACE INTO invention_cache VALUES (:discord_id, :invention_id, :invention_stats)""", 
                            {"discord_id": discord_id, "invention_id": invention_id, "invention_stats": stats})
-            
-    def update_cached_stats(self, discord_id: int, invention_id: int, invention: Invention):
-        stats = self.create_stats_dataclass(invention)
-        
-        with self.conn:
-            self.c.execute(f"""UPDATE invention_cache SET invention_stats = :invention_stats WHERE discord_id = :discord_id AND invention_id = :invention_id""", 
-                           {"invention_stats": stats, "discord_id": discord_id, "invention_id": invention_id})
             
     def delete_cached_stats(self, discord_id: int):
         with self.conn:
