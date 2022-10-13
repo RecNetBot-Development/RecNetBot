@@ -3,6 +3,7 @@ from embeds import get_default_embed
 from utils import img_url, profile_url, room_url, unix_timestamp
 from resources import get_emoji
 from recnetpy.dataclasses.event import Event
+from utils.rec_net_urls import event_url
 
 
 def event_embed(event: Event) -> discord.Embed:
@@ -12,6 +13,7 @@ def event_embed(event: Event) -> discord.Embed:
     
     em = get_default_embed()
     em.title = event.name
+    em.url = event_url(event.id)
     em.description = f"```{event.description if event.description else 'This event does not have a description!'}```"
     
     is_room_private = not bool(event.room)

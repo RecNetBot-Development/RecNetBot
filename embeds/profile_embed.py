@@ -5,6 +5,8 @@ from utils.formatters import format_platforms, format_identities, format_pronoun
 from embeds import get_default_embed
 from recnetpy.dataclasses.account import Account
 
+from utils.rec_net_urls import profile_url
+
 def profile_embed(account: Account) -> discord.Embed:
     """
     Generates a neat embed that overhauls a RR profile
@@ -30,6 +32,7 @@ def profile_embed(account: Account) -> discord.Embed:
     em.description = "\n".join(filter(lambda ele: ele, info))
     
     em.title = account.display_name
+    em.url = profile_url(account.username)
     em.set_thumbnail(
         url=img_url(account.profile_image, crop_square=True)
     )
