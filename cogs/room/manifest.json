@@ -5,6 +5,7 @@
     "scripts": [
         "info",
         "get_showcased_rooms",
-        "showcased"
+        "showcased",
+        "placement"
     ]
 }
