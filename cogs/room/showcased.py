@@ -158,8 +158,9 @@ async def showcased(
     ctx: ApplicationContext, 
     account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False)
 ):
-    account = await self.bot.cm.get_linked_account(self.bot.RecNet, ctx.author.id)
-    if not account: raise ConnectionNotFound
+    if not account:  # Check for a linked RR account
+        account = await self.bot.cm.get_linked_account(self.bot.RecNet, ctx.author.id)
+        if not account: raise ConnectionNotFound
     
     showcased = await account.get_showcased_rooms()
     if not showcased:
