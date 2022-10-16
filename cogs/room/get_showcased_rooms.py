@@ -5,7 +5,7 @@ from exceptions import ConnectionNotFound
 
 @user_command(name="Showcased Rooms")
 async def get_showcased_rooms(self, ctx: ApplicationContext, member: discord.Member):
-    account = await self.bot.cm.get_linked_account(self.bot.RecNet, ctx.author.id)
+    account = await self.bot.cm.get_linked_account(self.bot.RecNet, member.id)
     if not account: raise ConnectionNotFound
     
     # Run the showcased command with the RR username
