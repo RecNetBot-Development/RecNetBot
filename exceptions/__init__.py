@@ -4,3 +4,4 @@ from .ConnectionNotFound import ConnectionNotFound
 from .ConnectionAlreadyDone import ConnectionAlreadyDone
 from .EventNotFound import EventNotFound
 from .InventionNotFound import InventionNotFound
+from .ImageNotFound import ImageNotFound
