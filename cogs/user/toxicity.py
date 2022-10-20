@@ -24,9 +24,11 @@ async def cringe(
     user = await self.bot.rec_net.account(name=username, includes=["bio"])
     if not user: raise AccountNotFound(username)
 
+    bio = bio.replace("\r", "")
+
     # Get toxicity rating
     analyze_request = {
-        'comment': { 'text': user.bio if user.bio else 'User has not written a bio!'},
+        'comment': { 'text': bio if bio else 'User has not written a bio!'},
         'requestedAttributes': {
             'TOXICITY': {},
             'SEVERE_TOXICITY': {},
@@ -40,7 +42,7 @@ async def cringe(
     try:
         response = self.bot.discovery.comments().analyze(body=analyze_request).execute()
     except HttpError:
-        raise InvalidBioForPerspective(username, user.bio)
+        raise InvalidBioForPerspective(username, bio)
         
     results_raw, results = response["attributeScores"], []
     
