@@ -13,7 +13,7 @@ cfg = load_cfg()
 async def info(
     self,
     ctx,
-    event_id: Option(int, "Enter the event's id", required=True)
+    event_id: Option(str, "Enter the event's id", required=True)
 ):
     await ctx.interaction.response.defer()
 
