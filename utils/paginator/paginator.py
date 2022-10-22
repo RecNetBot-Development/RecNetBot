@@ -18,7 +18,10 @@ class RNBPage(Page):
         if args: self.data = args[0]
         self.index = kwargs.pop("index", 0)
         self.page_count = kwargs.pop("page_count", 0)
+        self.constant_embed = kwargs.pop("constant_embed", None)
+        self.constant_content = kwargs.pop("constant_content", None)
         super().__init__(*args, **kwargs)
+    
 
     async def callback(self, interaction: Optional[discord.Interaction] = None):
         """
@@ -46,7 +49,10 @@ class RNBPage(Page):
             self.embeds = [await fetch_image_embed(self.data)]
             self.content = None
             
-        self.embeds[-1].set_footer(text=f"{self.index}/{self.page_count}")
+        if self.constant_embed and self.constant_embed not in self.embeds:
+            self.embeds.insert(0, self.constant_embed)
+            
+        self.embeds[-1].set_footer(text=f"{self.index:,}/{self.page_count:,}")
 
 
 class RNBPaginator(pages.Paginator):
