@@ -25,12 +25,12 @@ def event_embed(event: Event) -> discord.Embed:
     info_field = [
         f"{get_emoji('room')} In Room {room_link}",
         f"{get_emoji('visitors')} Attendees `{event.attendee_count}`",
-        f"{get_emoji('date')} {unix_timestamp(event.start_time, 'R')} (Starts) - {unix_timestamp(event.end_time, 'R')} (Ends)"
+        f"{get_emoji('date')} Starts {unix_timestamp(event.start_time, 'R')} - Ends {unix_timestamp(event.end_time, 'R')}"
     ]
     em.add_field(name="Info", value="\n".join(info_field), inline=False)
     
     broadcast_field = [
-        f"{get_emoji('correct') if event.is_multi_instance else get_emoji('incorrect')} Multi Instance"
+        f"{get_emoji('correct') if event.is_multi_instance else get_emoji('incorrect')} Multi Instance",
         f"{get_emoji('correct') if event.support_multi_instance_room_chat else get_emoji('incorrect')} Live Chat"
     ]
     em.add_field(name="Broadcasting", value="\n".join(broadcast_field), inline=False)
