@@ -7,7 +7,7 @@ from recnetpy.dataclasses.account import Account
 from recnetpy.dataclasses.room import Room
 from recnetpy.dataclasses.event import Event
 from recnetpy.dataclasses.invention import Invention
-from embeds import event_embed, fetch_profile_embed, fetch_invention_embed, room_embed, fetch_image_embed
+from embeds import event_embed, fetch_profile_embed, fetch_invention_embed, room_embed, fetch_image_embed, fetch_event_embed
 from recnetpy.dataclasses.image import Image
 from typing import List, Optional, Union
 from discord.ext.bridge import BridgeContext
@@ -37,7 +37,7 @@ class RNBPage(Page):
             self.content = None
             
         elif isinstance(self.content, Event):
-            self.embeds.append(event_embed(self.data))
+            self.embeds.append(await fetch_event_embed(self.data))
             self.content = None
             
         elif isinstance(self.content, Invention):

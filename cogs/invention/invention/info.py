@@ -4,18 +4,16 @@ from utils.converters import FetchInvention
 from embeds import fetch_invention_embed
 
 @slash_command(
-    name="invention",
-    description="Search and view a Rec Room invention's details and statistics."
+    name="info",
+    description="View a Rec Room invention's details and statistics."
 )
 async def info(
     self, 
     ctx: discord.ApplicationContext, 
-    invention: Option(FetchInvention, name="name", description="Enter RR invention name", required=True)
+    invention: Option(FetchInvention, name="name", description="Enter a RecNet link or id", required=True)
 ):
     await ctx.interaction.response.defer()
 
-    #view = SearchView(self.bot, invention, "Invention", lock=True)
-    #em = await view.initialize()
     cached_stats = self.bot.icm.get_cached_stats(ctx.author.id, invention.id)
     self.bot.icm.cache_stats(ctx.author.id, invention.id, invention)
         
