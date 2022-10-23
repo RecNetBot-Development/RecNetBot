@@ -20,6 +20,7 @@ class Cog(commands.Cog):
         self.__modules = ModuleCollector()
         self.__cog_name__ = name
         self.__cog_commands__ = []
+        self.__cog_groups__ = []
         #self.__command_group = SlashCommandGroup(name=self.__cog_name__, description="No description provided!", debug_guilds=cfg['test_guild_ids'])
         self.__manifest = self.__getManifest
         self.__categorize_commands = False
@@ -44,22 +45,46 @@ class Cog(commands.Cog):
         
 
     def buildCog(self):
+        # Add standalone commands
         scripts = self.__manifest.get('scripts', None)
-        if not scripts: return self.debugPrint("No scripts, skipping...")
-            
-        for script in scripts:
-            self.__modules.add(f"cogs.{self.__cog_name__}.{script}")
-            lib = self.__modules.get(f"cogs.{self.__cog_name__}.{script}")
-            for attr in dir(lib):
-                if isinstance(getattr(lib, attr), ApplicationCommand):
+        if scripts:
+            for script in scripts:
+                path = f"cogs.{self.__cog_name__}.{script}"
+                self.__modules.add(path)
+                lib = self.__modules.get(path)
+                for attr in dir(lib):
                     mod = getattr(lib, attr)
-                    """
-                    add_application_command() only accepts SlashCommand or SlashCommandGroup
-                    it doesn't accept subcommands (not mod.is_subcommand)
-                    nor does it accept subcommand groups (not mod.parent (checks if the group has a parent group))
-                    """
-                    if isinstance(mod, SlashCommand) and not mod.is_subcommand or isinstance(mod, SlashCommandGroup) and not mod.parent or isinstance(mod, UserCommand):
-                        self.addCommand(mod)
+                    if isinstance(mod, ApplicationCommand):
+                        """
+                        add_application_command() only accepts SlashCommand or SlashCommandGroup
+                        it doesn't accept subcommands (not mod.is_subcommand)
+                        nor does it accept subcommand groups (not mod.parent (checks if the group has a parent group))
+                        """
+                        if isinstance(mod, SlashCommand) and not mod.is_subcommand or isinstance(mod, SlashCommandGroup) and not mod.parent or isinstance(mod, UserCommand):
+                            self.addCommand(mod)
+        
+        # Add command groups
+        groups = self.__manifest.get('groups', None)
+        if groups:
+            for name, scripts in groups.items():
+                command_group = SlashCommandGroup(name=name, debug_guilds=self.bot.config.get("debug_guilds"))
+                
+                for script in scripts:
+                    path = f"cogs.{self.__cog_name__}.{name}.{script}"
+                    self.__modules.add(path)
+                    lib = self.__modules.get(path)
+                    for attr in dir(lib):
+                        mod = getattr(lib, attr)
+                        if isinstance(mod, ApplicationCommand):
+                            """
+                            add_application_command() only accepts SlashCommand or SlashCommandGroup
+                            it doesn't accept subcommands (not mod.is_subcommand)
+                            nor does it accept subcommand groups (not mod.parent (checks if the group has a parent group))
+                            """
+                            if isinstance(mod, SlashCommand) and not mod.is_subcommand or isinstance(mod, SlashCommandGroup) and not mod.parent or isinstance(mod, UserCommand):
+                                command_group = self.appendCommandToGroup(mod, command_group)
+                                
+                self.__cog_commands__.append(command_group)
                         
         self.initializeCog()
         
@@ -70,18 +95,22 @@ class Cog(commands.Cog):
         self.__cog_name__ = self.__manifest['name']
         self.__cog_description__ = self.__manifest.get('description', "No description provided!")
         self.__cog_icon__ = self.__manifest.get('icon', None)
-        if self.__categorize_commands: self.__cog_commands__.append(self.__command_group)
+
+    def appendCommandToGroup(self, command, group):
+        self.debugPrint(f"Adding command '{command.name}' to group '{group.name}'...")
+        
+        command.cog = self
+        patched_command = command._update_copy(self.__cog_settings__)
+        patched_command.parent = group
+        group.subcommands.append(patched_command)
+        
+        return group
 
     def addCommand(self, command):
         self.debugPrint(f"Adding command '{command.name}'...")
         
         command.cog = self
-        patched_command = command._update_copy(self.__cog_settings__)
-        if self.__categorize_commands:
-            patched_command.parent = self.__command_group
-            self.__command_group.subcommands.append(patched_command)
-        else:
-            self.__cog_commands__.append(command)
+        self.__cog_commands__.append(command)
             
         
     async def cog_command_error(self, ctx: discord.ApplicationContext, exception: ApplicationCommandError):
