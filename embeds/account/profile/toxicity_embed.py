@@ -6,11 +6,10 @@ def toxicity_embed(user, toxicity_ratings):
     em = profile_header(user, Embed())
     
     em.title = f"{user.display_name}'s toxicity"
-    bio = user.bio.replace('\r', '')
-    em.description = f"```{bio}```" if bio else "User hasn't written a bio!"
+    em.description = f"```{user.bio}```" if user.bio else "User hasn't written a bio!"
 
     # Don't include toxicity if no bio
-    if not bio: return em
+    if not user.bio: return em
     
     conclusion = ""
     for type, value in toxicity_ratings:
