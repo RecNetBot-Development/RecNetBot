@@ -2,7 +2,7 @@ import discord
 from discord import ApplicationContext
 from discord.commands import slash_command, Option
 from exceptions import AccountNotFound, ConnectionAlreadyDone
-from embeds import get_default_embed, profile_embed
+from embeds import get_default_embed, fetch_profile_embed
 from utils import post_url, profile_url
 
 # For prompting the user whether or not to link the account
@@ -57,11 +57,8 @@ async def set_rr_profile(
     check_discord = self.bot.cm.get_discord_connection(ctx.author.id)
     if check_discord:
         user = await self.bot.RecNet.accounts.fetch(check_discord.rr_id)
-        await user.get_bio()
-        await user.get_subscriber_count()
-        await user.get_level()
         
-        profile_em = profile_embed(user)
+        profile_em = await fetch_profile_embed(user)
         prompt_em = get_default_embed()
         prompt_em.description = "Are you sure you want to unlink your current Rec Room account?"
         view = Confirm()
@@ -93,10 +90,7 @@ async def set_rr_profile(
     if check_rr: raise ConnectionAlreadyDone
     
     # Prompt the user
-    await user.get_bio()
-    await user.get_subscriber_count()
-    await user.get_level()
-    profile_em = profile_embed(user)
+    profile_em = await fetch_profile_embed(user)
     prompt_em = get_default_embed()
     prompt_em.description = '\n'.join([
         f"Are you sure you want to link [@{user.username}]({profile_url(user.username)}) to your Discord?",
