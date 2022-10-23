@@ -18,8 +18,7 @@ class RNBPage(Page):
         if args: self.data = args[0]
         self.index = kwargs.pop("index", 0)
         self.page_count = kwargs.pop("page_count", 0)
-        self.constant_embed = kwargs.pop("constant_embed", None)
-        self.constant_content = kwargs.pop("constant_content", None)
+        
         super().__init__(*args, **kwargs)
     
 
@@ -29,34 +28,33 @@ class RNBPage(Page):
         """
     
         if isinstance(self.content, Account):
-            self.embeds = [await fetch_profile_embed(self.data)]
+            self.embeds.append(await fetch_profile_embed(self.data))
             self.content = None
             
         elif isinstance(self.content, Room):
             room = await self.data.client.rooms.fetch(self.data.id, 78)
-            self.embeds = [room_embed(room)]
+            self.embeds.append(room_embed(room))
             self.content = None
             
         elif isinstance(self.content, Event):
-            self.embeds = [event_embed(self.data)]
+            self.embeds.append(event_embed(self.data))
             self.content = None
             
         elif isinstance(self.content, Invention):
-            self.embeds = [await fetch_invention_embed(self.data)]
+            self.embeds.append(await fetch_invention_embed(self.data))
             self.content = None
             
         elif isinstance(self.content, Image):
-            self.embeds = [await fetch_image_embed(self.data)]
+            self.embeds.append(await fetch_image_embed(self.data))
             self.content = None
-            
-        if self.constant_embed and self.constant_embed not in self.embeds:
-            self.embeds.insert(0, self.constant_embed)
             
         self.embeds[-1].set_footer(text=f"{self.index:,}/{self.page_count:,}")
 
 
 class RNBPaginator(pages.Paginator):
     def __init__(self, *args, **kwargs):
+        self.constant_embed = kwargs.pop("constant_embed", None)
+        
         super().__init__(*args, **kwargs)
         
         # For indicator
@@ -312,30 +310,38 @@ class RNBPaginator(pages.Paginator):
 
     
     
-    @staticmethod
+    #@staticmethod
     def get_page_content(
+        self,
         page: Union[Page, str, discord.Embed, List[discord.Embed]]
     ) -> Page:
         """Converts a page into a :class:`Page` object based on its content."""
+        return_page = None
+        
         if isinstance(page, Page):
-            return page
+            return_page = page
         elif isinstance(page, str):
-            return Page(content=page, embeds=[], files=[])
+            return_page = Page(content=page, embeds=[], files=[])
         elif isinstance(page, discord.Embed):
-            return Page(content=None, embeds=[page], files=[])
+            return_page = Page(content=None, embeds=[page], files=[])
         elif isinstance(page, discord.File):
-            return Page(content=None, embeds=[], files=[page])
+            return_page = Page(content=None, embeds=[], files=[page])
         elif isinstance(page, List):
             if all(isinstance(x, discord.Embed) for x in page):
-                return Page(content=None, embeds=page, files=[])
+                return_page = Page(content=None, embeds=page, files=[])
             if all(isinstance(x, discord.File) for x in page):
-                return Page(content=None, embeds=[], files=page)
+                return_page = Page(content=None, embeds=[], files=page)
             else:
                 raise TypeError("All list items must be embeds or files.")
         else:
             raise TypeError(
                 "Page content must be a Page object, string, an embed, a list of embeds, a file, or a list of files."
             )
+            
+        if self.constant_embed:
+            return_page.embeds.insert(0, self.constant_embed)
+            return return_page
+        return return_page
             
             
     def add_default_buttons(self):

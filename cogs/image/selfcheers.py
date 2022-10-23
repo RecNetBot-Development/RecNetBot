@@ -59,8 +59,8 @@ async def selfcheers(
             percentage = "less than 1"
         em.description = f"**{len(self_cheered_images):,}**, that's **{percentage}%** of their posts! How unpure."
         
-        pages = list(map(lambda ele: RNBPage(ele, constant_embed=em), self_cheered_images))
-        paginator = RNBPaginator(pages=pages, trigger_on_display=True, show_indicator=False, author_check=True)
+        pages = list(map(lambda ele: RNBPage(ele), self_cheered_images))
+        paginator = RNBPaginator(pages=pages, trigger_on_display=True, show_indicator=False, author_check=True, constant_embed=em)
 
         await paginator.respond(ctx.interaction)
         
