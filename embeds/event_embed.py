@@ -14,26 +14,28 @@ def event_embed(event: Event) -> discord.Embed:
     em = get_default_embed()
     em.title = event.name
     em.url = event_url(event.id)
-    em.description = f"```{event.description if event.description else 'This event does not have a description!'}```"
-    
-    is_room_private = not bool(event.room)
-    
-    room_link = "`[PRIVATE ROOM]`"
-    if not is_room_private:
-        room_link = f"[`^{event.room.name}`]({room_url(event.room.name)})"
+    if event.description:
+        em.description = f"```{event.description}```"
     
     info_field = [
-        f"{get_emoji('room')} In Room {room_link}",
         f"{get_emoji('visitors')} Attendees `{event.attendee_count}`",
         f"{get_emoji('date')} Starts {unix_timestamp(event.start_time, 'R')} - Ends {unix_timestamp(event.end_time, 'R')}"
     ]
+    is_room_private = not bool(event.room)
+    if not is_room_private:  # if room isn't private
+        room_link = f"[`^{event.room.name}`]({room_url(event.room.name)})"
+        info_field.insert(0, 
+            f"{get_emoji('room')} In Room {room_link}")
+        
     em.add_field(name="Info", value="\n".join(info_field), inline=False)
     
-    broadcast_field = [
-        f"{get_emoji('correct') if event.is_multi_instance else get_emoji('incorrect')} Multi Instance",
-        f"{get_emoji('correct') if event.support_multi_instance_room_chat else get_emoji('incorrect')} Live Chat"
-    ]
-    em.add_field(name="Broadcasting", value="\n".join(broadcast_field), inline=False)
+    broadcast_field = []
+    if event.is_multi_instance:
+        broadcast_field.append(f"{get_emoji('correct')} Multi Instance")
+    if event.support_multi_instance_room_chat:
+        broadcast_field.append(f"{get_emoji('correct')} Live Chat")
+    if broadcast_field:
+        em.add_field(name="Broadcasting", value="\n".join(broadcast_field), inline=False)
 
     em.set_author(
         name=event.creator_player.display_name, 
@@ -49,3 +51,13 @@ def event_embed(event: Event) -> discord.Embed:
         em.set_image(url=img_url(event.room.image_name))
 
     return em
+
+
+async def fetch_event_embed(event: Event, *args, **kwargs) -> discord.Embed:
+    """
+    Fetches the necessary data required for the embed
+    """
+    
+    await event.get_creator_player()
+    await event.get_room(include=0)
+    return event_embed(event, *args, **kwargs)

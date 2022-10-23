@@ -2,5 +2,8 @@
     "name": "Event",
     "description": "Event related commands.",
     "icon": "category_event",
-    "scripts": ["info"]
+    "scripts": [],
+    "groups": {
+        "event": ["info", "search"]
+    }
 }
