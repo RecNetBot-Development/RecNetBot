@@ -2,5 +2,11 @@
     "name": "Random",
     "icon": "category_random",
     "description": "Find random stuff from the depths of RecNet!",
-    "scripts": []
+    "scripts": [],
+    "groups": {
+        "random": {
+            "scripts": [],
+            "description": "View RecNetBot's random commands."
+        }
+    }
 }
