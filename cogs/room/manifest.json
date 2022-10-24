@@ -3,9 +3,14 @@
     "icon": "category_room",
     "description": "Room related commands.",
     "scripts": [
-        "info",
         "get_showcased_rooms",
         "showcased",
         "placement"
-    ]
+    ],
+    "groups": {
+        "room": {
+            "scripts": ["info", "search"],
+            "description": "View RecNetBot's room commands."
+        }
+    }
 }

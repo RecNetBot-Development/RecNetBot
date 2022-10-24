@@ -4,7 +4,7 @@ from discord.commands import slash_command, Option
 from embeds import room_embed
 
 @slash_command(
-    name="room",
+    name="info",
     description="View a Rec Room room's information and statistics."
 )
 async def info(
