@@ -44,16 +44,13 @@ async def toxicity(
     
     try:
         response = self.bot.perspective.comments().analyze(body=analyze_request).execute()
+        results_raw, results = response["attributeScores"], []
+        for key, value in results_raw.items():
+            results.append((key, value['summaryScore']['value']))
     except HttpError:
-        em = get_default_embed()
-        em.description = "This account's bio can't be analyzed by the AI!"
-        return await ctx.respond(embed=em)
-        
-    results_raw, results = response["attributeScores"], []
+        results = DEFAULT_RESULTS
     
     # Sort toxicity ratings
-    for key, value in results_raw.items():
-        results.append((key, value['summaryScore']['value']))
     results.sort(reverse=True, key=lambda x: x[1]) 
    
     # Form response
@@ -83,3 +80,12 @@ def toxicity_embed(account: Account, toxicity_ratings: dict) -> discord.Embed:
     
     return em
     
+    
+DEFAULT_RESULTS = [
+    ('TOXICITY', 0),
+    ('SEVERE_TOXICITY', 0),
+    ('IDENTITY_ATTACK', 0),
+    ('INSULT', 0),
+    ('PROFANITY', 0),
+    ('THREAT', 0)
+]
