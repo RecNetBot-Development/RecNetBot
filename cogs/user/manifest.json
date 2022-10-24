@@ -3,14 +3,18 @@
     "icon": "category_user",
     "description": "User related commands.",
     "scripts": [
-        "profile", 
         "get_rr_profile", 
-        "set_rr_profile",
         "bio", 
         "banner", 
         "pfp", 
         "platforms", 
         "toxicity",
         "owoify"
-    ]
+    ],
+    "groups": {
+        "profile": { 
+            "scripts": ["info", "link", "search"],
+            "description": "View RecNetBot's profile commands."
+        }
+    }
 }

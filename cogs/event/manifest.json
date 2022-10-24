@@ -4,6 +4,9 @@
     "icon": "category_event",
     "scripts": [],
     "groups": {
-        "event": ["info", "search"]
+        "event": {
+            "scripts": ["info", "search"],
+            "description": "View RecNetBot's event commands."
+        }
     }
 }

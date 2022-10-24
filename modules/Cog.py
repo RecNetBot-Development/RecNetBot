@@ -66,9 +66,11 @@ class Cog(commands.Cog):
         # Add command groups
         groups = self.__manifest.get('groups', None)
         if groups:
-            for name, scripts in groups.items():
-                command_group = SlashCommandGroup(name=name, debug_guilds=self.bot.config.get("debug_guilds"))
+            for name, metadata in groups.items():
+                scripts = metadata.get("scripts", [])
+                if not scripts: continue
                 
+                command_group = SlashCommandGroup(name=name, debug_guilds=self.bot.config.get("debug_guilds"))
                 for script in scripts:
                     path = f"cogs.{self.__cog_name__}.{name}.{script}"
                     self.__modules.add(path)
@@ -84,6 +86,7 @@ class Cog(commands.Cog):
                             if isinstance(mod, SlashCommand) and not mod.is_subcommand or isinstance(mod, SlashCommandGroup) and not mod.parent or isinstance(mod, UserCommand):
                                 command_group = self.appendCommandToGroup(mod, command_group)
                                 
+                command_group.description = metadata.get("description", "No description provided!")
                 self.__cog_commands__.append(command_group)
                         
         self.initializeCog()

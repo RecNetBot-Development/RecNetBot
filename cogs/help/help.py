@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import discord
 from discord.ext import commands
 from discord.commands import slash_command
@@ -7,6 +8,11 @@ from typing import List
 from utils import chunks
 from utils.paginator import RNBPaginator, RNBPage
 
+@dataclass
+class Group:
+    name: str
+    description: str
+    mention: str
 
 class HelpView(discord.ui.View):
     def __init__(self, bot: commands.Bot, context: discord.ApplicationContext):
@@ -37,10 +43,26 @@ class HelpView(discord.ui.View):
         self.commands = []
         
         # List all commands from commands to a single list
+        groups = []
         commands = []
         for cog in selections:
             for cmd in cog.walk_commands():
                 if not isinstance(cmd, discord.SlashCommand): continue  # Only allow slash commands for now
+                
+                if cmd.is_subcommand:  # Add the group
+                    # Make sure there's no duplicate groups
+                    group = cmd.parent
+                    if group in groups: continue
+                    groups.append(cmd.parent)
+                    
+                    # Make a mockup class for the help command
+                    commands.append(
+                        Group(
+                            group.name, group.description, f"</{group.name}:0>"
+                        )
+                    )
+                    continue
+                
                 commands.append(cmd)
                 
         # Sort in alphabetical order

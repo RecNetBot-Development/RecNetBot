@@ -5,11 +5,11 @@ from embeds import fetch_profile_embed
 from exceptions import ConnectionNotFound
 
 @slash_command(
-    name="profile",
+    name="info",
     description="View a Rec Room profile with additional information.",
     
 )
-async def profile(
+async def info(
     self,   
     ctx: discord.ApplicationContext,
     account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False)

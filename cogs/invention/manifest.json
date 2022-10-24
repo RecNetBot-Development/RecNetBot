@@ -4,6 +4,10 @@
     "description": "Invention related commands.",
     "scripts": [],
     "groups": {
-        "invention": ["info", "search"]
+        "invention": {
+            "scripts": ["info", "search"],
+            "description": "View RecNetBot's invention commands."
+        }
+        
     }
 }

@@ -43,10 +43,10 @@ class Check(discord.ui.View):
         self.stop()
 
 @slash_command(
-    name="set_profile",
+    name="link",
     description="Link your Rec Room profile to your Discord!"
 )
-async def set_rr_profile(
+async def link(
     self, 
     ctx: ApplicationContext, 
     username: Option(str, "Enter RR username", required=True)
