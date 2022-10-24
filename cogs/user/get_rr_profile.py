@@ -9,5 +9,6 @@ async def get_rr_profile(self, ctx: ApplicationContext, member: discord.Member):
     if not account: raise ConnectionNotFound
     
     # Run the profile command with the RR username
-    command = discord.utils.get(self.__cog_commands__, name='profile')
+    group = discord.utils.get(self.__cog_commands__, name='profile')
+    command = discord.utils.get(group.walk_commands(), name='info')
     await command(ctx, account)
