@@ -2,7 +2,7 @@ import discord
 from utils.converters import FetchRoom
 from discord.commands import slash_command, Option
 from utils import room_url
-from embeds import room_embed, get_default_embed
+from embeds import get_default_embed
 from utils.rec_net_urls import img_url
 
 @slash_command(

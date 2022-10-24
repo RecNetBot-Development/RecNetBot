@@ -1,6 +1,5 @@
 import discord
 from discord.commands import slash_command, Option
-from embeds import fetch_image_embed
 from utils.converters import FetchAccount
 from exceptions import ConnectionNotFound, ImagesNotFound
 from utils.paginator import RNBPaginator, RNBPage
