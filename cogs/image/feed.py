@@ -14,7 +14,7 @@ async def feed(
     ctx: discord.ApplicationContext,
     account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False)
 ):
-    await ctx.interaction.response.defer()
+    #await ctx.interaction.response.defer()
 
     if not account:  # Check for a linked RR account
         account = await self.bot.cm.get_linked_account(self.bot.RecNet, ctx.author.id)
