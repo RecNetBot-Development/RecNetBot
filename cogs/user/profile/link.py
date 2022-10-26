@@ -1,6 +1,7 @@
 import discord
 from discord import ApplicationContext
 from discord.commands import slash_command, Option
+from discord.ext.commands import cooldown, BucketType
 from exceptions import AccountNotFound, ConnectionAlreadyDone
 from embeds import get_default_embed, fetch_profile_embed
 from utils import post_url, profile_url
@@ -42,16 +43,18 @@ class Check(discord.ui.View):
         self.value = True
         self.stop()
 
+# User can only run the command once every "per" seconds
 @slash_command(
     name="link",
     description="Link your Rec Room profile to your Discord!"
 )
+@cooldown(rate=1, per=60, type=BucketType.user)
 async def link(
     self, 
     ctx: ApplicationContext, 
     username: Option(str, "Enter RR username", required=True)
 ):
-    await ctx.interaction.response.defer()
+    await ctx.interaction.response.defer(ephemeral=True)
     
     # Check if Discord user has already linked an account
     check_discord = self.bot.cm.get_discord_connection(ctx.author.id)
@@ -60,23 +63,24 @@ async def link(
         
         profile_em = await fetch_profile_embed(user)
         prompt_em = get_default_embed()
-        prompt_em.description = "Are you sure you want to unlink your current Rec Room account?"
+        prompt_em.description = "Are you sure you want to **UNLINK** your current Rec Room account?\nThis is irreversible and will get rid of all your saved data."
         view = Confirm()
         
-        await ctx.respond(
+        await ctx.interaction.edit_original_response(
             embeds=[profile_em, prompt_em],
-            view=view
+            view=view,
+            ephemeral=True
         )
         
         await view.wait()
         if view.value is None:
             em = get_default_embed()
             em.description = "Prompt timed out!"
-            return await ctx.edit(embed=em, view=None)
+            return await ctx.interaction.edit_original_response(embed=em, view=None)
         elif view.value is False:
             em = get_default_embed()
             em.description = "Cancelled unlinking!"
-            return await ctx.edit(embed=em, view=None)
+            return await ctx.interaction.edit_original_response(embed=em, view=None)
         
         # Delete connection
         self.bot.cm.delete_connection(ctx.author.id)
@@ -93,11 +97,11 @@ async def link(
     profile_em = await fetch_profile_embed(user)
     prompt_em = get_default_embed()
     prompt_em.description = '\n'.join([
-        f"Are you sure you want to link [@{user.username}]({profile_url(user.username)}) to your Discord?",
+        f"Are you sure you want to **LINK** [@{user.username}]({profile_url(user.username)}) to your Discord?",
         "You can only link a Rec Room account that you own."
     ])
     view = Confirm()
-    await ctx.edit(
+    await ctx.interaction.edit_original_response(
         embeds=[profile_em, prompt_em],
         view=view
     )
@@ -106,11 +110,11 @@ async def link(
     if view.value is None:
         em = get_default_embed()
         em.description = "Prompt timed out!"
-        return await ctx.edit(embed=em, view=None)
+        return await ctx.interaction.edit_original_response(embed=em, view=None)
     elif view.value is False:
         em = get_default_embed()
         em.description = "Cancelled linking!"
-        return await ctx.edit(embed=em, view=None)
+        return await ctx.interaction.edit_original_response(embed=em, view=None)
         
     # Fetch cheers from verify post
     post = self.bot.verify_post
@@ -119,6 +123,7 @@ async def link(
     # Verification process
     cheered = user.id in cheer_list
     specify = "Uncheer from" if cheered else "Cheer"
+    demonstration = "https://i.imgur.com/adYnPLi.gif" if cheered else "https://i.imgur.com/5VMBcJw.gif"
     
     view = Check()
     verify_em = get_default_embed()
@@ -128,19 +133,20 @@ async def link(
             "You can only check the verification once."
         ]
     )
-    await ctx.edit(embed=verify_em, view=view)
+    verify_em.set_thumbnail(url=demonstration)
+    await ctx.interaction.edit_original_response(embed=verify_em, view=view)
     
     await view.wait()
     if view.value is None:
         em = get_default_embed()
         em.description = "Verification timed out! Try again later."
         self.bot.cm.delete_connection(ctx.author.id)
-        return await ctx.edit(embed=em, view=None)
+        return await ctx.interaction.edit_original_response(embed=em, view=None)
     elif view.value is False:
         em = get_default_embed()
         em.description = "Could not verify the account's ownership. Try again later."
         self.bot.cm.delete_connection(ctx.author.id)
-        return await ctx.edit(embed=em, view=None)
+        return await ctx.interaction.edit_original_response(embed=em, view=None)
     
     # Check status
     cheer_list = await post.get_cheers(force=True)
@@ -149,11 +155,19 @@ async def link(
         em = get_default_embed()
         em.description = "Could not verify the account's ownership. Try again later."
         self.bot.cm.delete_connection(ctx.author.id)
-        return await ctx.edit(embed=em, view=None)
+        return await ctx.interaction.edit_original_response(embed=em, view=None)
         
+    # One more security check
+    if self.bot.cm.get_rec_room_connection(user.id):
+        # If someone linked the account already
+        em = get_default_embed()
+        em.description = "Someone else already linked this account!"
+        self.bot.cm.delete_connection(ctx.author.id)
+        return await ctx.interaction.edit_original_response(embed=em, view=None)
+    
     # Verification done
     self.bot.cm.create_connection(ctx.author.id, user.id)
     em = get_default_embed()
     em.description = f"Your Discord is now linked to [@{user.username}]({profile_url(user.username)})!"
-    await ctx.edit(embeds=[profile_em, em], view=None)
+    await ctx.interaction.edit_original_response(embeds=[profile_em, em], view=None)
     
