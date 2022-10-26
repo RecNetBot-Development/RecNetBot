@@ -108,7 +108,7 @@ class SearchView(discord.ui.View):
                 continue
             
             level = await ele.get_level()
-            formatted = f"[{ele.display_name}]({profile_url(ele.username)})\n{get_emoji('arrow')} {get_emoji('level')} {level.level} @{ele.username}"
+            formatted = f"[{ele.display_name}]({profile_url(ele.username)})\n{get_emoji('arrow')} {get_emoji('level')} {level.level} · @{ele.username}"
             item = {"name": f"{i}. {ele.username}", "formatted": formatted, "dataclass": ele}
             results.append(item)
         
@@ -127,7 +127,7 @@ class SearchView(discord.ui.View):
                 continue
             
             creator = await ele.get_creator_player()
-            formatted = f"[^{ele.name}]({room_url(ele.name)})\n{get_emoji('arrow')} @{creator.username}"
+            formatted = f"[^{ele.name}]({room_url(ele.name)})\n{get_emoji('arrow')} {get_emoji('cheer')} {ele.cheer_count:,} · @{creator.username}"
             item = {"name": f"{i}. {ele.name}", "formatted": formatted, "dataclass": ele}
             results.append(item)
         
@@ -147,7 +147,7 @@ class SearchView(discord.ui.View):
             
             creator = await ele.get_creator_player()
             room = await ele.get_room(include=0)
-            formatted = f"[{ele.name}]({event_url(ele.id)})\n{get_emoji('arrow')} @{creator.username}"
+            formatted = f"[{ele.name}]({event_url(ele.id)})\n{get_emoji('arrow')} {get_emoji('visitors')} {ele.attendee_count:,} · @{creator.username}"
             if room: formatted += f" at ^{room.name}"
             item = {"name": f"{i}. {ele.name}", "formatted": formatted, "dataclass": ele}
             results.append(item)
@@ -167,7 +167,7 @@ class SearchView(discord.ui.View):
                 continue
             
             creator = await ele.get_creator_player()
-            formatted = f"[{ele.name}]({invention_url(ele.id)})\n{get_emoji('arrow')} {get_emoji('cheer')} {ele.cheer_count} · @{creator.username}"
+            formatted = f"[{ele.name}]({invention_url(ele.id)})\n{get_emoji('arrow')} {get_emoji('cheer')} {ele.cheer_count:,} · @{creator.username}"
             item = {"name": f"{i}. {ele.name}", "formatted": formatted, "dataclass": ele}
             results.append(item)
         
