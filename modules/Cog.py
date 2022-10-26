@@ -121,6 +121,10 @@ class Cog(commands.Cog):
         Global error handling for all cogs
         """
         
+        # Handle cooldowns separately
+        if isinstance(exception, commands.CommandOnCooldown):
+            return await ctx.interaction.response.send_message("Please try again later.", ephemeral=True)
+        
         original = exception.original
         if hasattr(original, "embed"):
             await ctx.respond(embed=original.embed)
@@ -131,5 +135,7 @@ class Cog(commands.Cog):
             
             await ctx.respond(f"An unknown error occurred! {str(original)}")
             raise original
+        
+         
             
         
