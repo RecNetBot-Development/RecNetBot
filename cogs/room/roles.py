@@ -72,7 +72,7 @@ class RoleView(discord.ui.View):
             for role in chunk:
                 pieces.append(
                     #f"[{role.account.display_name}]({profile_url(role.account.username)})\n{get_emoji('arrow')}{role.role}"
-                    f"[{role.account.display_name}]({profile_url(role.account.username)}) • {role.role}"
+                    f"[{role.account.display_name}]({profile_url(role.account.username)}) • {role.name}"
                 )
             
             em.description = "\n".join(pieces)
