@@ -9,9 +9,9 @@ def format_roles(roles: List[Role]) -> List[str]:
     """
     
     role_counts = {
-        "co-owner": len(list(filter(lambda role: role.role == "Co-Owner", roles))),
-        "moderator": len(list(filter(lambda role: role.role == "Moderator", roles))),
-        "host": len(list(filter(lambda role: role.role == "Member", roles)))
+        "co-owner": len(list(filter(lambda role: role.name == "Co-Owner", roles))),
+        "moderator": len(list(filter(lambda role: role.name == "Moderator", roles))),
+        "host": len(list(filter(lambda role: role.name == "Member", roles)))
     }
     
     formatted = []
