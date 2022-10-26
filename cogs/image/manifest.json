@@ -2,5 +2,11 @@
     "name": "Image",
     "icon": "category_image",
     "description": "Commands relating to shared posts on RecNet!",
-    "scripts": ["photos", "feed", "selfcheers"]
+    "scripts": ["photos", "feed", "selfcheers"],
+    "groups": {
+        "image": {
+            "scripts": ["data"],
+            "description": "View RecNetBot's miscellaneous image commands."
+        }
+    }
 }

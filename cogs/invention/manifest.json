@@ -5,7 +5,7 @@
     "scripts": [],
     "groups": {
         "invention": {
-            "scripts": ["info", "search"],
+            "scripts": ["info", "search", "data"],
             "description": "View RecNetBot's invention commands."
         }
         

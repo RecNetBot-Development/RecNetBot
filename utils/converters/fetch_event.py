@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
-from exceptions import EventNotFound
+from exceptions import EventNotFound, InvalidURL
+from urllib.parse import urlparse
 
 class FetchEvent(commands.Converter):
     """
@@ -12,13 +13,16 @@ class FetchEvent(commands.Converter):
             if _event.isdigit(): 
                 event_id = _event
             else:
-                # This is fucking crazy and I can't believe I wrote this shit
-                url = _event.split("/")
-                event_id = list(filter(lambda piece: piece.isdigit(), url))
-                if event_id:
-                    event_id = event_id[0]
+                url = urlparse(_event)
+                
+                if url.netloc != "rec.net":
+                    raise InvalidURL
+                
+                if "event" in url.path:
+                    event_id = url.path.split("event/")[1]
                 else:
-                    raise EventNotFound
+                    raise InvalidURL("/event/...")
+                
                 
         event = await ctx.bot.RecNet.events.fetch(event_id)
         if not event: raise EventNotFound

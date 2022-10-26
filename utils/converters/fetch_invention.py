@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
-from exceptions import InventionNotFound
+from exceptions import InventionNotFound, InvalidURL
+from urllib.parse import urlparse
 
 class FetchInvention(commands.Converter):
     """
@@ -12,13 +13,15 @@ class FetchInvention(commands.Converter):
             if _invention.isdigit(): 
                 invention_id = _invention
             else:
-                # This is fucking crazy and I can't believe I wrote this shit
-                url = _invention.split("/")
-                invention_id = list(filter(lambda piece: piece.isdigit(), url))
-                if invention_id:
-                    invention_id = invention_id[0]
+                url = urlparse(_invention)
+                
+                if url.netloc != "rec.net":
+                    raise InvalidURL
+                
+                if "invention/" in url.path:
+                    invention_id = url.path.split("invention/")[1]
                 else:
-                    raise InventionNotFound
+                    raise InvalidURL("/invention/...")
         
         invention = await ctx.bot.RecNet.inventions.fetch(invention_id)
         if not invention: raise InventionNotFound
