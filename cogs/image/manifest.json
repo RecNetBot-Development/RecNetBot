@@ -7,6 +7,10 @@
         "image": {
             "scripts": ["data", "origin"],
             "description": "View RecNetBot's miscellaneous image commands."
+        },
+        "filter": {
+            "scripts": ["custom", "sort", "together"],
+            "description": "View RecNetBot's image filtering and sorting commands."
         }
     }
 }

@@ -5,7 +5,7 @@ from discord.commands import slash_command, Option
 from embeds import get_default_embed
 from utils import img_url, profile_posts_url
 from utils.converters import FetchAccount
-from exceptions import ConnectionNotFound, ImagesNotFound
+from exceptions import ConnectionNotFound
 from utils.paginator import RNBPaginator, RNBPage
 
 @slash_command(

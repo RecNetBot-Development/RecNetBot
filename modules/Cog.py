@@ -64,6 +64,7 @@ class Cog(commands.Cog):
         groups = self.__manifest.get('groups', None)
         if groups:
             for name, metadata in groups.items():
+                print(f"Loading command group '{name}'...")
                 scripts = metadata.get("scripts", [])
                 if not scripts: continue
                 
