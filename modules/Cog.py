@@ -1,6 +1,5 @@
 import os
 import json
-import time
 import discord
 import logging
 from typing import TYPE_CHECKING, Optional
@@ -9,7 +8,6 @@ from discord.ext import commands
 from discord import ApplicationCommandError
 from .ModuleCollector import ModuleCollector
 from discord.commands import ApplicationCommand, SlashCommand, SlashCommandGroup, UserCommand
-from exceptions import RNBException
 
 if TYPE_CHECKING:
     from .CogManager import CogManager
@@ -23,7 +21,6 @@ class Cog(commands.Cog):
         self.__cog_groups__ = []
         #self.__command_group = SlashCommandGroup(name=self.__cog_name__, description="No description provided!", debug_guilds=cfg['test_guild_ids'])
         self.__manifest = self.__getManifest
-        self.__categorize_commands = False
         self.buildCog()
 
     @property
@@ -115,6 +112,7 @@ class Cog(commands.Cog):
         command.cog = self
         self.__cog_commands__.append(command)
             
+            
         
     async def cog_command_error(self, ctx: discord.ApplicationContext, exception: ApplicationCommandError):
         """
@@ -133,9 +131,29 @@ class Cog(commands.Cog):
                             format="%(asctime)-15s %(levelname)-8s %(message)s")
             logging.error(str(exception))
             
-            await ctx.respond(f"An unknown error occurred! {str(original)}")
-            raise original
-        
-         
+            # Fetch the bug report command
+            misc_cog = self.bot.get_cog("Miscellaneous")
+            cmd = discord.utils.get(misc_cog.__cog_commands__, name='bugreport')
             
+            # Make an error embed for the user
+            user_em = discord.Embed(
+                title = "Something unexpected happened!",
+                description = f"```{str(original)}```\nConsider telling us about what happened so this bug can be resolved quicker! {cmd.mention}",
+                color = discord.Color.red()
+            )
+            user_em.set_footer(text="This error was logged and will be fixed soon!")
+            await ctx.respond(embed=user_em)
+            
+            # Send error to RNB log channel
+            log_em = discord.Embed(
+                title=str(exception),
+                description=str(original),
+                color = discord.Color.red()
+            )
+            log_em.set_author(name=ctx.author, icon_url=ctx.author.avatar)
+            log_em.set_footer(text=ctx.command.name)
+            await self.bot.log_channel.send(embed=log_em)
+            
+            # Raise it anyways for better debugging
+            raise original
         

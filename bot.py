@@ -61,7 +61,7 @@ class RecNetBot(commands.Bot):
         """
         self.RecNet = Client()
         self.verify_post = await self.RecNet.images.fetch(self.config["verify_post"])
-        self.bug_channel = await self.fetch_channel(self.config["bug_report_channel"])
+        self.log_channel = await self.fetch_channel(self.config["log_channel"])
         
         await self.change_presence(
             status=discord.Status.online,
