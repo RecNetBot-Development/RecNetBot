@@ -19,36 +19,36 @@ class ProfileView(discord.ui.View):
     async def photos_callback(
         self, button: discord.ui.Button, interaction: discord.Interaction
     ):
-        cmd = discord.utils.get(self.image_cog.__cog_commands__, name='photos')
-        await cmd(self.ctx, self.account)
-        
         # Update the view with the disabled button
         button.disabled = True
         await interaction.response.edit_message(view=self)
+        
+        cmd = discord.utils.get(self.image_cog.__cog_commands__, name='photos')
+        await cmd(self.ctx, self.account)
         
 
     @discord.ui.button(label="Feed", style=discord.ButtonStyle.gray, emoji=get_emoji("image"))
     async def feed_callback(
         self, button: discord.ui.Button, interaction: discord.Interaction
     ):
-        cmd = discord.utils.get(self.image_cog.__cog_commands__, name='feed')
-        await cmd(self.ctx, self.account)
-        
         # Update the view with the disabled button
         button.disabled = True
         await interaction.response.edit_message(view=self)
+        
+        cmd = discord.utils.get(self.image_cog.__cog_commands__, name='feed')
+        await cmd(self.ctx, self.account)
         
     
     @discord.ui.button(label="Showcased Rooms", style=discord.ButtonStyle.gray, emoji=get_emoji("room"), row=2)
     async def showcased_callback(
         self, button: discord.ui.Button, interaction: discord.Interaction
     ):
-        cmd = discord.utils.get(self.room_cog.__cog_commands__, name='showcased')
-        await cmd(self.ctx, self.account)
-        
         # Update the view with the disabled button
         button.disabled = True
         await interaction.response.edit_message(view=self)
+        
+        cmd = discord.utils.get(self.room_cog.__cog_commands__, name='showcased')
+        await cmd(self.ctx, self.account)
         
 
 @slash_command(
