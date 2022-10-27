@@ -10,23 +10,30 @@ class FetchImage(commands.Converter):
     async def convert(self, ctx: discord.ApplicationContext, _image: str | int):
         image_id = 0
         if isinstance(_image, str):
-            if _image.isdigit(): 
+            if _image.isdigit():  # If it's a stringified id
                 image_id = _image
+                image = await ctx.bot.RecNet.images.fetch(image_id)
             else:
                 url = urlparse(_image)
                 
-                if url.netloc != "rec.net":
-                    raise InvalidURL
-                
-                if "image/" in url.path:
-                    image_id = url.path.split("image/")[1]
-                elif "image=" in url.query:
-                    image_id = url.query.split("image=")[1]
+                if url.netloc == "rec.net":  # If RecNet post url
+                    if "image/" in url.path:
+                        image_id = url.path.split("image/")[1]
+                    elif "image=" in url.query:
+                        image_id = url.query.split("image=")[1]
+                    else:
+                        raise InvalidURL(path="/image/...")
+                    
+                    image = await ctx.bot.RecNet.images.fetch(image_id)
+                    
+                elif url.netloc == "img.rec.net":  # If img.rec.net url
+                    image_name = url.path.replace("/", "")
+                    image = await ctx.bot.RecNet.images.get(image_name)
+                    
                 else:
-                    raise InvalidURL("/image/...")
-                
-                
-        image = await ctx.bot.RecNet.images.fetch(image_id)
+                    image = await ctx.bot.RecNet.images.get(_image)  # Test if the param is just the image name
+                    if not image: raise InvalidURL
+                    
         if not image: raise ImageNotFound
         return image
     

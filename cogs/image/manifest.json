@@ -5,7 +5,7 @@
     "scripts": ["photos", "feed", "selfcheers"],
     "groups": {
         "image": {
-            "scripts": ["data"],
+            "scripts": ["data", "origin"],
             "description": "View RecNetBot's miscellaneous image commands."
         }
     }
