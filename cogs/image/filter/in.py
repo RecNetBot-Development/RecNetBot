@@ -4,12 +4,14 @@ from utils.converters import FetchAccount
 from exceptions import ConnectionNotFound
 
 @slash_command(
-    name="feed",
-    description="Browse through a user's RecNet feed."
+    name="in",
+    description="Filter RecNet posts by in which rooms the photos are taken."
 )
-async def feed(
+async def _in(
     self, 
     ctx: discord.ApplicationContext,
+    rooms: Option(str, name="rooms", description="Filter by which RR rooms can be featured (separate by spaces)", required=True),
+    exclude: Option(str, name="exclude_rooms", description="Filter by which RR rooms SHOULDN'T be featured (separate by spaces)", required=True),
     account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False)
 ):
     if not account:  # Check for a linked RR account
@@ -18,7 +20,7 @@ async def feed(
     
     group = discord.utils.get(self.__cog_commands__, name='filter')
     command = discord.utils.get(group.walk_commands(), name='custom')
-    await command(ctx, together=account.username)
+    await command(ctx, rooms=rooms, exclude_rooms=exclude, taken_by=account)
 
     
     
