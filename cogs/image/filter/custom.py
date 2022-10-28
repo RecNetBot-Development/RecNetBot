@@ -23,12 +23,14 @@ async def custom(
     exclude_together: Option(str, name="exclude_together", description="Filter by which RR users SHOULDN'T be featured in a post (separate by spaces)", required=False, default=None) = None,
     rooms: Option(str, name="rooms", description="Filter by which RR rooms can be featured (separate by spaces)", required=False, default=None) = None,
     exclude_rooms: Option(str, name="exclude_rooms", description="Filter by which RR rooms SHOULDN'T be featured (separate by spaces)", required=False, default=None) = None,
-    min_cheers: Option(int, name="minimum_cheers", description="Filter out posts that don't have at least this many cheers", default=0, required=False, min_value=0) = None,
-    max_cheers: Option(int, name="maximum_cheers", description="Filter out posts that exceed this many cheers", default=10**10, required=False, min_value=0) = None,
-    min_comments: Option(int, name="minimum_comments", description="Filter out posts that don't have at least this many comments", default=0, required=False, min_value=0) = None,
-    max_comments: Option(int, name="maximum_comments", description="Filter out posts that exceed this many comments", default=10**10, required=False, min_value=0) = None,
-    min_tags: Option(int, name="minimum_tags", description="Filter out posts that don't have at least this many tags", default=0, required=False, min_value=0) = None,
-    max_tags: Option(int, name="maximum_tags", description="Filter out posts that exceed this many tags", default=10**10, required=False, min_value=0) = None,
+    events: Option(str, name="events", description="Filter by which RR events can be featured (separate by spaces, enter event ids)", required=True) = None,
+    exclude_events: Option(str, name="exclude_events", description="Filter by which RR rooms SHOULDN'T be featured (separate by spaces, enter event ids)", required=False, default=None) = None,
+    min_cheers: Option(int, name="minimum_cheers", description="Filter out posts that don't have at least this many cheers", default=0, required=False, min_value=0) = 0,
+    max_cheers: Option(int, name="maximum_cheers", description="Filter out posts that exceed this many cheers", default=10**10, required=False, min_value=0) = 10**10,
+    min_comments: Option(int, name="minimum_comments", description="Filter out posts that don't have at least this many comments", default=0, required=False, min_value=0) = 0,
+    max_comments: Option(int, name="maximum_comments", description="Filter out posts that exceed this many comments", default=10**10, required=False, min_value=0) = 10**10,
+    min_tags: Option(int, name="minimum_tags", description="Filter out posts that don't have at least this many tags", default=0, required=False, min_value=0) = 0,
+    max_tags: Option(int, name="maximum_tags", description="Filter out posts that exceed this many tags", default=10**10, required=False, min_value=0) = 10**10,
 ):
     await ctx.interaction.response.defer(invisible=True)
     posts = []
@@ -56,6 +58,20 @@ async def custom(
         
         if e_rooms:
             posts = list(filter(lambda image: all(room.id != image.room_id for room in e_rooms), posts))
+        
+    # Filter by events
+    if events:
+        i_events = events.split(" ")
+        
+        if i_events:
+            posts = list(filter(lambda image: all(event == str(image.event_id) for event in i_events), posts))
+        
+    # Exclude by events
+    if exclude_events:
+        e_events = exclude_events.split(" ")
+        
+        if e_events:
+            posts = list(filter(lambda image: all(event != str(image.event_id) for event in e_events), posts))
         
     # Filter by together
     if together:

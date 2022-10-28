@@ -9,7 +9,7 @@
             "description": "View RecNetBot's miscellaneous image commands."
         },
         "filter": {
-            "scripts": ["custom", "sort", "together", "in", "minmax"],
+            "scripts": ["custom", "sort", "together", "in", "minmax", "during"],
             "description": "View RecNetBot's image filtering and sorting commands."
         }
     }

@@ -24,8 +24,8 @@ def image_embed(image: Image) -> discord.Embed:
         info.insert(1, 
             f"{get_emoji('room')} {room}")
         
-    if image.player_event:  # include event name
-        event = f"[`{image.player_event.name}`]({event_url(image.player_event.id)})"
+    if image.event:  # include event name
+        event = f"[`{image.event.name}`]({event_url(image.event.id)})"
         info.insert(1, 
             f"{get_emoji('event')} {event}")
         
@@ -47,7 +47,7 @@ async def fetch_image_embed(image: Image, *args, **kwargs) -> discord.Embed:
     Fetches the necessary data required for the embed
     """
     
-    await image.get_player_event()
+    await image.get_event()
     await image.get_room()
     await image.get_tagged_players()
     await image.get_player()

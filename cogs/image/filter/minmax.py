@@ -18,6 +18,10 @@ async def minmax(
     min_tags: Option(int, name="minimum_tags", description="Filter out posts that don't have at least this many tags", default=0, required=False, min_value=0),
     max_tags: Option(int, name="maximum_tags", description="Filter out posts that exceed this many tags", default=10**10, required=False, min_value=0),
 ):
+    if all(minmax in (0, 10**10) for minmax in (min_cheers, max_cheers, min_comments, max_comments, min_tags, max_tags)):
+        await ctx.interaction.response.send_message("Fill in any of the filter params!", ephemeral=True)
+        return
+    
     if not account:  # Check for a linked RR account
         account = await self.bot.cm.get_linked_account(self.bot.RecNet, ctx.author.id)
         if not account: raise ConnectionNotFound
