@@ -7,7 +7,7 @@ import sqlite3
 from discord.ext import commands
 from recnetpy import Client
 from modules import CogManager
-from database import ConnectionManager, RoomCacheManager, InventionCacheManager
+from database import ConnectionManager, RoomCacheManager, InventionCacheManager, BookmarkManager
 from googleapiclient import discovery
 
 class RecNetBot(commands.Bot):
@@ -50,6 +50,7 @@ class RecNetBot(commands.Bot):
         self.cm = ConnectionManager(self.db)
         self.rcm = RoomCacheManager(self.db)
         self.icm = InventionCacheManager(self.db)
+        self.bcm = BookmarkManager(self.db)
 
         # Initialize
         self.cog_manager.buildCogs()
