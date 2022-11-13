@@ -115,5 +115,5 @@ async def fetch_room_embed(room: Room, *args, **kwargs) -> discord.Embed:
     """
     Fetches the necessary data and returns the embed
     """
-    
+    room = await room.client.rooms.fetch(room.id, 78)
     return room_embed(room, *args, **kwargs)
