@@ -24,9 +24,16 @@ class Event(BaseDataclass):
     @classmethod
     def from_data(cls, data, **kwargs):
         if isinstance(data, list): return [*map(Event.from_data, data)]
-        print(f"{data=}")
-        start_time =  date_to_unix(data["StartTime"])
-        end_time =  date_to_unix(data["EndTime"])
+        raw_start_time = data.get("StartTime")
+        raw_end_time = data.get("EndTime")
+        if raw_start_time:
+            start_time =  date_to_unix(raw_start_time)
+        else:
+            start_time = 0
+        if raw_end_time:
+            end_time =  date_to_unix(raw_end_time)
+        else:
+            end_time = 0
         return cls(
             id = data["PlayerEventId"],
             creator = data["CreatorPlayerId"],
