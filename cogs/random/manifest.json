@@ -6,7 +6,7 @@
     "groups": {
         "random": {
             "scripts": ["account", "image", "room"],
-            "description": "View RecNetBot's random commands."
+            "description": "View RecNetBot's {} random commands."
         }
     }
 }

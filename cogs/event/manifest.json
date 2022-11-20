@@ -6,7 +6,7 @@
     "groups": {
         "event": {
             "scripts": ["info", "search", "data", "responses"],
-            "description": "View RecNetBot's event commands."
+            "description": "View RecNetBot's {} event commands."
         }
     }
 }

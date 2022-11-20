@@ -11,7 +11,7 @@
     "groups": {
         "room": {
             "scripts": ["info", "search", "data", "rank"],
-            "description": "View RecNetBot's room commands."
+            "description": "View RecNetBot's {} room commands."
         }
     }
 }

@@ -14,7 +14,7 @@
     "groups": {
         "profile": { 
             "scripts": ["info", "link", "search", "data"],
-            "description": "View RecNetBot's profile commands."
+            "description": "View RecNetBot's {} profile commands."
         }
     }
 }

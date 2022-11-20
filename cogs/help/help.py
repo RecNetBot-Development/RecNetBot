@@ -22,6 +22,7 @@ class HelpView(discord.ui.View):
         self.cogs = list(filter(lambda ele: ele.get_commands(), self.bot.cogs.values()))  # Only include cogs with commands
         self.commands = []
         self.embeds = []
+        self.selected_cogs = []
         self.paginator = None
         
         self.add_item(Dropdown(self))
@@ -41,6 +42,7 @@ class HelpView(discord.ui.View):
         """
         
         self.commands = []
+        self.selected_cogs = selections
         
         # List all commands from commands to a single list
         groups = []
@@ -58,7 +60,7 @@ class HelpView(discord.ui.View):
                     # Make a mockup class for the help command
                     commands.append(
                         Group(
-                            group.name, group.description, f"</{group.name}:0>"
+                            group.name, group.description.format(len(group.subcommands)), f"</{group.name}:0>"
                         )
                     )
                     continue
@@ -78,13 +80,22 @@ class HelpView(discord.ui.View):
         Creates help page embeds
         """
         
-        embeds = []
+        # Generate title with all selected cogs
+        #if self.selected_cogs or self.selected_cogs != self.cogs:
+        #    cog_names = list(map(lambda cog: cog.qualified_name.lower(), self.selected_cogs))
+        #    title = ", ".join(cog_names).capitalize() + " commands"
+        #else:
+        #    title = "All commands"
+            
+        # Generate each embed page
+        embeds = []  
         for page in self.commands:
             pieces = []
             em = get_default_embed()
             for cmd in page:
                 pieces.append(f"{cmd.mention}\n{get_emoji('arrow')} {cmd.description}")
             
+            #em.title = title
             em.description = "\n".join(pieces)
             embeds.append(RNBPage(embeds=[em]))
         
