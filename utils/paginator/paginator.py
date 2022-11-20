@@ -1,7 +1,8 @@
 import discord
-from typing import Optional
+import random
+from typing import Optional, Dict
 from discord.ext import pages
-from discord.ext.pages import Page, PaginatorButton, PageGroup
+from discord.ext.pages import Page, PageGroup
 from resources import get_emoji
 from recnetpy.dataclasses.account import Account
 from recnetpy.dataclasses.room import Room
@@ -12,6 +13,78 @@ from recnetpy.dataclasses.image import Image
 from typing import List, Optional, Union
 from discord.ext.bridge import BridgeContext
 from discord.ext.commands import Context
+        
+class RNBPaginatorButton(discord.ui.Button):
+    def __init__(
+        self,
+        button_type: str,
+        label: str = None,
+        emoji: Union[str, discord.Emoji, discord.PartialEmoji] = None,
+        style: discord.ButtonStyle = discord.ButtonStyle.green,
+        disabled: bool = False,
+        custom_id: str = None,
+        row: int = 0,
+        loop_label: str = None,
+    ):
+        super().__init__(
+            label=label if label or emoji else button_type.capitalize(),
+            emoji=emoji,
+            style=style,
+            disabled=disabled,
+            custom_id=custom_id,
+            row=row,
+        )
+        self.button_type = button_type
+        self.label = label if label or emoji else button_type.capitalize()
+        self.emoji: Union[str, discord.Emoji, discord.PartialEmoji] = emoji
+        self.style = style
+        self.disabled = disabled
+        self.loop_label = self.label if not loop_label else loop_label
+        self.paginator = None
+
+    async def callback(self, interaction: discord.Interaction):
+        if self.button_type == "first":
+            self.paginator.current_page = 0
+            
+        elif self.button_type == "prev":
+            if self.paginator.loop_pages and self.paginator.current_page == 0:
+                self.paginator.current_page = self.paginator.page_count
+            else:
+                self.paginator.current_page -= 1
+                
+        elif self.button_type == "next":
+            if (
+                self.paginator.loop_pages
+                and self.paginator.current_page == self.paginator.page_count
+            ):
+                self.paginator.current_page = 0
+            else:
+                self.paginator.current_page += 1
+                
+        elif self.button_type == "prev10":
+            if self.paginator.loop_pages and self.paginator.current_page == 0:
+                self.paginator.current_page = self.paginator.page_count
+            else:
+                self.paginator.current_page -= 10
+                
+        elif self.button_type == "next10":
+            if (
+                self.paginator.loop_pages
+                and self.paginator.current_page == self.paginator.page_count
+            ):
+                self.paginator.current_page = 0
+            else:
+                self.paginator.current_page += 10
+                
+        elif self.button_type == "random":
+            self.paginator.current_page = random.randint(0, self.paginator.page_count)
+                
+        elif self.button_type == "last":
+            self.paginator.current_page = self.paginator.page_count
+            
+        await self.paginator.goto_page(
+            page_number=self.paginator.current_page, interaction=interaction
+        )
         
 class RNBPage(Page):
     def __init__(self, *args, **kwargs):
@@ -60,6 +133,84 @@ class RNBPaginator(pages.Paginator):
         # For indicator
         for i, page in enumerate(self.pages, start=1):
             page.index, page.page_count = i, self.page_count + 1
+        
+    
+    def update_buttons(self) -> Dict:
+        for key, button in self.buttons.items():
+            if key == "first":
+                if self.current_page <= 1:
+                    button["hidden"] = True
+                elif self.current_page >= 1:
+                    button["hidden"] = False
+            elif key == "last":
+                if self.current_page >= self.page_count - 1:
+                    button["hidden"] = True
+                if self.current_page < self.page_count - 1:
+                    button["hidden"] = False
+            elif key == "next":
+                if self.current_page == self.page_count:
+                    if not self.loop_pages:
+                        button["hidden"] = True
+                        button["object"].label = button["label"]
+                    else:
+                        button["object"].label = button["loop_label"]
+                elif self.current_page < self.page_count:
+                    button["hidden"] = False
+                    button["object"].label = button["label"]
+            elif key == "next10":
+                if self.current_page + 10 > self.page_count:
+                    if not self.loop_pages:
+                        button["hidden"] = True
+                        button["object"].label = button["label"]
+                    else:
+                        button["object"].label = button["loop_label"]
+                elif self.current_page + 10 <= self.page_count:
+                    button["hidden"] = False
+                    button["object"].label = button["label"]
+            elif key == "prev10":
+                if self.current_page - 10 < 0:
+                    if not self.loop_pages:
+                        button["hidden"] = True
+                        button["object"].label = button["label"]
+                    else:
+                        button["object"].label = button["loop_label"]
+                elif self.current_page - 10 < self.page_count:
+                    button["hidden"] = False
+                    button["object"].label = button["label"]
+            elif key == "prev":
+                if self.current_page <= 0:
+                    if not self.loop_pages:
+                        button["hidden"] = True
+                        button["object"].label = button["label"]
+                    else:
+                        button["object"].label = button["loop_label"]
+                elif self.current_page >= 0:
+                    button["hidden"] = False
+                    button["object"].label = button["label"]
+        self.clear_items()
+        if self.show_indicator:
+            self.buttons["page_indicator"]["object"].label = f"{self.current_page + 1}/{self.page_count + 1}"
+        for key, button in self.buttons.items():
+            if key != "page_indicator":
+                if button["hidden"]:
+                    button["object"].disabled = True
+                    if self.show_disabled:
+                        self.add_item(button["object"])
+                else:
+                    button["object"].disabled = False
+                    self.add_item(button["object"])
+            elif self.show_indicator:
+                self.add_item(button["object"])
+
+        if self.show_menu:
+            self.add_menu()
+
+        # We're done adding standard buttons and menus, so we can now add any specified custom view items below them
+        # The bot developer should handle row assignments for their view before passing it to Paginator
+        if self.custom_view:
+            self.update_custom_view(self.custom_view)
+
+        return self.buttons
         
         
     async def goto_page(
@@ -343,49 +494,7 @@ class RNBPaginator(pages.Paginator):
             return return_page
         return return_page
             
-            
-    def add_default_buttons(self):
-        """Adds the full list of default buttons that can be used with the paginator.
-        Includes ``first``, ``prev``, ``page_indicator``, ``next``, and ``last``.
-        """
-        default_buttons = [
-            PaginatorButton(
-                "first",
-                emoji=get_emoji('first'),
-                style=discord.ButtonStyle.blurple,
-                row=self.default_button_row,
-            ),
-            PaginatorButton(
-                "prev",
-                emoji=get_emoji('prev'),
-                style=discord.ButtonStyle.red,
-                loop_label="↪",
-                row=self.default_button_row,
-            ),
-            PaginatorButton(
-                "page_indicator",
-                style=discord.ButtonStyle.gray,
-                disabled=True,
-                row=self.default_button_row,
-            ),
-            PaginatorButton(
-                "next",
-                emoji=get_emoji('next'),
-                style=discord.ButtonStyle.green,
-                loop_label="↩",
-                row=self.default_button_row,
-            ),
-            PaginatorButton(
-                "last",
-                emoji=get_emoji('last'),
-                style=discord.ButtonStyle.blurple,
-                row=self.default_button_row,
-            ),
-        ]
-        for button in default_buttons:
-            self.add_button(button)
-            
-            
+
     async def update(
         self,
         pages: Optional[
@@ -407,7 +516,7 @@ class RNBPaginator(pages.Paginator):
         loop_pages: Optional[bool] = None,
         custom_view: Optional[discord.ui.View] = None,
         timeout: Optional[float] = None,
-        custom_buttons: Optional[List[PaginatorButton]] = None,
+        custom_buttons: Optional[List[RNBPaginatorButton]] = None,
         trigger_on_display: Optional[bool] = None,
         interaction: Optional[discord.Interaction] = None,
     ):
@@ -483,3 +592,65 @@ class RNBPaginator(pages.Paginator):
             self.add_default_buttons()
 
         await self.goto_page(self.current_page, interaction=interaction)
+        
+
+    def add_default_buttons(self):
+        default_buttons = [
+            RNBPaginatorButton(
+                "first",
+                emoji=get_emoji("first"),
+                style=discord.ButtonStyle.gray,
+                row=self.default_button_row + 1,
+            ),
+            RNBPaginatorButton(
+                "prev10",
+                label="10",
+                emoji=get_emoji("prev_bulk"),
+                style=discord.ButtonStyle.blurple,
+                loop_label="↪",
+                row=self.default_button_row,
+            ),
+            RNBPaginatorButton(
+                "prev",
+                emoji=get_emoji("prev"),
+                style=discord.ButtonStyle.blurple,
+                loop_label="↪",
+                row=self.default_button_row,
+            ),
+            RNBPaginatorButton(
+                "page_indicator",
+                style=discord.ButtonStyle.gray,
+                disabled=True,
+                row=self.default_button_row,
+            ),
+            RNBPaginatorButton(
+                "next",
+                emoji=get_emoji("next"),
+                style=discord.ButtonStyle.blurple,
+                loop_label="↩",
+                row=self.default_button_row,
+            ),
+            RNBPaginatorButton(
+                "next10",
+                label="10",
+                emoji=get_emoji("next_bulk"),
+                style=discord.ButtonStyle.blurple,
+                loop_label="↩",
+                row=self.default_button_row,
+            ),
+            RNBPaginatorButton(
+                "last",
+                emoji=get_emoji("last"),
+                style=discord.ButtonStyle.gray,
+                row=self.default_button_row + 1,
+            ),
+            RNBPaginatorButton(
+                "random",
+                emoji=get_emoji("random"),
+                style=discord.ButtonStyle.gray,
+                row=self.default_button_row + 1,
+            ),
+        ]
+        for button in default_buttons:
+            self.add_button(button)
+

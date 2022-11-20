@@ -157,6 +157,6 @@ class Dropdown(discord.ui.Select):
 async def help(self, ctx: discord.ApplicationContext):
     view = HelpView(self.bot, context=ctx)
     embeds = view.initialize()
-    paginator = RNBPaginator(pages=embeds, custom_view=view, show_indicator=False, show_disabled=False, trigger_on_display=True)
+    paginator = RNBPaginator(pages=embeds, custom_view=view, show_indicator=False, trigger_on_display=True)
     view.paginator = paginator
     await paginator.respond(ctx.interaction)
