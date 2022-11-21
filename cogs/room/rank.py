@@ -20,7 +20,7 @@ def separate_keywords(_filter):
 async def rank(
     self, 
     ctx,
-    specify: Option(str, "Enter any #tags or keywords to filter results (separate by space)", required=False),
+    specify: Option(str, "Enter any #tags or keywords to filter results (separate by space)", required=False, name="filter"),
     room_count: Option(int, "Specify how many rooms should be included in ranking.", required=False, default=10, min_value=3, max_value=15)
 ):
     if specify:
