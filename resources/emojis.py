@@ -87,6 +87,7 @@ class Emoji:
     ink = "<:ink:1029085539737026681>"  #  https://www.flaticon.com/free-icons/splatter Splatter icons created by Smashicons - Flaticon
     cv2 = "<:cv2:1029120796880285747>"
     token = "<:token:1029126503499309068>"
+    pico = "<:pico:1045031007222501498>"
 
 class CategoryIcons:
     category_api = 963878518960291903  # (Api by Larea from NounProject.com)

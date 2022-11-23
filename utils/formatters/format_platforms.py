@@ -8,16 +8,19 @@ PLATFORM_URLS = {
     'xbox': "https://www.xbox.com/en-ZA/games/store/rec-room/9pgpqk0xthrz",
     'ios': "https://apps.apple.com/us/app/rec-room/id1450306065", 
     'android': "https://play.google.com/store/apps/details?id=com.AgainstGravity.RecRoom",
-    'standalone': "https://rec.net/download"
+    'standalone': "https://rec.net/download",
+    'pico': "https://www.picoxr.com/"
 }
 
 def format_platforms(platforms: List[str]) -> List[str]:
     """
     Formats platforms in a nice manner that contains links and icons
     """
+    print(platforms)
+    
     if not platforms: return []
     formatted = []
     for ele in platforms:
-        formatted.append(f"{get_emoji(ele)} [`{ele}`](<{PLATFORM_URLS.get(ele.lower(), 'standalone')}>)")
+        formatted.append(f"{get_emoji(ele)} [`{ele}`](<{PLATFORM_URLS.get(ele.lower(), 'https://rec.net/download')}>)")
         
     return formatted
