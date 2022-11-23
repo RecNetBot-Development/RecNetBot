@@ -26,6 +26,7 @@ class Emoji:
     xbox = "<:xbox:962813430761406464>"  # Xbox icon
     android = "<:android:962815093626785883>"  # Android icon
     ios = "<:apple:962815516127424532>"  # iOS icon
+    pico = "<:pico:1045031007222501498>" # Pico icon
     
     # Profile Embed
     level = "<:level:962027535007354901>"  # Account level (Star by Elvn Sands from NounProject.com)

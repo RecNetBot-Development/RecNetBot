@@ -9,7 +9,8 @@ def create_platforms_section(platform_mask: int = None, platform_names: list = N
         'Xbox': f"{get_emoji('xbox')} [`Xbox`](https://www.xbox.com/en-ZA/games/store/rec-room/9pgpqk0xthrz)",
         'iOS': f"{get_emoji('ios')} [`iOS`](https://apps.apple.com/us/app/rec-room/id1450306065)", 
         'Android': f"{get_emoji('android')} [`Android`](https://play.google.com/store/apps/details?id=com.AgainstGravity.RecRoom)",
-        'Standalone': f"{get_emoji('standalone')} [`Standalone`](https://rec.net/download)"
+        'Standalone': f"{get_emoji('screen')} [`Standalone`](https://rec.net/download)",
+        'Pico': f"{get_emoji('pico')} [`Pico`](https://www.picoxr.com/)"
     }
     
     if platform_names:
