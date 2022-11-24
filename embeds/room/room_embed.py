@@ -64,7 +64,13 @@ def room_embed(room, hot_rooms = {}):
             
     # Room engagement
     score = 0
-    if room.scores: score = round((sum([i.score for i in room.scores]) / len(room.scores)) * 100)
+    if room.scores: 
+        # Get rid of 0 scores.
+        scores = [i.score for i in room.scores if i.visit_type != 2]
+        if scores:
+            score = round((sum(scores) / len(scores)) * 100)
+        else:
+            score = 0
     
     details = [
         f"{get_emoji('date')} {unix_timestamp(room.created_at)} — Created At",
