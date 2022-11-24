@@ -55,12 +55,12 @@ def room_embed(room, hot_rooms = {}):
     description = f"```{room.description}```"
     
     # Room hot placement
-    placement = 0
-    if hot_rooms: 
-        if isinstance(hot_rooms, dict):
-            placement = f"{next((i for (i, _room) in enumerate(hot_rooms) if _room['RoomId'] == room.id), 0):,}"
-        elif isinstance(hot_rooms, int):
-            placement = f"{hot_rooms:,}"
+    #placement = 0
+    #if hot_rooms: 
+    #    if isinstance(hot_rooms, dict):
+    #        placement = f"{next((i for (i, _room) in enumerate(hot_rooms) if _room['RoomId'] == room.id), 0):,}"
+    #    elif isinstance(hot_rooms, int):
+    #        placement = f"{hot_rooms:,}"
             
     # Room engagement
     score = 0
@@ -78,15 +78,22 @@ def room_embed(room, hot_rooms = {}):
     if room.images: 
         total_images = f"{len(room.images):,}"
         details.insert(3, f"{get_emoji('image')} `{total_images if len(room.images) < 1000 else '<1,000'}` — Photos Taken")
-    if room.voice_moderated: details.insert(-1, f"{get_emoji('toxmod')} Voice Moderation enabled!")
+    
+    # Player retention    
+    retention = round((room.visitor_count / room.visit_count) * 100, 2) if room.visit_count > 0 else 0
+    
+    # Cheer ratio
+    cheer_ratio = round((room.cheer_count / room.visitor_count) * 100, 2) if room.visitor_count > 0 else 0
     
     statistics = [
         f"{get_emoji('cheer')} `{room.cheer_count:,}` — Cheers",
         f"{get_emoji('favorite')} `{room.favorite_count:,}` — Favorites",
         f"{get_emoji('visitors')} `{room.visitor_count:,}` — Visitors",
         f"{get_emoji('visitor')} `{room.visit_count:,}` — Visits",
-        f"{get_emoji('hot')} `#{placement if placement else '>1,000'}` — Hot Placement",
-        f"{get_emoji('engagement')} `{score}%` — Engagement"
+        #f"{get_emoji('hot')} `#{placement if placement else '>1,000'}` — Hot Placement",
+        f"{get_emoji('engagement')} `{score}%` — Engagement",
+        f"{get_emoji('visitors')} `{retention}%` — Player Retention",
+        f"{get_emoji('cheer')} `{cheer_ratio}%` — Cheer to Visitor Ratio"
     ]
     
     roles = None
