@@ -117,7 +117,7 @@ def room_embed(room, hot_rooms = {}):
     em = Embed(
         title = f"^{room.name}",
         description = description,
-        url=room_url(room.name)
+        url=room_url(room.name),
     )
     
     if details: em.add_field(name="Details", value="\n".join(details), inline=False)
@@ -135,5 +135,7 @@ def room_embed(room, hot_rooms = {}):
     # Show if UGC or RRO
     thumbnail_url = get_icon("rro") if room.is_rro else get_icon("ugc")
     em.set_thumbnail(url=thumbnail_url)
+    # Engagement disclaimer
+    em.set_footer(text="Engagement is a unofficial metric, take it with a grain of salt")
     
     return em  # Return the embed.
