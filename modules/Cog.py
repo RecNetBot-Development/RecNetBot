@@ -117,8 +117,9 @@ Command `/{ctx.command.name}`
             await self.bot.get_channel(cfg['error_log_channel']).send(embed=em)  # Send it to the developer error log channel
             
             # Error for users
-            friendly_error_message = f"**Something unexpected occurred!**\n" \
-                                     f"Unable to process the request. I may be malfunctioning or Rec Room's servers are down."
+            friendly_error_message = "**Something unexpected occurred!**\n" \
+                                     "Unable to process the request. I may be malfunctioning or Rec Room's servers are down.\n" \
+                                     f"We hate errors as much as you do. If this keeps happening, you're invited to come shout at the developers [here]({cfg['server_link']})!"
                             
             em = error_embed(custom_text=friendly_error_message)
             await respond(ctx, embed=em, ephemeral=True)  # Send it to chat
