@@ -57,7 +57,7 @@ class Check(discord.ui.View):
     name="link",
     description="Link your Rec Room profile to your Discord!"
 )
-@cooldown(rate=1, per=60, type=BucketType.user)
+@cooldown(rate=1, per=300, type=BucketType.user)
 async def link(
     self, 
     ctx: ApplicationContext, 
@@ -103,9 +103,9 @@ async def link(
     
     await view.wait()
     if view.value is None:
-        return await ctx.interaction.edit_original_response(content="Prompt timed out!", embeds=[], view=None)
+        return await ctx.interaction.edit_original_response(content="Timed out! Try again later.", embeds=[], view=None)
     elif view.value is False:
-        return await ctx.interaction.edit_original_response(content="Cancelled linking!", embeds=[], view=None)
+        return await ctx.interaction.edit_original_response(content="Cancelled linking! You can try again later.", embeds=[], view=None)
         
     # Fetch cheers from verify post
     post = self.bot.verify_post
@@ -160,6 +160,6 @@ async def link(
     # Verification done
     self.bot.cm.create_connection(ctx.author.id, user.id)
     em = get_default_embed()
-    em.description = f"Your Discord is now linked to [@{user.username}]({profile_url(user.username)})!"
+    em.description = f"Your Discord is now linked to [@{user.username}]({profile_url(user.username)})! RecNetBot now fills out the `username` option for you if you leave it empty."
     await ctx.interaction.edit_original_response(embeds=[profile_em, em], view=None)
     
