@@ -5,7 +5,7 @@ from discord.ext.commands import cooldown, BucketType
 from exceptions import AccountNotFound, ConnectionAlreadyDone
 from embeds import get_default_embed, fetch_profile_embed
 from utils import post_url, profile_url, unix_timestamp
-from resources import get_emoji
+from resources import get_emoji, get_icon
 from datetime import datetime, timedelta
 
 # For prompting the user whether or not to link the account
@@ -34,7 +34,7 @@ class Confirm(discord.ui.View):
 # For checking if the user has cheered the post
 class Check(discord.ui.View):
     def __init__(self, post_id: int = 1):
-        super().__init__()
+        super().__init__(timeout=300)
         self.value = None
         
         # Add link to the verification post
@@ -97,6 +97,8 @@ async def link(
         "You can only link a Rec Room account that you own. Verification is required."
     ])
     view = Confirm()
+    
+    # Edit to verification phase
     await ctx.interaction.edit_original_response(
         embeds=[profile_em, prompt_em],
         view=view
@@ -117,13 +119,14 @@ async def link(
     specify = "Uncheer from" if cheered else "Cheer"
     demonstration = "https://i.imgur.com/adYnPLi.gif" if cheered else "https://i.imgur.com/5VMBcJw.gif"
     
+    # Send verification steps
+    view = Check(post_id=post.id)
+    
     # Get timeout date
     dt = datetime.now()
     td = timedelta(seconds=view.timeout)
     timeout_datetime = dt + td
     
-    # Send verification steps
-    view = Check(post_id=post.id)
     verify_em = get_default_embed()
     verify_em.title = "Verification Steps"
     verify_em.description = "\n".join(
@@ -163,5 +166,7 @@ async def link(
     em = get_default_embed()
     em.description = f"Your Discord is now linked to [@{user.username}]({profile_url(user.username)})! {get_emoji('helpful')}\n" \
                       "RecNetBot will now automatically fill out the `username` slot in commands."
+    em.set_image(url=get_icon("user_command"))
+    em.set_footer(text="You can also pull up yours or others' linked profiles and more through their Discord!")
     await ctx.interaction.edit_original_response(embeds=[profile_em, em], view=None)
     
