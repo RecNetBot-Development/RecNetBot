@@ -110,6 +110,7 @@ class Icons:
     unknown = "https://i.imgur.com/paO6CDA.png"
     photo = "https://i.imgur.com/NCoPFNq.png"
     room = "https://i.imgur.com/8o1oFRn.png"
+    helpful = "https://i.imgur.com/Vr5983F.png"
 
 def get_icon(name: str) -> str:
     """

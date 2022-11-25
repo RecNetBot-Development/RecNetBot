@@ -6,7 +6,7 @@ from exceptions import ConnectionNotFound
 @user_command(name="Rec Room Profile")
 async def get_rr_profile(self, ctx: ApplicationContext, member: discord.Member):
     account = await self.bot.cm.get_linked_account(self.bot.RecNet, member.id)
-    if not account: raise ConnectionNotFound
+    if not account: raise ConnectionNotFound(is_self=False)
     
     # Run the profile command with the RR username
     group = discord.utils.get(self.__cog_commands__, name='profile')

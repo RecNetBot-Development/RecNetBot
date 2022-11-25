@@ -8,6 +8,7 @@ from discord.ext import commands
 from discord import ApplicationCommandError
 from .ModuleCollector import ModuleCollector
 from discord.commands import ApplicationCommand, SlashCommand, SlashCommandGroup, UserCommand
+from exceptions import ConnectionNotFound
 
 if TYPE_CHECKING:
     from .CogManager import CogManager
@@ -126,6 +127,12 @@ class Cog(commands.Cog):
         
         original = exception.original
         if hasattr(original, "embed"):
+            if isinstance(original, ConnectionNotFound) and "{}" in original.embed.description:
+                # Plug in the link command
+                group = discord.utils.get(self.__cog_commands__, name='profile')
+                command = discord.utils.get(group.walk_commands(), name='link')
+                original.embed.description = original.embed.description.format(command.mention)
+            
             await ctx.respond(embed=original.embed)
         else:
             logging.basicConfig(level=logging.WARNING, filename="error.log", filemode="a+",
