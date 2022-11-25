@@ -15,7 +15,7 @@ class Group:
     mention: str
 
 class HelpView(discord.ui.View):
-    def __init__(self, bot: commands.Bot, context: discord.ApplicationContext):
+    def __init__(self, bot: commands.Bot, context: discord.ApplicationContext, invite_link: str = None, server_link: str = None):
         super().__init__()
         self.bot = bot
         self.ctx = context
@@ -26,6 +26,32 @@ class HelpView(discord.ui.View):
         self.paginator = None
         
         self.add_item(Dropdown(self))
+        
+        buttons = []
+        # Invite bot button
+        if invite_link:
+            invite_btn = discord.ui.Button(
+                label="Invite Bot",
+                url=invite_link,
+                style=discord.ButtonStyle.link,
+                row=3
+            )
+            buttons.append(invite_btn)
+        
+        # Join discord button
+        if server_link:
+            server_btn = discord.ui.Button(
+                label="Join Discord",
+                url=server_link,
+                style=discord.ButtonStyle.link,
+                row=3
+            )
+            buttons.append(server_btn)
+        
+        # add buttons
+        for item in buttons:
+            self.add_item(item)
+        
         
     def initialize(self) -> discord.Embed:
         """
@@ -155,8 +181,10 @@ class Dropdown(discord.ui.Select):
     
 )
 async def help(self, ctx: discord.ApplicationContext):
-    view = HelpView(self.bot, context=ctx)
+    server_link, invite_link = self.bot.config.get("server_link", None), self.bot.config.get("invite_link", None)
+    
+    view = HelpView(self.bot, context=ctx, server_link=server_link, invite_link=invite_link)
     embeds = view.initialize()
-    paginator = RNBPaginator(pages=embeds, custom_view=view, show_indicator=False, trigger_on_display=True)
+    paginator = RNBPaginator(pages=embeds, custom_view=view, show_indicator=False, trigger_on_display=True, hidden_items=["first", "last", "random", "next10", "prev10"], default_button_row=3)
     view.paginator = paginator
     await paginator.respond(ctx.interaction)

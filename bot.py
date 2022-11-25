@@ -12,7 +12,7 @@ from googleapiclient import discovery
 
 class RecNetBot(commands.Bot):
     def __init__(self, production: bool):
-        super().__init__()
+        super().__init__(help_command=None)
 
         # Load config
         path = "./config/{}.json"
@@ -77,8 +77,7 @@ class RecNetBot(commands.Bot):
             f"Running on: {platform.system()} {platform.release()} ({os.name})",
             sep="\n"
         )
-
-
+    
     #async def on_error(self, event, *args, **kwargs):
     #    logging.basicConfig(level=logging.WARNING, filename="error.log", filemode="a+",
     #                        format="%(asctime)-15s %(levelname)-8s %(message)s")
