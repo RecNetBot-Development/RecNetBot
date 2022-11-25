@@ -36,6 +36,12 @@ class ConnectionManager():
         if not data: return
         return Connections(*data)
     
+    def get_connection_count(self) -> int:
+        self.c.execute(f"""SELECT * FROM linked_accounts""")
+        data = self.c.fetchall()
+        if not data: return 0
+        return len(data)
+    
     def create_connection(self, discord_id: int, rr_id: int):
         with self.conn:
             self.c.execute(f"""INSERT OR IGNORE INTO linked_accounts VALUES (:discord_id, :rr_id)""", {"discord_id": discord_id, "rr_id": rr_id})
@@ -52,7 +58,6 @@ class ConnectionManager():
         """
         Fetches the linked Rec Room account of a Discord account
         """
-
         connection = self.get_discord_connection(discord_id)
         if not connection: return None
         account = await RecNet.accounts.fetch(connection.rr_id)

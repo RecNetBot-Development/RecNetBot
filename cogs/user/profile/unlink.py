@@ -10,7 +10,7 @@ class Confirm(discord.ui.View):
         super().__init__()
         self.value = None
 
-    @discord.ui.button(label="Confirm", style=discord.ButtonStyle.green)
+    @discord.ui.button(label="Unlink", style=discord.ButtonStyle.red)
     async def confirm_callback(
         self, button: discord.ui.Button, interaction: discord.Interaction
     ):
@@ -60,7 +60,7 @@ async def unlink(
         
         profile_em = await fetch_profile_embed(user)
         prompt_em = get_default_embed()
-        prompt_em.description = "Are you sure you want to **UNLINK** your current Rec Room account?\nThis is irreversible and will get rid of all your saved data."
+        prompt_em.description = "Are you sure you want to **UNLINK** your current Rec Room account?\nThis is irreversible and you will have to verify the account again if you wish to link it again."
         view = Confirm()
         
         await ctx.interaction.edit_original_response(
@@ -78,7 +78,7 @@ async def unlink(
         self.bot.cm.delete_connection(ctx.author.id)
         
         await ctx.interaction.edit_original_response(
-            content="Unlinking complete, your Discord account isn't linked to any Rec Room account anymore!",
+            content="Unlinking complete, your Discord account isn't linked to the Rec Room account anymore!",
             embeds=[],
             view=None
         )        
@@ -86,5 +86,5 @@ async def unlink(
         group = discord.utils.get(self.__cog_commands__, name='profile')
         unlink_command = discord.utils.get(group.walk_commands(), name='link')
         await ctx.interaction.edit_original_response(
-            content=f"Your Discord account has no linked Rec Room account in the first place! Feel free to link one with {unlink_command.mention}"
+            content=f"Your Discord account isn't linked to a Rec Room account in the first place! Feel free to link one with {unlink_command.mention}"
         )        

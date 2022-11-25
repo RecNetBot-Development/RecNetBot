@@ -5,6 +5,7 @@ from discord.ext.commands import cooldown, BucketType
 from exceptions import AccountNotFound, ConnectionAlreadyDone
 from embeds import get_default_embed, fetch_profile_embed
 from utils import post_url, profile_url, unix_timestamp
+from resources import get_emoji
 from datetime import datetime, timedelta
 
 # For prompting the user whether or not to link the account
@@ -13,7 +14,7 @@ class Confirm(discord.ui.View):
         super().__init__()
         self.value = None
 
-    @discord.ui.button(label="Confirm", style=discord.ButtonStyle.green)
+    @discord.ui.button(label="Link", style=discord.ButtonStyle.green)
     async def confirm_callback(
         self, button: discord.ui.Button, interaction: discord.Interaction
     ):
@@ -93,7 +94,7 @@ async def link(
     prompt_em = get_default_embed()
     prompt_em.description = '\n'.join([
         f"Are you sure you want to link [@{user.username}]({profile_url(user.username)}) to your Discord?",
-        "You can only link a Rec Room account that you own."
+        "You can only link a Rec Room account that you own. Verification is required."
     ])
     view = Confirm()
     await ctx.interaction.edit_original_response(
@@ -127,7 +128,7 @@ async def link(
     verify_em.title = "Verification Steps"
     verify_em.description = "\n".join(
         [
-            f"1. {specify} this [this post]({post_url(post.id)}) to verify that you own the account.",
+            f"1. {specify} [this RecNet post]({post_url(post.id)}) to verify that you own the account.",
             "2. Press the Verify button.",
             f"\nThis expires {unix_timestamp(int(timeout_datetime.timestamp()), 'R')}."
         ]
@@ -160,6 +161,7 @@ async def link(
     # Verification done
     self.bot.cm.create_connection(ctx.author.id, user.id)
     em = get_default_embed()
-    em.description = f"Your Discord is now linked to [@{user.username}]({profile_url(user.username)})! RecNetBot now fills out the `username` option for you if you leave it empty."
+    em.description = f"Your Discord is now linked to [@{user.username}]({profile_url(user.username)})! {get_emoji('helpful')}\n" \
+                      "RecNetBot will now automatically fill out the `username` slot in commands."
     await ctx.interaction.edit_original_response(embeds=[profile_em, em], view=None)
     
