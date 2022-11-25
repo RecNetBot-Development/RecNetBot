@@ -4,7 +4,8 @@ from discord.commands import slash_command, Option
 from discord.ext.commands import cooldown, BucketType
 from exceptions import AccountNotFound, ConnectionAlreadyDone
 from embeds import get_default_embed, fetch_profile_embed
-from utils import post_url, profile_url
+from utils import post_url, profile_url, unix_timestamp
+from datetime import datetime, timedelta
 
 # For prompting the user whether or not to link the account
 class Confirm(discord.ui.View):
@@ -31,9 +32,17 @@ class Confirm(discord.ui.View):
 
 # For checking if the user has cheered the post
 class Check(discord.ui.View):
-    def __init__(self):
+    def __init__(self, post_id: int = 1):
         super().__init__()
         self.value = None
+        
+        # Add link to the verification post
+        link_button = discord.ui.Button(
+            label="Verification Post",
+            style=discord.ButtonStyle.link, 
+            url=post_url(post_id)
+        )
+        self.add_item(link_button)
 
     @discord.ui.button(label="Verify", style=discord.ButtonStyle.green)
     async def confirm_callback(
@@ -62,28 +71,14 @@ async def link(
         user = await self.bot.RecNet.accounts.fetch(check_discord.rr_id)
         
         profile_em = await fetch_profile_embed(user)
-        prompt_em = get_default_embed()
-        prompt_em.description = "Are you sure you want to **UNLINK** your current Rec Room account?\nThis is irreversible and will get rid of all your saved data."
-        view = Confirm()
+        em = get_default_embed()
+        group = discord.utils.get(self.__cog_commands__, name='profile')
+        unlink_command = discord.utils.get(group.walk_commands(), name='unlink')
+        em.description = f"You are already linked to [@{user.username}]({profile_url(user.username)}). If you'd like, you can unlink the account with {unlink_command.mention}."
         
-        await ctx.interaction.edit_original_response(
-            embeds=[profile_em, prompt_em],
-            view=view,
-            ephemeral=True
+        return await ctx.interaction.edit_original_response(
+            embeds=[profile_em, em]
         )
-        
-        await view.wait()
-        if view.value is None:
-            em = get_default_embed()
-            em.description = "Prompt timed out!"
-            return await ctx.interaction.edit_original_response(embed=em, view=None)
-        elif view.value is False:
-            em = get_default_embed()
-            em.description = "Cancelled unlinking!"
-            return await ctx.interaction.edit_original_response(embed=em, view=None)
-        
-        # Delete connection
-        self.bot.cm.delete_connection(ctx.author.id)
     
     # Check if RR account exists
     user = await self.bot.RecNet.accounts.get(username)
@@ -97,7 +92,7 @@ async def link(
     profile_em = await fetch_profile_embed(user)
     prompt_em = get_default_embed()
     prompt_em.description = '\n'.join([
-        f"Are you sure you want to **LINK** [@{user.username}]({profile_url(user.username)}) to your Discord?",
+        f"Are you sure you want to link [@{user.username}]({profile_url(user.username)}) to your Discord?",
         "You can only link a Rec Room account that you own."
     ])
     view = Confirm()
@@ -108,13 +103,9 @@ async def link(
     
     await view.wait()
     if view.value is None:
-        em = get_default_embed()
-        em.description = "Prompt timed out!"
-        return await ctx.interaction.edit_original_response(embed=em, view=None)
+        return await ctx.interaction.edit_original_response(content="Prompt timed out!", embeds=[], view=None)
     elif view.value is False:
-        em = get_default_embed()
-        em.description = "Cancelled linking!"
-        return await ctx.interaction.edit_original_response(embed=em, view=None)
+        return await ctx.interaction.edit_original_response(content="Cancelled linking!", embeds=[], view=None)
         
     # Fetch cheers from verify post
     post = self.bot.verify_post
@@ -125,45 +116,46 @@ async def link(
     specify = "Uncheer from" if cheered else "Cheer"
     demonstration = "https://i.imgur.com/adYnPLi.gif" if cheered else "https://i.imgur.com/5VMBcJw.gif"
     
-    view = Check()
+    # Get timeout date
+    dt = datetime.now()
+    td = timedelta(seconds=view.timeout)
+    timeout_datetime = dt + td
+    
+    # Send verification steps
+    view = Check(post_id=post.id)
     verify_em = get_default_embed()
+    verify_em.title = "Verification Steps"
     verify_em.description = "\n".join(
         [
-            f"{specify} this [this post]({post_url(post.id)}) to verify that you own the account.",
-            "You can only check the verification once."
+            f"1. {specify} this [this post]({post_url(post.id)}) to verify that you own the account.",
+            "2. Press the Verify button.",
+            f"\nThis expires {unix_timestamp(int(timeout_datetime.timestamp()), 'R')}."
         ]
     )
+    verify_em.set_footer(text=f"You can only press the verify button once.")
     verify_em.set_thumbnail(url=demonstration)
     await ctx.interaction.edit_original_response(embed=verify_em, view=view)
     
     await view.wait()
     if view.value is None:
-        em = get_default_embed()
-        em.description = "Verification timed out! Try again later."
         self.bot.cm.delete_connection(ctx.author.id)
-        return await ctx.interaction.edit_original_response(embed=em, view=None)
+        return await ctx.interaction.edit_original_response(content="Verification timed out! Try again later.", embeds=[], view=None)
     elif view.value is False:
-        em = get_default_embed()
-        em.description = "Could not verify the account's ownership. Try again later."
         self.bot.cm.delete_connection(ctx.author.id)
-        return await ctx.interaction.edit_original_response(embed=em, view=None)
+        return await ctx.interaction.edit_original_response(content="Could not verify the account's ownership. Try again later.", embeds=[], view=None)
     
     # Check status
     cheer_list = await post.get_cheers(force=True)
     if cheered and user.id in cheer_list or not cheered and user.id not in cheer_list:    
         # Failed to verify
-        em = get_default_embed()
-        em.description = "Could not verify the account's ownership. Try again later."
         self.bot.cm.delete_connection(ctx.author.id)
-        return await ctx.interaction.edit_original_response(embed=em, view=None)
+        return await ctx.interaction.edit_original_response(content="Could not verify the account's ownership. Try again later.", embeds=[], view=None)
         
     # One more security check
     if self.bot.cm.get_rec_room_connection(user.id):
         # If someone linked the account already
-        em = get_default_embed()
-        em.description = "Someone else already linked this account!"
         self.bot.cm.delete_connection(ctx.author.id)
-        return await ctx.interaction.edit_original_response(embed=em, view=None)
+        return await ctx.interaction.edit_original_response(content="Someone else already linked this account!", embeds=[], view=None)
     
     # Verification done
     self.bot.cm.create_connection(ctx.author.id, user.id)
