@@ -16,8 +16,6 @@ def format_platforms(platforms: List[str]) -> List[str]:
     """
     Formats platforms in a nice manner that contains links and icons
     """
-    print(platforms)
-    
     if not platforms: return []
     formatted = []
     for ele in platforms:
