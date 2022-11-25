@@ -127,6 +127,7 @@ class RNBPage(Page):
 class RNBPaginator(pages.Paginator):
     def __init__(self, *args, **kwargs):
         self.constant_embed = kwargs.pop("constant_embed", None)
+        self.hidden_items = kwargs.pop("hidden_items", [])
         
         super().__init__(*args, **kwargs)
         
@@ -191,6 +192,9 @@ class RNBPaginator(pages.Paginator):
         if self.show_indicator:
             self.buttons["page_indicator"]["object"].label = f"{self.current_page + 1}/{self.page_count + 1}"
         for key, button in self.buttons.items():
+            if key in self.hidden_items:
+                continue
+            
             if key != "page_indicator":
                 if button["hidden"]:
                     button["object"].disabled = True
