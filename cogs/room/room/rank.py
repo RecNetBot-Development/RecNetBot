@@ -78,23 +78,23 @@ class RankView(discord.ui.View):
         for placement, room in enumerate(rooms, start=1):
             match selection:
                 case "Popularity":
-                    em.description = f"Ranked by RecNet's ranking system\n`^Room` • {get_emoji('cheer')} Cheers"
+                    em.description = f"Ranked by **RecNet's ranking system**\n`^Room` • {get_emoji('cheer')} Cheers"
                     details = f"{room.cheer_count:,}"
                     
                 case "Cheers":
-                    em.description = f"Ranked by cheers\n`^Room` • {get_emoji('cheer')} Cheers"
+                    em.description = f"Ranked by **cheers**\n`^Room` • {get_emoji('cheer')} Cheers"
                     details = f"{room.cheer_count:,}"
                     
                 case "Favorites":
-                    em.description = f"Ranked by favorites\n`^Room` • {get_emoji('favorite')} Favorites"
+                    em.description = f"Ranked by **favorites**\n`^Room` • {get_emoji('favorite')} Favorites"
                     details = f"{room.favorite_count:,}"
                     
                 case "Visits":
-                    em.description = f"Ranked by total visits\n`^Room` • {get_emoji('visitor')} Visits"
+                    em.description = f"Ranked by **total visits**\n`^Room` • {get_emoji('visitor')} Visits"
                     details = f" {room.visit_count:,}"
                     
                 case "Visitors":
-                    em.description = f"Ranked by unique visitors\n`^Room` • {get_emoji('visitor')} Visitors"
+                    em.description = f"Ranked by **unique visitors**\n`^Room` • {get_emoji('visitor')} Visitors"
                     details = f"{room.visitor_count:,}"
                     
             ranked += f"**{placement}.** `^{room.name}` • {details}\n"
@@ -146,7 +146,6 @@ class Dropdown(discord.ui.Select):
                 emoji=get_emoji('visitors')
             ),
         ]
-        
 
         super().__init__(
             placeholder="Ranking Method",
@@ -170,6 +169,7 @@ async def rank(
     ctx: discord.ApplicationContext,
     filter: Option(str, name="filter", description="Enter keywords or #tags. Example: pvp #contest", required=False)
 ):
+    await ctx.interaction.response.defer()
     
     if filter:
         results = await self.bot.RecNet.rooms.search(filter, take=200)
