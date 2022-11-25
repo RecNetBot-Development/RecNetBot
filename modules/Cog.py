@@ -149,7 +149,7 @@ class Cog(commands.Cog):
                 description = f"```{str(original)}```\nConsider telling us about what happened so this bug can be resolved quicker! {cmd.mention}",
                 color = discord.Color.red()
             )
-            user_em.set_footer(text="This error was logged and will be fixed soon!")
+            user_em.set_footer(text="This error was logged and will be investigated!")
             await ctx.respond(embed=user_em)
             
             # Send error to RNB log channel
