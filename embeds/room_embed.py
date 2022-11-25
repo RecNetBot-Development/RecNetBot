@@ -74,7 +74,8 @@ def room_embed(room: Room, cached_stats: RoomStats = "None", hide_details: bool 
         em.set_thumbnail(url=img_url(room.image_name))
             
     # Room engagement
-    score = round((sum([i.score for i in room.scores]) / len(room.scores)) * 100) if room.scores else 0
+    scores = [i.score for i in room.scores if i.visit_type != 2]
+    score = round((sum(scores) / len(scores)) * 100) if scores else 0
 
     # Room hot placement
     #placement = 0
@@ -85,7 +86,7 @@ def room_embed(room: Room, cached_stats: RoomStats = "None", hide_details: bool 
     #        placement = f"{hot_rooms:,}"
     
     # Player retention    
-    retention = round((room.visitor_count / room.visit_count) * 100, 2) if room.visit_count > 0 else 0
+    retention = round(room.visit_count / room.visitor_count, 2) if room.visitor_count > 0 else 0
     
     # Cheer ratio
     cheer_ratio = round((room.cheer_count / room.visitor_count) * 100, 2) if room.visitor_count > 0 else 0
@@ -104,8 +105,8 @@ def room_embed(room: Room, cached_stats: RoomStats = "None", hide_details: bool 
         f"{get_emoji('visitors')} `{room.visitor_count:,}`{f' *(+{visitor_dif:,})*' if visitor_dif else ''} — Visitors",
         f"{get_emoji('visitor')} `{room.visit_count:,}`{f' *(+{visit_dif:,})*' if visit_dif else ''} — Visits",
         #f"{get_emoji('hot')} `#{placement if placement else '>1,000'}` — Hot Placement",
+        f"{get_emoji('visitors')} `{retention}` — Average Revisits",
         f"{get_emoji('engagement')} `{score}%` — Engagement",
-        f"{get_emoji('visitors')} `{retention}%` — Player Retention",
         f"{get_emoji('cheer')} `{cheer_ratio}%` — Cheer to Visitor Ratio"
     ]
     
