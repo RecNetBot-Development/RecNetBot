@@ -2,5 +2,5 @@
     "name": "Help",
     "icon": "category_help",
     "description": "Contains the help command for RecNetBot!",
-    "scripts": ["help", "details"]
+    "scripts": ["help", "commands"]
 }
