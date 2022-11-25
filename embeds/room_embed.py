@@ -84,6 +84,12 @@ def room_embed(room: Room, cached_stats: RoomStats = "None", hide_details: bool 
     #    elif isinstance(hot_rooms, int):
     #        placement = f"{hot_rooms:,}"
     
+    # Player retention    
+    retention = round((room.visitor_count / room.visit_count) * 100, 2) if room.visit_count > 0 else 0
+    
+    # Cheer ratio
+    cheer_ratio = round((room.cheer_count / room.visitor_count) * 100, 2) if room.visitor_count > 0 else 0
+    
     cheer_dif, favorite_dif, visitor_dif, visit_dif, last_check = 0, 0, 0, 0, 0
     if cached_stats not in ("None", None):
         cheer_dif = room.cheer_count - cached_stats.cheers if room.cheer_count != cached_stats.cheers else 0
@@ -98,7 +104,9 @@ def room_embed(room: Room, cached_stats: RoomStats = "None", hide_details: bool 
         f"{get_emoji('visitors')} `{room.visitor_count:,}`{f' *(+{visitor_dif:,})*' if visitor_dif else ''} — Visitors",
         f"{get_emoji('visitor')} `{room.visit_count:,}`{f' *(+{visit_dif:,})*' if visit_dif else ''} — Visits",
         #f"{get_emoji('hot')} `#{placement if placement else '>1,000'}` — Hot Placement",
-        f"{get_emoji('engagement')} `{score}%` — Engagement"
+        f"{get_emoji('engagement')} `{score}%` — Engagement",
+        f"{get_emoji('visitors')} `{retention}%` — Player Retention",
+        f"{get_emoji('cheer')} `{cheer_ratio}%` — Cheer to Visitor Ratio"
     ]
     
     if last_check:
@@ -106,7 +114,9 @@ def room_embed(room: Room, cached_stats: RoomStats = "None", hide_details: bool 
     elif cached_stats != "None":
         statistics.append(f"\nYou can see the statistical difference the next time you view this room!")
         
-    if statistics: em.add_field(name="Statistics", value="\n".join(statistics), inline=False)
+    if statistics:
+        em.add_field(name="Statistics", value="\n".join(statistics), inline=False)
+        em.set_footer(text="Engagement is a unofficial metric. Take it with a grain of salt.")
     
     return em
 
