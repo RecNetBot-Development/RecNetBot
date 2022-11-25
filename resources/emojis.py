@@ -88,6 +88,8 @@ class Emoji:
     cv2 = "<:cv2:1029120796880285747>"
     token = "<:token:1029126503499309068>"
     pico = "<:pico:1045031007222501498>"
+    rr = "<:recroom:1045821708071882762>"
+    helpful = "<:helpful:1045823274522775596>"
 
 class CategoryIcons:
     category_api = 963878518960291903  # (Api by Larea from NounProject.com)
