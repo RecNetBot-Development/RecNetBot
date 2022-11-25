@@ -33,8 +33,8 @@ def room_rank_embed(raw_rooms, tags, keywords, ranking_method="Popularity"):
     ranked_rooms = list(map(lambda room: format_room(room, ranking_method), enumerated_rooms))
     
     ranked_rooms[0] = ranked_rooms[0].replace("1.", get_emoji("first_place"))
-    if len(ranked_rooms) >= 1: ranked_rooms[1] = ranked_rooms[1].replace("2.", get_emoji("second_place"))
-    if len(ranked_rooms) >= 2: ranked_rooms[2] = ranked_rooms[2].replace("3.", get_emoji("third_place"))
+    if len(ranked_rooms) >= 2: ranked_rooms[1] = ranked_rooms[1].replace("2.", get_emoji("second_place"))
+    if len(ranked_rooms) >= 3: ranked_rooms[2] = ranked_rooms[2].replace("3.", get_emoji("third_place"))
     
     em.add_field(
         name="Ranking",
