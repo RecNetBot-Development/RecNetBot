@@ -5,7 +5,7 @@ from discord.commands import slash_command, Option
 from discord.ext.pages import PaginatorButton
 from embeds.invention_embed import invention_embed
 from resources import get_emoji
-from utils import profile_url, room_url, sanitize_text, event_url, invention_url
+from utils import profile_url, room_url, sanitize_text, event_url, invention_url, shorten
 from utils.paginator import RNBPaginator, RNBPage
 from recnetpy.dataclasses.account import Account
 from recnetpy.dataclasses.event import Event
@@ -226,7 +226,7 @@ class DropdownSelection(discord.ui.Select["SearchView"]):
         options = []
         for ele in self.results:
             option = discord.SelectOption(
-                label=ele["name"]
+                label=shorten(ele["name"])
             )
             options.append(option)
             
