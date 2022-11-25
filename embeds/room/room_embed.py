@@ -86,7 +86,7 @@ def room_embed(room, hot_rooms = {}):
         details.insert(3, f"{get_emoji('image')} `{total_images if len(room.images) < 1000 else '<1,000'}` — Photos Taken")
     
     # Player retention    
-    retention = round((room.visitor_count / room.visit_count) * 100, 2) if room.visit_count > 0 else 0
+    retention = round(room.visit_count / room.visitor_count, 2) if room.visitor_count > 0 else 0
     
     # Cheer ratio
     cheer_ratio = round((room.cheer_count / room.visitor_count) * 100, 2) if room.visitor_count > 0 else 0
@@ -97,8 +97,8 @@ def room_embed(room, hot_rooms = {}):
         f"{get_emoji('visitors')} `{room.visitor_count:,}` — Visitors",
         f"{get_emoji('visitor')} `{room.visit_count:,}` — Visits",
         #f"{get_emoji('hot')} `#{placement if placement else '>1,000'}` — Hot Placement",
+        f"{get_emoji('visitors')} `{retention}` — Average Revisits",
         f"{get_emoji('engagement')} `{score}%` — Engagement",
-        f"{get_emoji('visitors')} `{retention}%` — Player Retention",
         f"{get_emoji('cheer')} `{cheer_ratio}%` — Cheer to Visitor Ratio"
     ]
     
