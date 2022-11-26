@@ -10,7 +10,7 @@
     ],
     "groups": {
         "room": {
-            "scripts": ["info", "search", "data", "rank"],
+            "scripts": ["info", "search", "data", "rank", "stats"],
             "description": "View RecNetBot's {} room commands."
         }
     }
