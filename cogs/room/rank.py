@@ -20,13 +20,12 @@ def separate_keywords(_filter):
 async def rank(
     self, 
     ctx,
-    specify: Option(str, "Enter any #tags or keywords to filter results (separate by space)", required=False, name="filter"),
-    room_count: Option(int, "Specify how many rooms should be included in ranking.", required=False, default=10, min_value=3, max_value=15)
+    specify: Option(str, "Enter any #tags or keywords to filter results (separate by space)", required=False, name="filter")
 ):
     if specify:
-        room_resp = await self.bot.rec_net.rec_net.rooms.rooms.search.get(params={"query": specify, "take": room_count}).fetch()
+        room_resp = await self.bot.rec_net.rec_net.rooms.rooms.search.get(params={"query": specify, "take": 500}).fetch()
     else:
-        room_resp = await self.bot.rec_net.rec_net.rooms.rooms.hot.get(params={"take": room_count}).fetch()
+        room_resp = await self.bot.rec_net.rec_net.rooms.rooms.hot.get(params={"take": 500}).fetch()
         
     rooms = room_resp.data['Results']
     

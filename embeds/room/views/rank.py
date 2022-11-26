@@ -72,6 +72,7 @@ class Rank(discord.ui.View):
         super().__init__(
             timeout=None
         )
+        self.scope = 15
         self.tags = tags
         self.keywords = keywords
         self.rec_net = rec_net
@@ -123,7 +124,7 @@ class Rank(discord.ui.View):
         
     def update_items(self, displaying_room=False):
         self.clear_items()
-        self.add_item(RankRoomSelect(self, self.rooms))
+        self.add_item(RankRoomSelect(self, self.rooms[:self.scope]))
         if displaying_room: self.add_item(RankBackButton(self))
         if not displaying_room: self.add_item(RankRoomRankingSelect(self))
         
