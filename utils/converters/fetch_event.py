@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from exceptions import EventNotFound, InvalidURL
 from urllib.parse import urlparse
+from recnetpy.rest.exceptions import BadRequest
 
 class FetchEvent(commands.Converter):
     """
@@ -23,7 +24,10 @@ class FetchEvent(commands.Converter):
                 else:
                     raise InvalidURL("/event/...")
                 
-                
-        event = await ctx.bot.RecNet.events.fetch(event_id)
+        try:
+            event = await ctx.bot.RecNet.events.fetch(event_id)
+        except BadRequest:  # odd edge case
+            event = None
+            
         if not event: raise EventNotFound
         return event
