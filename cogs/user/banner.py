@@ -20,17 +20,12 @@ async def banner(
         account = await self.bot.cm.get_linked_account(self.bot.RecNet, ctx.author.id)
         if not account: raise ConnectionNotFound
         
-    em = get_default_embed()
-        
     if not account.banner_image:  # Check if the user has a banner
-        em.description = f"[{account.display_name}]({profile_url(account.username)}) hasn't set a banner yet!"
-        return await ctx.respond(embed=em) 
+        return await ctx.respond(
+            f"[{account.display_name}](<{profile_url(account.username)}>) hasn't set a banner yet!"
+        ) 
         
-    resolutions = (480, 360, 180)
-    # Make a list of banners with different resolutions
-    em.description = "\n".join(map(lambda res: f"[{res}]({img_url(account.banner_image, resolution=res)})", resolutions))
-        
-    await ctx.respond(img_url(account.banner_image, resolution=1080), embed=em) 
+    await ctx.respond(img_url(account.banner_image, raw=True)) 
         
     
     

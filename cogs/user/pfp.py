@@ -20,13 +20,15 @@ async def pfp(
         account = await self.bot.cm.get_linked_account(self.bot.RecNet, ctx.author.id)
         if not account: raise ConnectionNotFound
         
-    resolutions = (480, 360, 180)
+    #resolutions = (480, 360, 180)
         
-    em = get_default_embed()
+    #em = get_default_embed()
     # Make a list of pfp's with different resolutions
-    em.description = "\n".join(map(lambda res: f"[{res}]({img_url(account.profile_image, resolution=res)})", resolutions))
+    #em.description = "\n".join(map(lambda res: f"[{res}]({img_url(account.profile_image, resolution=res)})", resolutions))
         
-    await ctx.respond(img_url(account.profile_image, resolution=1080), embed=em) 
+    #await ctx.respond(img_url(account.profile_image, raw=True), embed=em)
+    
+    await ctx.respond(img_url(account.profile_image, raw=True)) 
         
     
     
