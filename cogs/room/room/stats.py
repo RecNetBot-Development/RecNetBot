@@ -17,7 +17,7 @@ async def info(
 
 @slash_command(
     name="stats",
-    description="View a Rec Room room's statistics only."
+    description="View a room's statistics only."
 )
 async def stats(
     self, 

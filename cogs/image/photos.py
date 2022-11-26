@@ -5,7 +5,7 @@ from exceptions import ConnectionNotFound
 
 @slash_command(
     name="photos",
-    description="Browse through a user's RecNet posts."
+    description="Browse through a player's RecNet posts."
 )
 async def photos(
     self, 

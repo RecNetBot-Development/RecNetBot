@@ -7,7 +7,7 @@ from exceptions import ConnectionNotFound
 
 @slash_command(
     name="pfp",
-    description="Fetch a Rec Room user's uncropped profile picture with many resolution options."
+    description="Get a player's uncropped profile picture."
 )
 async def pfp(
     self,   

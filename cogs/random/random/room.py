@@ -51,7 +51,7 @@ class RandomRoom(discord.ui.View):
 
 @slash_command(
     name="room",
-    description="Lookup random rooms taken in Rec Room."
+    description="Lookup random rooms."
 )
 async def room(
     self, 

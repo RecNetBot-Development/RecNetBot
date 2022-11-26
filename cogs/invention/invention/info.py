@@ -5,7 +5,7 @@ from embeds import fetch_invention_embed
 
 @slash_command(
     name="info",
-    description="View a Rec Room invention's details and statistics."
+    description="View an invention's details and statistics."
 )
 async def info(
     self, 

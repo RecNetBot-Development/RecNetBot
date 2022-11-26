@@ -56,7 +56,7 @@ class RoomView(discord.ui.View):
 
 @slash_command(
     name="info",
-    description="View a Rec Room room's information and statistics."
+    description="View a room's information and statistics."
 )
 async def info(
     self, 

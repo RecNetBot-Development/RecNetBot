@@ -5,7 +5,7 @@ from exceptions import ConnectionNotFound
 
 @slash_command(
     name="during",
-    description="Filter RecNet posts by in which event they were taken in."
+    description="Browse posts taken during specified events."
 )
 async def during(
     self, 

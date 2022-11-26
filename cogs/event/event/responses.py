@@ -168,7 +168,7 @@ class Dropdown(discord.ui.Select):
 
 @slash_command(
     name="responses",
-    description="View a Rec Room events's responses from players."
+    description="See who have responsed to an event."
 )
 async def responses(
     self, 

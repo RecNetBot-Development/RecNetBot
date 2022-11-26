@@ -4,7 +4,7 @@ from cogs.miscellaneous.search import SearchView
 
 @slash_command(
     name="search",
-    description="Search and view a Rec Room invention's details and statistics."
+    description="Search for inventions."
 )
 async def search(
     self, 

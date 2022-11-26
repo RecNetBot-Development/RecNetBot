@@ -6,7 +6,7 @@ from exceptions import ConnectionNotFound
 
 @slash_command(
     name="data",
-    description="View a Rec Room account's raw API data."
+    description="Get raw JSON data of a player."
 )
 async def data(
     self, 

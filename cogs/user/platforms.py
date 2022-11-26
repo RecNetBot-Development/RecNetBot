@@ -8,7 +8,7 @@ from exceptions import ConnectionNotFound
 
 @slash_command(
     name="platforms",
-    description="See what platforms a Rec Room user has played on."
+    description="See what platforms a player has played on."
 )
 async def platforms(
     self,   

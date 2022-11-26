@@ -5,7 +5,7 @@ from embeds import fetch_image_embed
 
 @slash_command(
     name="origin",
-    description="View a public RecNet post by its RecNet link, id, img.rec.net link or image name."
+    description="View a public post by its RecNet link, id, img.rec.net link or image name."
 )
 async def origin(
     self, 

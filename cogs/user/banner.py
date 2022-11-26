@@ -7,7 +7,7 @@ from exceptions import ConnectionNotFound
 
 @slash_command(
     name="banner",
-    description="Fetch a Rec Room user's banner with many resolution options."
+    description="Get a player's RecNet banner."
 )
 async def banner(
     self,   

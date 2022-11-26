@@ -5,7 +5,7 @@ from utils import format_json_block
 
 @slash_command(
     name="data",
-    description="View a Rec Room image's raw API data."
+    description="Get raw JSON data of an image."
 )
 async def data(
     self, 

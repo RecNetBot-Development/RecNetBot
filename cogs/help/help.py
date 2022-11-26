@@ -118,7 +118,9 @@ async def help(self, ctx: discord.ApplicationContext):
            
     # Add github link if in cfg
     if 'github_link' in cfg:
-        info += f"\n{get_emoji('github')} I am open source! Check out my [GitHub repository]({cfg['github_link']})."
+        info += f"\n{get_emoji('github')} I am open source! Check out my [GitHub organization]({cfg['github_link']})." 
+        
+        
     em.add_field(name="Information", value=info, inline=False)
     
     # Get link buttons + commands

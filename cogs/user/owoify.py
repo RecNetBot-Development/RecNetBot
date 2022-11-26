@@ -9,7 +9,7 @@ from owoify.owoify import Owoness
 
 @slash_command(
     name="owoify",
-    description="View a Wec Woom pwofiwe with additionyaw infowmation.",
+    description="View a pwayew's pwofiwe.",
     
 )
 async def _owoify(

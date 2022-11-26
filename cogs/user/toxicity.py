@@ -10,7 +10,7 @@ from exceptions import ConnectionNotFound
 
 @slash_command(
     name="toxicity",
-    description="See how toxic an AI sees a Rec Room profile's bio!"
+    description="See how toxic an AI sees a player's bio!"
 )
 async def toxicity(
     self, 

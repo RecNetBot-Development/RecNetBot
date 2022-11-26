@@ -86,10 +86,10 @@ class RandomAccount(discord.ui.View):
         
 
 @slash_command(
-    name="account",
-    description="Lookup random Rec Room accounts by join date."
+    name="player",
+    description="Lookup random players by join date."
 )
-async def account(
+async def player(
     self, 
     ctx: discord.ApplicationContext,
     join_date: Option(int, "Choose join date if any", choices=[2016, 2017, 2018, 2019, 2020, 2021], required=False),

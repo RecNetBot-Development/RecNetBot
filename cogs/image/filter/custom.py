@@ -7,7 +7,7 @@ from embeds import get_default_embed
 
 @slash_command(
     name="custom",
-    description="Combine all filters together to find specific RecNet posts."
+    description="Use filters to find specific posts."
 )
 async def custom(
     self, 

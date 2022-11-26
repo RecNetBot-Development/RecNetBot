@@ -7,7 +7,7 @@ from utils.rec_net_urls import img_url
 
 @slash_command(
     name="placement",
-    description="View a Rec Room room's placement in the hot page."
+    description="View a room's placement in the hot page."
 )
 async def placement(
     self, 

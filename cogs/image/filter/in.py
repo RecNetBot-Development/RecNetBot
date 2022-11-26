@@ -5,7 +5,7 @@ from exceptions import ConnectionNotFound
 
 @slash_command(
     name="in",
-    description="Filter RecNet posts by in which rooms the photos are taken."
+    description="Browse posts taken in specified rooms."
 )
 async def _in(
     self, 

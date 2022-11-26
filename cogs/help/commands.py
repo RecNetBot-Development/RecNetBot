@@ -179,7 +179,7 @@ class Dropdown(discord.ui.Select):
 
 @slash_command(
     name="commands",
-    description="View all of RecNetBot's commands!"
+    description="Browse RecNetBot's commands!"
     
 )
 async def commands(self, ctx: discord.ApplicationContext):

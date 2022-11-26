@@ -3,7 +3,7 @@ from discord.commands import slash_command, Option
 
 @slash_command(
     name="together",
-    description="Filter RecNet posts by who are tagged in them."
+    description="Find posts where specified players are featured in."
 )
 async def together(
     self, 

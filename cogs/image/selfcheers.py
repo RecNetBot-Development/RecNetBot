@@ -10,7 +10,7 @@ from utils.paginator import RNBPaginator, RNBPage
 
 @slash_command(
     name="selfcheers",
-    description="See how many times a user has cheered their own RecNet posts."
+    description="See how many times a player has cheered their own RecNet posts."
 )
 async def selfcheers(
     self, 

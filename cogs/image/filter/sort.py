@@ -5,7 +5,7 @@ from exceptions import ConnectionNotFound
 
 @slash_command(
     name="sort",
-    description="Sort a user's RecNet posts by cheers, comments, tags or date and browse through them."
+    description="Sort a player's posts by cheers, comments, tags or date and browse through them."
 )
 async def sort(
     self, 

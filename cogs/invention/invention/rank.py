@@ -129,7 +129,7 @@ class Dropdown(discord.ui.Select):
 
 @slash_command(
     name="rank",
-    description="Rank Rec Room inventions' by different attributes and filters."
+    description="Ranks inventions in a leaderboard by filters."
 )
 async def rank(
     self, 

@@ -5,7 +5,7 @@ from exceptions import ConnectionNotFound
 
 @slash_command(
     name="minmax",
-    description="Filter RecNet posts by a minimum or maximum amount of cheers, comments or tags."
+    description="Filter posts by a minimum or maximum amount of cheers, comments or tags."
 )
 async def minmax(
     self, 

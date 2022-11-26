@@ -151,7 +151,7 @@ class Delete(discord.ui.Button["ShowcaseView"]):
 
 @slash_command(
     name="showcased",
-    description="View someone's showcased rooms on their RR profile."
+    description="View a player's showcased rooms on their profile."
 )
 async def showcased(
     self, 

@@ -29,7 +29,7 @@ class AdjectiveAnimal(discord.ui.View):
 
 @slash_command(
     name="adjectiveanimal",
-    description="Generate random Adjective Animal names used in Rec Room"
+    description="Generate random Adjective Animal names used in Rec Room."
 )
 async def adjectiveanimal(
     self, 

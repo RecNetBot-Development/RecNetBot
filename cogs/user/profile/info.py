@@ -66,7 +66,7 @@ class ProfileView(discord.ui.View):
 
 @slash_command(
     name="info",
-    description="View a Rec Room profile with additional information.",
+    description="View a player's profile.",
     
 )
 async def info(

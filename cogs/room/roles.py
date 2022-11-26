@@ -175,7 +175,7 @@ class Dropdown(discord.ui.Select):
 
 @slash_command(
     name="roles",
-    description="View a Rec Room room's co-owners, moderators and hosts."
+    description="View a room's co-owners, moderators and hosts."
 )
 async def roles(
     self, 

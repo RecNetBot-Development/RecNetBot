@@ -5,7 +5,7 @@ from exceptions import ConnectionNotFound
 
 @slash_command(
     name="feed",
-    description="Browse through a user's RecNet feed."
+    description="Browse through a player's RecNet feed."
 )
 async def feed(
     self, 

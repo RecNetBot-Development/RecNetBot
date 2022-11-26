@@ -5,7 +5,7 @@ from embeds import fetch_event_embed
 
 @slash_command(
     name="info",
-    description="View a Rec Room event's details."
+    description="View an event's details."
 )
 async def info(
     self, 

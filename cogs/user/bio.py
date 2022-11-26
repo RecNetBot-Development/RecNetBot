@@ -7,7 +7,7 @@ from discord.commands import slash_command, Option
 
 @slash_command(
     name="bio",
-    description="Read someone's Rec Room bio."
+    description="Read a player's bio."
 )
 async def bio(
     self, 
