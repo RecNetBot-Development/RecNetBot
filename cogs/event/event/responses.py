@@ -23,6 +23,7 @@ class AttendeeView(discord.ui.View):
         self.responses = event.responses
         
         # Sort responses by the account's display_name
+        self.responses = list(filter(lambda resp: hasattr(resp.player, "display_name"), self.responses))  # Temporary fix to deleted accounts
         self.responses.sort(key=lambda response: response.player.display_name)
         
         self.add_item(Dropdown(self))
@@ -59,7 +60,7 @@ class AttendeeView(discord.ui.View):
         
         image_name = self.event.image_name
         if image_name:
-            em.set_thumbnail(image_name)
+            em.set_thumbnail(url=img_url(image_name, crop_square=True))
         
         if not responses:
             em.description = "No players found!"
@@ -71,7 +72,7 @@ class AttendeeView(discord.ui.View):
             em.title = f"{self.event.name}'s responses"
             em.url = event_url(self.event.id)
             if image_name:
-                em.set_thumbnail(image_name)
+                em.set_thumbnail(url=img_url(image_name, crop_square=True))
             for responsee in chunk:
                 pieces.append(
                     f"[{responsee.player.username}]({profile_url(responsee.player.username)}) • {responsee.type}"
@@ -95,11 +96,15 @@ class Dropdown(discord.ui.Select):
         self.bot = self.attendee_view.bot
         self.responses = self.attendee_view.responses
         
-        # Create selection options with cogs
+        total_responses = len(self.responses)
+        # Limitation
+        if len(self.responses) >= 4095:
+            total_responses = f"{total_responses}+"
         
+        # Create selection options with cogs
         options = [
             discord.SelectOption(
-                label=f"All ({len(self.responses)})"
+                label=f"All ({total_responses})"
             )
         ]
         
@@ -108,7 +113,7 @@ class Dropdown(discord.ui.Select):
         if attendees:
             options.append(
                 discord.SelectOption(
-                    label=f"Attending ({attendees})"
+                    label=f"Attending ({attendees:,})"
                 )
             )
         
@@ -117,7 +122,7 @@ class Dropdown(discord.ui.Select):
         if interested:
             options.append(
                 discord.SelectOption(
-                    label=f"Interested ({interested})"
+                    label=f"Interested ({interested:,})"
                 )
             )
         
@@ -126,7 +131,7 @@ class Dropdown(discord.ui.Select):
         if not_attending:
             options.append(
                 discord.SelectOption(
-                    label=f"Not Attending ({not_attending})"
+                    label=f"Not Attending ({not_attending:,})"
                 )
             )
 
@@ -135,7 +140,7 @@ class Dropdown(discord.ui.Select):
         if invited:
             options.append(
                 discord.SelectOption(
-                    label=f"Invited ({invited})"
+                    label=f"Invited ({invited:,})"
                 )
             )
 
@@ -175,9 +180,11 @@ async def responses(
     ctx: discord.ApplicationContext, 
     event: Option(FetchEvent, name="event", description="Enter a RecNet link or id", required=True)
 ):
+    await ctx.interaction.response.defer()
+    
     await event.resolve_responders()
     view = AttendeeView(self.bot, context=ctx, event=event)
     embeds = view.initialize()
-    paginator = RNBPaginator(pages=embeds, custom_view=view, show_indicator=False, show_disabled=True, trigger_on_display=True)
+    paginator = RNBPaginator(pages=embeds, custom_view=view, show_indicator=False, show_disabled=True, trigger_on_display=True, hidden_items=["random"])
     view.paginator = paginator
     await paginator.respond(ctx.interaction)
