@@ -4,6 +4,7 @@ import os
 import logging
 import json
 import sqlite3
+import rr_bot.client
 from discord.ext import commands
 from recnetpy import Client
 from modules import CogManager
@@ -52,6 +53,10 @@ class RecNetBot(commands.Bot):
         self.icm = InventionCacheManager(self.db)
         self.bcm = BookmarkManager(self.db)
 
+        # In-game bot
+        credentials = self.config.get("rr_bot_credentials", {})
+        self.rr_bot = rr_bot.client.Client(self, credentials.get("username", None), credentials.get("password", None))
+
         # Initialize
         self.cog_manager.buildCogs()
 
@@ -74,9 +79,16 @@ class RecNetBot(commands.Bot):
             f"Logged in as {self.user.name}",
             f"PyCord version: {discord.__version__}",
             f"Python version: {platform.python_version()}",
-            f"Running on: {platform.system()} {platform.release()} ({os.name})",
+            f"Running on: {platform.system()} {platform.release()} ({os.name})\n",
             sep="\n"
         )
+        
+        # RR bot initialization
+        status = await self.rr_bot.start()
+        if status:
+            print("Rec Room bot initialized!")
+        else:
+            print("Rec Room bot failed to initialize!")
     
     #async def on_error(self, event, *args, **kwargs):
     #    logging.basicConfig(level=logging.WARNING, filename="error.log", filemode="a+",
