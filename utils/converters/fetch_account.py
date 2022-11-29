@@ -11,6 +11,9 @@ class FetchAccount(commands.Converter):
         if isinstance(account, Account):
             return account
         
+        # Sanitize input
+        account = account.strip().replace("@", "")
+        
         account = await ctx.bot.RecNet.accounts.get(account)
         if not account: raise AccountNotFound
         return account

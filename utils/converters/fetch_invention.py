@@ -10,6 +10,9 @@ class FetchInvention(commands.Converter):
     async def convert(self, ctx: discord.ApplicationContext, _invention: str):
         invention_id = 0
         if isinstance(_invention, str):
+            # Sanitize input
+            _invention = _invention.strip()
+            
             if _invention.isdigit(): 
                 invention_id = _invention
             else:

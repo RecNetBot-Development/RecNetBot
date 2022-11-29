@@ -11,6 +11,9 @@ class FetchEvent(commands.Converter):
     async def convert(self, ctx: discord.ApplicationContext, _event: str | int):
         event_id = 0
         if isinstance(_event, str):
+            # Sanitize input
+            _event = _event.strip()
+            
             if _event.isdigit(): 
                 event_id = _event
             else:

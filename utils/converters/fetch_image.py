@@ -10,6 +10,9 @@ class FetchImage(commands.Converter):
     async def convert(self, ctx: discord.ApplicationContext, _image: str | int):
         image_id = 0
         if isinstance(_image, str):
+            # Sanitize input
+            _image = _image.strip()
+            
             if _image.isdigit():  # If it's a stringified id
                 image_id = _image
                 image = await ctx.bot.RecNet.images.fetch(image_id)
