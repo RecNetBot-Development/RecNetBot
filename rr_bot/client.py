@@ -2,10 +2,13 @@ import json
 import urllib.parse
 import re
 import itertools
-from utils import date_to_unix
+from utils import date_to_unix, post_url, event_url
 from datetime import datetime
 from recnetlogin import RecNetLoginAsync
 from recnetpy.dataclasses.account import Account
+from recnetpy.dataclasses.room import Room
+from recnetpy.dataclasses.image import Image
+from recnetpy.dataclasses.event import Event
 from discord.ext import tasks
 from typing import List, Optional
 
@@ -62,11 +65,12 @@ class Client():
         return {"Authorization": await self.login.get_token(include_bearer=True)}
         
     
-    def generate_message(self, text: str) -> dict:
+    def generate_message(self, text: str, version: int = 1) -> dict:
         """Generates a message that can be sent through RecNet's chat API
 
         Args:
             text (str): Message content
+            version (int): Version (1 for normal, 2 for some embeds)
 
         Returns:
             dict: Message structure
@@ -75,7 +79,7 @@ class Client():
         message = {
             "Data": str(text), 
             "Type": 0,
-            "Version": 1
+            "Version": version
         }
         return urllib.parse.quote(json.dumps(message))
     
@@ -194,7 +198,7 @@ class Client():
         """Sends a thread message with RecNet's chat API
 
         Args:
-            messages (List[str]) Messages to send
+            messages (List[dict]) Messages to send
             thread_id (int): Thread ID to send to
 
         Returns:
@@ -207,7 +211,7 @@ class Client():
         # Generate the payload
         payload = ""
         for text in messages:
-            payload += f"msg={self.generate_message(text)}&"
+            payload += f"msg={text}&"
             
         # Get headers
         headers = await self.get_headers()
@@ -262,6 +266,7 @@ class Client():
             elif notif["Type"] == 4:
                 # Check if it's a linked account
                 method = "post" if self.bot.cm.get_rec_room_connection(rr_id=account_id) else "delete"
+                #method = "post"
                 
                 # Accept or reject request
                 resp = await self.bot.RecNet.rec_net.api.relationships.v3(account_id).make_request(method, headers=headers)
@@ -322,6 +327,21 @@ class Client():
         room_ids = re.findall("<\^R(\d*)\|", text)
         if room_ids:
             embeds["room"] = set(filter(None, room_ids))
+            
+        # Find possible club ids
+        club_ids = re.findall("<\*C(\d*)\|", text)
+        if club_ids:
+            embeds["club"] = set(filter(None, club_ids))
+            
+        # Find possible image ids
+        image_ids = re.findall("<Image\:(\d*)", text)
+        if image_ids:
+            embeds["image"] = set(filter(None, image_ids))
+            
+        # Find possible event ids
+        event_ids = re.findall("<\*E(\d*)\|", text)
+        if event_ids:
+            embeds["event"] = set(filter(None, event_ids))
         
         return embeds
     
@@ -337,6 +357,45 @@ class Client():
             str: RR account chat embed
         """
         return f"<@U{account_id}|{username}>"
+    
+    
+    def create_room_embed(self, room_id: int, room_name: str) -> str:
+        """Generates a room embed for RR chats
+
+        Args:
+            room_id (int): A room's id
+            room_name (str): The room's name
+
+        Returns:
+            str: RR room chat embed
+        """
+        return f"<^R{room_id}|{room_name}>"
+    
+    
+    def create_event_embed(self, event_id: int, event_name: str) -> str:
+        """Generates a room embed for RR chats
+
+        Args:
+            event_id (int): A event's id
+            event_name (str): The event's name
+
+        Returns:
+            str: RR event chat embed
+        """
+        return f"<*E{event_id}|{event_name}>"
+    
+    
+    def create_club_embed(self, club_id: int, club_name: str) -> str:
+        """Generates a club embed for RR chats
+
+        Args:
+            club_id (int): A club's id
+            club_name (str): The club's name
+
+        Returns:
+            str: RR club chat embed
+        """
+        return f"<*C{club_id}|{club_name}>"
     
     
     def create_account_details(self, account: Account, matchmaking: dict = None) -> str:
@@ -378,16 +437,167 @@ class Client():
         
         return "\n".join(fields)
     
+
+    def create_room_details(self, room: Room) -> str:
+        """Takes an room dataclass and turns it into a short description about the room.
+
+        Args:
+            room (Room): RecNetPy room
+
+        Returns:
+            str: Room details
+        """
+        creation_date = datetime.utcfromtimestamp(room.created_at).strftime('%d %B, %Y')
+        embed = self.create_room_embed(room.id, room.name)
+ 
+        # Room engagement
+        scores = [i.score for i in room.scores if i.visit_type != 2]
+        score = round((sum(scores) / len(scores)) * 100) if scores else 0
+ 
+        # Player retention    
+        retention = round(room.visit_count / room.visitor_count, 2) if room.visitor_count > 0 else 0
+        
+        # Cheer ratio
+        cheer_ratio = round((room.cheer_count / room.visitor_count) * 100, 2) if room.visitor_count > 0 else 0
+        
+        # Message fields
+        fields = [
+            f"{embed}",
+            f"📅 Created at {creation_date}",
+            f"⭐ Favorites: {room.favorite_count:,}",
+            f"👤 Visitors: {room.visitor_count:,}",
+            f"👤🚪 Avg. Revisits: {retention:,}",
+            f"📈 Engagement: {score}%",
+            f"👍👥 Cheer to Visitor Ratio: {cheer_ratio}%",
+        ]
+        return "\n".join(fields)
     
-    @tasks.loop(seconds=5)
+    
+    def create_image_details(self, image: Image) -> str:
+        """Takes an image dataclass and turns it into a short description about the image.
+
+        Args:
+            image (Image): RecNetPy image
+
+        Returns:
+            str: Image details
+        """
+        creation_date = datetime.utcfromtimestamp(image.created_at).strftime('%d %B, %Y %I %p %Z')
+        
+        # Message fields
+        fields = [
+            f"{post_url(image.id)}",
+            f"📅 Taken at {creation_date}",
+            f"👍 Cheers: {image.cheer_count}",
+            f"💬 Comments: {image.comment_count}",
+        ]
+        
+        # Add tagged player count if any
+        if image.tagged_player_ids:
+            fields.append(f"👥 Tagged: {len(image.tagged_player_ids)}")
+            
+        return "\n".join(fields)
+    
+    
+    def create_event_details(self, event: Event) -> str:
+        """Takes an event dataclass and turns it into a short description about the event.
+
+        Args:
+            event (Event): RecNetPy event
+
+        Returns:
+            str: Event details
+        """
+        
+        # Get responses
+        responses = {
+            "Attending": 0,
+            "May Attend": 0,
+            "Not Attending": 0,
+            "Pending": 0
+        }
+        icons = {
+            "Attending": "🎫",
+            "May Attend": "🤔",
+            "Not Attending": "❌",
+            "Pending": "🔃"
+        }
+        for r in event.responses:
+            if r.type in responses:
+                responses[r.type] += 1
+        
+        # Message fields
+        fields = [
+            #self.create_event_embed(event.id, event.name),
+            f"{event.name} • {event_url(event.id)}",
+            f"🎟️ Total Responses: {len(event.responses)}",
+        ]
+        
+        # Add responses to fields
+        for r, n in responses.items():
+            fields.append(
+                f"{icons.get(r, '')} {r}: {n:,}"
+            )
+            
+        return "\n".join(fields)
+    
+    
+    def create_club_details(self, club: dict) -> str:
+        """Takes a club JSON and turns it into a short description about the club.
+
+        Args:
+            club (dict): RecNet club
+
+        Returns:
+            str: Club details
+        """
+        
+        # Message fields
+        fields = [
+            f"🎋 {club.get('name', 'ClubName')} • {club.get('category', 'CategoryType')}",
+            f"⭐ Min. Level: {club.get('minLevel', 0)}"
+        ]
+        
+        # Junior indicator
+        if club.get('allowJuniors', False):
+            fields.append("🍼 Allows Juniors!")
+        else:
+            fields.append("🍼❌ Doesn't Allow Juniors.")
+            
+        # Club house indicator
+        if club.get('clubhouseRoomId', None):
+            fields.append("🛖 Has a Club House!")
+        else:
+            fields.append("🛖❌ Doesn't have a Club House.")
+            
+        # Club chat indicator
+        if club.get('clubChatEnabled', False):
+            fields.append("🗨️ Has a Club Chat!")
+        else:
+            fields.append("🗨️❌ Doesn't have a Club Chat.")
+        
+        return "\n".join(fields)
+    
+    
+    def create_help_details(self) -> str:
+        """Creates the help message when someone adds RNB
+
+        Returns:
+            str: Help message
+        """
+        return f"Hey, thank you for using RecNetBot!" \
+               f"\nSend me any supported attachment in-game to receive bite-sized details!" \
+               f"\nFor support needs, contact {self.create_account_embed(1700372, 'Jegarde')}."
+    
+    
+    @tasks.loop(seconds=2)
     async def update(self):
         # Accept all friend requests
         ids = await self.accept_friend_requests()
         
         # Send an introduction to just added people
         for account_id in ids:
-            await self.send_dm("Hey! You can send me @usernames for details.", account_id)
-            print(f"Added id:{account_id}")
+            await self.send_dm(self.create_help_details(), account_id)
             
         # Leave inactive threads
         await self.leave_inactive_threads()
@@ -399,11 +609,19 @@ class Client():
             messages = await self.get_unread_messages(thread["chatThreadId"], thread["lastReadMessageId"], contents_only=True)
             if not messages: continue
             
-            # Get any embeds
-            embeds = list(map(lambda m: self.parse_embeds(m["Data"]), messages))
+            # Go through messages
+            response, accounts, rooms, clubs, images, events, matchmaking, embeds = [], [], [], [], [], [], [], []
+            for m in messages:
+                match m["Type"]:
+                    case 0 | 2:
+                        embeds.append(self.parse_embeds(m["Data"]))
+                    case 1:
+                        message = self.generate_message("I'm just a robot, I can't party!")
+                        response.append(message)
+                    case _:
+                        continue
             
             # Build the response
-            response, accounts, rooms, matchmaking = [], [], [], []
             for e in embeds:
                 for em, ids in e.items():
                     match em:
@@ -413,19 +631,46 @@ class Client():
                             accounts = await self.bot.RecNet.accounts.fetch_many(ids)
                             resp = await self.bot.RecNet.rec_net.custom("https://match.rec.net/player").make_request("post", body={"id": ids}, headers=await self.get_headers())
                             matchmaking = resp.data
+                        case "club":  # if it's an club embed
+                            for id in ids:
+                                resp = await self.bot.RecNet.rec_net.custom("https://clubs.rec.net/").club(id).make_request("get", headers=await self.get_headers())
+                                if resp.success: clubs.append(resp.data)
+                        case "image":  # if it's an image embed
+                            images = await self.bot.RecNet.images.fetch_many(ids)
+                        case "event":  # if it's an event embed
+                            events = await self.bot.RecNet.events.fetch_many(ids)
                         case _:
                             continue
             
             # Build account details
             for (a, m) in zip(accounts, matchmaking):
-                response.append(self.create_account_details(a, m))
+                message = self.generate_message(self.create_account_details(a, m))
+                response.append(message)
+                
+            # Build room details
+            for r in rooms:
+                patched = await r.client.rooms.fetch(r.id, 64)
+                message = self.generate_message(self.create_room_details(patched))
+                response.append(message)
+                
+            # Build image details
+            for i in images:
+                message = self.generate_message(self.create_image_details(i))
+                response.append(message)
+             
+            # Build club details   
+            for c in clubs:
+                message = self.generate_message(self.create_club_details(c))
+                response.append(message)
+                
+            # Build event details
+            for e in events:
+                await e.resolve_responders()
+                message = self.generate_message(self.create_event_details(e))
+                response.append(message)
                 
             if response:
                 await self.send_thread_msg(response, thread["chatThreadId"])
-                print("SENT", response)
-            else:
-                await self.send_thread_msg(["No player embeds found!"], thread["chatThreadId"])
-                print("SENT No player embeds found!")
         
         
     @update.before_loop
