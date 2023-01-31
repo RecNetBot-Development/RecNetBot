@@ -54,8 +54,8 @@ class RecNetBot(commands.Bot):
         self.bcm = BookmarkManager(self.db)
 
         # In-game bot
-        credentials = self.config.get("rr_bot_credentials", {})
-        self.rr_bot = rr_bot.client.Client(self, credentials.get("username", None), credentials.get("password", None))
+        #credentials = self.config.get("rr_bot_credentials", {})
+        #self.rr_bot = rr_bot.client.Client(self, credentials.get("username", None), credentials.get("password", None))
 
         # Initialize
         self.cog_manager.buildCogs()
