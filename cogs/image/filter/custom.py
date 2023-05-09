@@ -36,14 +36,20 @@ async def custom(
     posts = []
 
     if taken_by:  # Check for a linked RR account
-        posts: list = await taken_by.get_images(take=1_000_000)
+        # why did you have to limit image fetches to a 1000 posts Rec Room???
+        posts = await taken_by.get_images(take=1000)
+        while len(posts) % 1000 == 0 and posts:
+            posts += await taken_by.get_images(skip=1000 * (len(posts) // 1000), take=1000, force=True)  # Skips the previous posts to fetch another 1000
+            
     elif together:
         # Fetch the first user from together
         # Since the user is required to be in the post, this will work
         first_user = together.split(" ")[0]
         first_user = await self.bot.RecNet.accounts.get(first_user)
         if first_user:
-            posts: list = await first_user.get_feed(take=1_000_000)
+            posts = await first_user.get_feed(take=1000)
+            while len(posts) % 1000 == 0 and posts:
+                posts += await first_user.get_feed(skip=1000 * len(posts) // 1000, take=1000, force=True)  # Skips the previous posts to fetch another 1000
         
     # Filter by rooms
     if rooms:
