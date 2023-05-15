@@ -67,10 +67,10 @@ async def help(self, ctx: discord.ApplicationContext):
             "link": {"mention": None, "hidden": True}
         },
         "Room": {
-            "info": {"mention": None, "description": "View a room"}  
+            "info": {"mention": None, "description": "See detailed information about a room"}  
         },
         "Image": {
-            "photos": {"mention": None, "description": "Browse someone's posts"}
+            "photos": {"mention": None, "description": "Browse someone's shared photos"}
         },
         "Event": {
             "search": {"mention": None, "description": "Search events"}
