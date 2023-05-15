@@ -39,7 +39,7 @@ def create_embed(data: dict) -> discord.Embed:
     em.title = data["Title"]
     
     # Replace sprites with unknown emojis
-    em.description = re.sub("<sprite .+?>", get_emoji("unknown"), data["Message"])
+    em.description = sp
     
     # Add additional information
     em.description += f"\n\nMade {unix_timestamp(timestamp, 'R')}" \
