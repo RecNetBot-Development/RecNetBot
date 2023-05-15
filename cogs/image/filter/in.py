@@ -14,7 +14,7 @@ async def _in(
     exclude: Option(str, name="exclude", description="Filter by which RR rooms SHOULDN'T be featured (separate by spaces)", required=False, default=None),
     account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False)
 ):
-    if any((rooms, exclude)):
+    if not rooms and not exclude:
         await ctx.interaction.response.send_message("Fill in `rooms` or `exclude` params!", ephemeral=True)
         return
     

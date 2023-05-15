@@ -14,7 +14,7 @@ async def during(
     exclude: Option(str, name="exclude", description="Filter by which RR rooms SHOULDN'T be featured (separate by spaces, enter event ids)", required=False, default=None),
     account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False)
 ):
-    if any((events, exclude)):
+    if not events and not exclude:
         await ctx.interaction.response.send_message("Fill in `events` or `exclude` params!", ephemeral=True)
         return
     

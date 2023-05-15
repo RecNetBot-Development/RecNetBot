@@ -11,7 +11,7 @@ async def together(
     together: Option(str, name="together", description="Filter by which RR users are featured in a post (separate by spaces)", required=False, default=None),
     exclude: Option(str, name="exclude", description="Filter by which RR users SHOULDN'T be featured in a post (separate by spaces)", required=False, default=None)
 ):
-    if not any((together, exclude)):
+    if not together and not exclude:
         await ctx.interaction.response.send_message("Fill in `together` or `exclude`!", ephemeral=True)
         return
     
