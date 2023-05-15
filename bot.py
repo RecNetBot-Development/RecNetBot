@@ -4,14 +4,13 @@ import os
 import logging
 import json
 import sqlite3
-import rr_bot.client
 from discord.ext import commands
 from recnetpy import Client
 from modules import CogManager
 from database import ConnectionManager, RoomCacheManager, InventionCacheManager, BookmarkManager
 from googleapiclient import discovery
 
-class RecNetBot(commands.Bot):
+class RecNetBot(commands.AutoShardedBot):
     def __init__(self, production: bool):
         super().__init__(help_command=None)
 
@@ -84,11 +83,11 @@ class RecNetBot(commands.Bot):
         )
         
         # RR bot initialization
-        status = await self.rr_bot.start()
-        if status:
-            print("Rec Room bot initialized!")
-        else:
-            print("Rec Room bot failed to initialize!")
+        #status = await self.rr_bot.start()
+        #if status:
+        #    print("Rec Room bot initialized!")
+        #else:
+        #    print("Rec Room bot failed to initialize!")
     
     #async def on_error(self, event, *args, **kwargs):
     #    logging.basicConfig(level=logging.WARNING, filename="error.log", filemode="a+",
