@@ -1,0 +1,11 @@
+{
+    "debug_guilds": [],
+    "discord_token": "",
+    "sqlite_database": "",
+    "verify_post": 0,
+    "log_channel": 0,
+    "perspective_api_key": "",
+    "invite_link": "",
+    "server_link": "",
+    "github_link": ""
+}
