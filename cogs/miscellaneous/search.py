@@ -230,6 +230,12 @@ class DropdownSelection(discord.ui.Select["SearchView"]):
             )
             options.append(option)
             
+        while len(options) < 5:
+            option = discord.SelectOption(
+                label="." * len(options)
+            )
+            options.append(option)
+            
         super().__init__(
             placeholder="View result",
             min_values=1,
@@ -240,7 +246,13 @@ class DropdownSelection(discord.ui.Select["SearchView"]):
 
     async def callback(self, interaction: discord.Interaction):
         embeds = []
+        placeholder_flag = False
         for ele in self.values:
+            # Placeholder check
+            if ele.startswith("."): 
+                placeholder_flag = True
+                continue
+            
             # Find the result with the name property
             item = next((item for item in self.results if item['name'] == ele), None)["dataclass"]
             if item in self.sent: continue  # Spam prevention
@@ -267,7 +279,10 @@ class DropdownSelection(discord.ui.Select["SearchView"]):
                 embeds.append(invention_embed(item, cached_stats))
         
         if not embeds:
-            return await interaction.response.send_message("You can't send the same results more than once to prevent spam.", ephemeral=True)
+            if placeholder_flag:
+                return await interaction.response.send_message("You selected a placeholder because Discord requires at least 5 selection options.", ephemeral=True)
+            else:
+                return await interaction.response.send_message("You can't send the same results more than once to prevent spam.", ephemeral=True)
         
         await interaction.response.send_message(embeds=embeds)
         

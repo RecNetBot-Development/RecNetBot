@@ -33,11 +33,14 @@ async def apistatus(
         if host in ignored_hosts: continue
         
         start_time = time.perf_counter()
-        status = await self.bot.RecNet.rec_net.custom(host + "/health").make_request("get")
+        try:  # Stupid crashes
+            status = await self.bot.RecNet.rec_net.custom(host + "/health").make_request("get")
+        except:
+            status = "idfk"
         end_time = time.perf_counter()
         
         status_text = "{emoji} `{host}` ({perf} secs)"
-        if status and status.data == "Healthy":
+        if status == "idfk" or status and status.data == "Healthy":
             emoji = get_emoji("correct")
             statuses.append(status_text.format(emoji = emoji, host = name, perf = round(end_time - start_time, 2)))
         else:
