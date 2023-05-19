@@ -27,7 +27,8 @@ def profile_embed(account: Account) -> discord.Embed:
         f"```{sanitize_bio(account.bio)}```" if account.bio else None,
         f"{get_emoji('junior') if account.is_junior else get_emoji('mature')} {'Junior account!' if account.is_junior else 'Mature account!'}",
         f' '.join(format_platforms(account.platforms)) if account.platforms else None,
-        f"{get_emoji('date')} Joined {unix_timestamp(account.created_at)}"
+        f"{get_emoji('date')} Joined {unix_timestamp(account.created_at)}",
+        f"{get_emoji('information')} ID: `{account.id}`"
     ]
     em.description = "\n".join(filter(lambda ele: ele, info))
     
