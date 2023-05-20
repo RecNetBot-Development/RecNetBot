@@ -1,7 +1,7 @@
 {
     "debug_guilds": [],
     "discord_token": "",
-    "sqlite_database": "test.db",
+    "sqlite_database": "rnb.db",
     "verify_post": 352672690,
     "log_channel": 0,
     "perspective_api_key": "",
