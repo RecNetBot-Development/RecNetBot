@@ -1,3 +1,11 @@
 {
-    "discord_token": "NzkzMTE0MjkyNDEzMDA1ODU1.GSP3bX.dRwFqB4-S59FSOSY754svU5TlKjNTDwJalq5Qc"
+    "debug_guilds": [],
+    "discord_token": "",
+    "sqlite_database": "test.db",
+    "verify_post": 352672690,
+    "log_channel": 0,
+    "perspective_api_key": "",
+    "invite_link": "",
+    "server_link": "https://discord.gg/S9meE83Xu2",
+    "github_link": "https://github.com/RecNetBot-Development/RecNetBot"
 }
