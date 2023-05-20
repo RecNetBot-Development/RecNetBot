@@ -25,7 +25,12 @@ async def selfcheers(
     
     start_time = time.perf_counter()
     
-    posts = await account.get_images(take=1_000_000)
+    posts = await account.get_images(take=1000)
+    new_posts = posts
+    while len(new_posts) % 1000 == 0 and new_posts:
+        new_posts = await account.get_images(skip=1000 * len(posts) // 1000, take=1000, force=True)  # Skips the previous posts to fetch another 1000
+        posts += new_posts
+    
     if posts:
         # Filter out images that have no cheers since they can't possibly be self-cheered
         cheered_images = list(filter(lambda image: image.cheer_count, posts))
