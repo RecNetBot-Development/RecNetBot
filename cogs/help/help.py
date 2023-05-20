@@ -72,8 +72,8 @@ async def help(self, ctx: discord.ApplicationContext):
         "Image": {
             "photos": {"mention": None, "description": "Browse someone's shared photos"}
         },
-        "Event": {
-            "search": {"mention": None, "description": "Search events"}
+        "Random": {
+            "image": {"mention": None, "description": "Pull up random images out of context"}
         },
         "Invention": {
             "search": {"mention": None, "description": "Search inventions"}
