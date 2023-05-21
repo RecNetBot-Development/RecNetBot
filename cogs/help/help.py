@@ -64,7 +64,7 @@ async def help(self, ctx: discord.ApplicationContext):
     cmds = {
         "User": {
             "info": {"mention": None, "description": "View someone's profile"},
-            "link": {"mention": None, "hidden": True}
+            "link": {"mention": None, "description": "Link your Rec Room account"}
         },
         "Room": {
             "info": {"mention": None, "description": "See detailed information about a room"}  
