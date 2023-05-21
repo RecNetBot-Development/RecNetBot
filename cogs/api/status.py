@@ -40,7 +40,7 @@ async def apistatus(
         end_time = time.perf_counter()
         
         status_text = "{emoji} `{host}` ({perf} secs)"
-        if status == "idfk" or status and status.data == "Healthy":
+        if status and status != "idfk" and status.data == "Healthy":
             emoji = get_emoji("correct")
             statuses.append(status_text.format(emoji = emoji, host = name, perf = round(end_time - start_time, 2)))
         else:
