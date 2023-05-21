@@ -1,7 +1,7 @@
 import discord
 from discord.commands import slash_command, Option
 from utils.converters import FetchRoom
-from utils import format_json_block
+from utils import format_json_block, shorten
 
 @slash_command(
     name="data",
@@ -19,4 +19,9 @@ async def data(
     for key in remove:
         room.data.pop(key)
 
-    await ctx.respond(content=format_json_block(room.data))
+    json_block = format_json_block(room.data)
+    if len(json_block) > 2000:
+        shortened = shorten(json_block, 1950)[:-2] 
+        json_block = shortened + "...\n}```Cut off short due to the amount of data."
+
+    await ctx.respond(content=json_block)
