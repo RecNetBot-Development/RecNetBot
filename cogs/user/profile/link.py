@@ -58,7 +58,7 @@ class Check(discord.ui.View):
     name="link",
     description="Link your Rec Room profile to your Discord!"
 )
-@cooldown(rate=1, per=300, type=BucketType.user)
+@cooldown(rate=2, per=300, type=BucketType.user)
 async def link(
     self, 
     ctx: ApplicationContext, 
