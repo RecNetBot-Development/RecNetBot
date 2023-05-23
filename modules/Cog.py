@@ -130,8 +130,14 @@ class Cog(commands.Cog):
             if isinstance(original, ConnectionNotFound) and "{}" in original.embed.description:
                 # Plug in the link command
                 group = discord.utils.get(self.__cog_commands__, name='profile')
-                command = discord.utils.get(group.walk_commands(), name='link')
-                original.embed.description = original.embed.description.format(command.mention)
+                
+                if group:  # counter a weird bug in which it doesn't find the command.
+                    command = discord.utils.get(group.walk_commands(), name='link')
+                    cmd_name = command.mention
+                else:
+                    cmd_name = "`/profile link`"
+                    
+                original.embed.description = original.embed.description.format(cmd_name)
             
             await ctx.respond(embed=original.embed)
         else:
