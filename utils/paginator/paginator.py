@@ -44,7 +44,7 @@ class RNBPaginatorButton(discord.ui.Button):
 
     async def callback(self, interaction: discord.Interaction):
         # Make sure it's the author using the component
-        if interaction.user.id != interaction.message.interaction.user.id:
+        if interaction.message.interaction and interaction.user.id != interaction.message.interaction.user.id:
             return await interaction.response.send_message("You're not authorized!", ephemeral=True)
 
         if self.button_type == "first":
