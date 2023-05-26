@@ -5,7 +5,7 @@ import logging
 from typing import TYPE_CHECKING, Optional
 from resources import CategoryIcons
 from discord.ext import commands
-from discord import ApplicationCommandError
+from discord import ApplicationCommandError, Forbidden
 from .ModuleCollector import ModuleCollector
 from discord.commands import ApplicationCommand, SlashCommand, SlashCommandGroup, UserCommand
 from exceptions import ConnectionNotFound
@@ -141,6 +141,22 @@ class Cog(commands.Cog):
             
             await ctx.respond(embed=original.embed)
         else:
+            # Permission error?
+            if isinstance(original, Forbidden):
+                em = discord.Embed(
+                    title = "Missing Permissions!",
+                    description = "This command does not work as expected because I do not have sufficient permissions.\n" \
+                                  "### Solutions:\n" \
+                                  f"- [Re-invite the bot]({self.bot.config['invite_link']}) to reset permissions\n"
+                                  "- Make sure the bot does not have interfering roles\n"
+                                  "- Make sure the channel permissions do not overlap with the bot's required permissions\n"
+                                  f"- If all hope is lost, get help from [the support server]({self.bot.config['server_link']})",
+                    color = discord.Color.orange()
+                )
+
+                return await ctx.respond(embed=em)
+
+            # Unknown error
             logging.basicConfig(level=logging.WARNING, filename="error.log", filemode="a+",
                             format="%(asctime)-15s %(levelname)-8s %(message)s")
             logging.error(str(exception))
