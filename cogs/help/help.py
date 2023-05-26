@@ -63,7 +63,8 @@ async def help(self, ctx: discord.ApplicationContext):
     # The displayed commands in the meant order
     cmds = {
         "User": {
-            "info": {"mention": None, "description": "View someone's profile"}
+            "info": {"mention": None, "description": "View someone's profile"},
+            "link": {"mention": None, "description": "Link your Rec Room profile", "hidden": True}  # Keep it here for later
         },
         "Room": {
             "info": {"mention": None, "description": "See detailed information about a room"}  
