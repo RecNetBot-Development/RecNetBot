@@ -8,7 +8,7 @@ class BugReportModal(discord.ui.Modal):
         super().__init__(
             discord.ui.InputText(
                 label="Command",
-                placeholder="Tell us the command you used.",
+                placeholder="Tell us what command you used.",
                 style=discord.InputTextStyle.short
             ),
             discord.ui.InputText(
@@ -23,7 +23,7 @@ class BugReportModal(discord.ui.Modal):
             ),
             discord.ui.InputText(
                 label="May we possibly contact you for more info?",
-                placeholder="If we are unable to locate the issue, contacting you for more info could help a lot.",
+                placeholder="(yes/no)",
                 style=discord.InputTextStyle.short,
             ),
             *args,
