@@ -298,7 +298,7 @@ class Browse(discord.ui.Button["SearchView"]):
     async def callback(self, interaction: discord.Interaction):
         await interaction.response.defer()
         pages = list(map(lambda ele: RNBPage(ele["dataclass"]), self.search_view.results[self.search_view.search_type]))
-        paginator = RNBPaginator(pages=pages, trigger_on_display=True, show_indicator=False, author_check=True)
+        paginator = RNBPaginator(pages=pages, trigger_on_display=True, show_indicator=False, author_check=False)
         paginator.add_button(Send())
         await paginator.respond(interaction, ephemeral=True)
         

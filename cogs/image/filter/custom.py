@@ -120,7 +120,7 @@ async def custom(
     
     if posts:
         pages = list(map(lambda ele: RNBPage(ele), posts))
-        paginator = RNBPaginator(pages=pages, trigger_on_display=True, show_indicator=False, author_check=True)
+        paginator = RNBPaginator(pages=pages, trigger_on_display=True, show_indicator=False, author_check=False)
         await paginator.respond(ctx.interaction)
     else:
         em = get_default_embed()

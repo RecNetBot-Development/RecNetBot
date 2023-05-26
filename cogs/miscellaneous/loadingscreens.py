@@ -25,7 +25,7 @@ async def loadingscreens(self,  ctx: discord.ApplicationContext):
     
     # Create paginator
     pages = list(map(lambda ele: RNBPage(embeds=[create_embed(ele)]), loading_screens))
-    paginator = RNBPaginator(pages=pages, trigger_on_display=True, show_indicator=False, author_check=True)
+    paginator = RNBPaginator(pages=pages, trigger_on_display=True, show_indicator=False, author_check=False)
     await paginator.respond(ctx.interaction)
 
 

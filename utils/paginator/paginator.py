@@ -43,6 +43,10 @@ class RNBPaginatorButton(discord.ui.Button):
         self.paginator = None
 
     async def callback(self, interaction: discord.Interaction):
+        # Make sure it's the author using the component
+        if interaction.user.id != interaction.message.interaction.user.id:
+            return await interaction.response.send_message("You're not authorized!", ephemeral=True)
+
         if self.button_type == "first":
             self.paginator.current_page = 0
             
@@ -128,9 +132,12 @@ class RNBPaginator(pages.Paginator):
     def __init__(self, *args, **kwargs):
         self.constant_embed = kwargs.pop("constant_embed", None)
         self.hidden_items = kwargs.pop("hidden_items", [])
-        
         super().__init__(*args, **kwargs)
-        
+
+        # Component timeout
+        self.timeout = 180
+        self.disable_on_timeout = True
+
         # For indicator
         for i, page in enumerate(self.pages, start=1):
             page.index, page.page_count = i, self.page_count + 1
