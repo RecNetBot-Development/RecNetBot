@@ -22,10 +22,13 @@ class RandomAccount(discord.ui.View):
         super().__init__()
         self.RecNet = rec_net
         self.year = year
-        self.time_out = 10
         self.bio_only = bio_only
         self.amount = amount
-        
+        # Interaction timeout
+        self.timeout = 30
+        self.disable_on_timeout = True
+        # Timeout for fetching accounts
+        self.time_out = 10
         
     async def fetch_account(self, amount: int = 1) -> List[Account]:
         attempts, users = 0, []
@@ -76,6 +79,10 @@ class RandomAccount(discord.ui.View):
     async def again(
         self, button: discord.ui.Button, interaction: discord.Interaction
     ):
+        # Make sure it's the author using the component
+        if interaction.user.id != interaction.message.interaction.user.id:
+            return await interaction.response.send_message("You're not authorized!", ephemeral=True)
+        
         embeds = await self.fetch_with_embed()
         await interaction.response.edit_message(embeds=embeds, view=self)
         

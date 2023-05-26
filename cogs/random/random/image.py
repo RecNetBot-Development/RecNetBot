@@ -10,10 +10,10 @@ class RandomImage(discord.ui.View):
     def __init__(self, rec_net: recnetpy.Client, amount: int = 1):
         super().__init__()
         self.RecNet = rec_net
-        self.time_out = 10
+        self.timeout = 30
+        self.disable_on_timeout = True
         self.amount = amount
         self.image_pool = []
-        
         
     async def fetch_image(self, amount: int = 1) -> List[Image]:
         if not self.image_pool:
@@ -38,6 +38,10 @@ class RandomImage(discord.ui.View):
     async def again(
         self, button: discord.ui.Button, interaction: discord.Interaction
     ):
+        # Make sure it's the author using the component
+        if interaction.user.id != interaction.message.interaction.user.id:
+            return await interaction.response.send_message("You're not authorized!", ephemeral=True)
+        
         links = await self.fetch_with_links()
         await interaction.response.edit_message(content="\n".join(links), view=self)
         
