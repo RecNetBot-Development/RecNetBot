@@ -156,6 +156,10 @@ class Dropdown(discord.ui.Select):
         Returns chosen categories back to the view
         """
         
+        # Make sure it's the author using the component
+        if interaction.user.id != interaction.message.interaction.user.id:
+            return await interaction.response.send_message("You're not authorized!", ephemeral=True)
+
         response_types = {
             "Attending": "Attending",
             "Interested": "May Attend",
@@ -185,6 +189,6 @@ async def responses(
     await event.resolve_responders()
     view = AttendeeView(self.bot, context=ctx, event=event)
     embeds = view.initialize()
-    paginator = RNBPaginator(pages=embeds, custom_view=view, show_indicator=False, show_disabled=True, trigger_on_display=True, hidden_items=["random"])
+    paginator = RNBPaginator(pages=embeds, custom_view=view, show_indicator=False, show_disabled=True, trigger_on_display=True, hidden_items=["random"], author_check=False)
     view.paginator = paginator
     await paginator.respond(ctx.interaction)

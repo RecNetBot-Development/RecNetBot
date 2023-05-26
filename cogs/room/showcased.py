@@ -43,6 +43,10 @@ class ShowcaseView(discord.ui.View):
         self.showcased = []
         self.account = account
 
+        # Component timeout
+        self.timeout = 180
+        self.disable_on_timeout = True
+
 
     async def initialize(self) -> discord.Embed:
         self.showcased = await self.register_rooms(self.raw_rooms)
@@ -100,6 +104,10 @@ class DropdownSelection(discord.ui.Select["ShowcaseView"]):
         )
 
     async def callback(self, interaction: discord.Interaction):
+        # Make sure it's the author using the component
+        if interaction.user.id != interaction.message.interaction.user.id:
+            return await interaction.response.send_message("You're not authorized!", ephemeral=True)
+
         embeds = []
         for ele in self.values:
             # Find the result with the name property
@@ -129,6 +137,10 @@ class Browse(discord.ui.Button["ShowcaseView"]):
         )
 
     async def callback(self, interaction: discord.Interaction):
+        # Make sure it's the author using the component
+        if interaction.user.id != interaction.message.interaction.user.id:
+            return await interaction.response.send_message("You're not authorized!", ephemeral=True)
+
         await interaction.response.defer()
         pages = list(map(lambda ele: RNBPage(ele["dataclass"]), self.search_view.showcased))
         paginator = RNBPaginator(pages=pages, trigger_on_display=True, show_indicator=False, author_check=True)
@@ -145,6 +157,10 @@ class Delete(discord.ui.Button["ShowcaseView"]):
         )
 
     async def callback(self, interaction: discord.Interaction):
+        # Make sure it's the author using the component
+        if interaction.user.id != interaction.message.interaction.user.id:
+            return await interaction.response.send_message("You're not authorized!", ephemeral=True)
+
         await interaction.response.defer()
         await interaction.delete_original_response()
         

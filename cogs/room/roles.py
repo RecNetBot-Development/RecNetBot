@@ -22,6 +22,10 @@ class RoleView(discord.ui.View):
         self.paginator = None
         self.room = room
         self.roles = room.roles
+
+        # Component timeout
+        self.timeout = 180
+        self.disable_on_timeout = True
         
         # Sort roles by the account's display_name
         self.roles.sort(key=lambda role: role.account.display_name)
@@ -156,6 +160,10 @@ class Dropdown(discord.ui.Select):
         """
         Returns chosen categories back to the view
         """
+
+        # Make sure it's the author using the component
+        if interaction.user.id != interaction.message.interaction.user.id:
+            return await interaction.response.send_message("You're not authorized!", ephemeral=True)
         
         role_ids = {
             "Creator": 255,
@@ -185,6 +193,6 @@ async def roles(
     await room.resolve_role_owners()
     view = RoleView(self.bot, context=ctx, room=room)
     embeds = view.initialize()
-    paginator = RNBPaginator(pages=embeds, custom_view=view, show_indicator=False, show_disabled=True, trigger_on_display=True)
+    paginator = RNBPaginator(pages=embeds, custom_view=view, show_indicator=False, show_disabled=True, trigger_on_display=True, author_check=False)
     view.paginator = paginator
     await paginator.respond(ctx.interaction)

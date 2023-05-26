@@ -24,6 +24,10 @@ class HelpView(discord.ui.View):
         self.embeds = []
         self.selected_cogs = []
         self.paginator = None
+
+        # Component timeout
+        self.timeout = 180
+        self.disable_on_timeout = True
         
         self.add_item(Dropdown(self))
         
@@ -180,13 +184,12 @@ class Dropdown(discord.ui.Select):
 @slash_command(
     name="commands",
     description="Browse RecNetBot's commands!"
-    
 )
 async def commands(self, ctx: discord.ApplicationContext):
     server_link, invite_link = self.bot.config.get("server_link", None), self.bot.config.get("invite_link", None)
     
     view = HelpView(self.bot, context=ctx, server_link=server_link, invite_link=invite_link)
     embeds = view.initialize()
-    paginator = RNBPaginator(pages=embeds, custom_view=view, show_indicator=False, trigger_on_display=True, hidden_items=["first", "last", "random", "next10", "prev10"], default_button_row=3)
+    paginator = RNBPaginator(pages=embeds, custom_view=view, show_indicator=False, trigger_on_display=True, hidden_items=["first", "last", "random", "next10", "prev10"], default_button_row=3, author_check=False)
     view.paginator = paginator
-    await paginator.respond(ctx.interaction)
+    await paginator.respond(ctx.interaction, ephemeral=True)

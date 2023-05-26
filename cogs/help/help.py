@@ -10,8 +10,11 @@ class DetailsView(discord.ui.View):
         super().__init__()
         self.help_cmd = help_command
         self.ctx = context
-        
         buttons = []
+
+        # Component timeout
+        self.timeout = 180
+        self.disable_on_timeout = True
         
         # Invite bot button
         if invite_link:
@@ -39,9 +42,12 @@ class DetailsView(discord.ui.View):
     async def view_cmds(
         self, button: discord.ui.Button, interaction: discord.Interaction
     ):
+        # Make sure it's the author using the component
+        if interaction.user.id != interaction.message.interaction.user.id:
+            return await interaction.response.send_message("You're not authorized!", ephemeral=True)
+        
+        await interaction.response.defer()
         await self.help_cmd(self.ctx)
-        button.disabled = True
-        await interaction.response.edit_message(view=self)
 
 @slash_command(
     name="help",

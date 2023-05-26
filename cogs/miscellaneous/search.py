@@ -50,6 +50,10 @@ class SearchView(discord.ui.View):
         self.max_count = 10
         self.lock = lock
 
+        # Component timeout
+        self.timeout = 180
+        self.disable_on_timeout = True
+
 
     async def initialize(self):
         await self.register_selection(self.search_type)
@@ -178,7 +182,6 @@ class SearchView(discord.ui.View):
         await interaction.edit_original_response(embed=self.embed, view=self)
         
 
-
 class DropdownSearch(discord.ui.Select["SearchView"]):
     def __init__(self, view: SearchView):
         self.search_view = view
@@ -211,6 +214,10 @@ class DropdownSearch(discord.ui.Select["SearchView"]):
         )
 
     async def callback(self, interaction: discord.Interaction):
+        # Make sure it's the author using the component
+        if interaction.user.id != interaction.message.interaction.user.id:
+            return await interaction.response.send_message("You're not authorized!", ephemeral=True)
+        
         await interaction.response.defer(invisible=True)
         await self.search_view.register_selection(self.values[0])
         await self.search_view.refresh(interaction)
@@ -245,6 +252,10 @@ class DropdownSelection(discord.ui.Select["SearchView"]):
         )
 
     async def callback(self, interaction: discord.Interaction):
+        # Make sure it's the author using the component
+        if interaction.user.id != interaction.message.interaction.user.id:
+            return await interaction.response.send_message("You're not authorized!", ephemeral=True)
+
         embeds = []
         placeholder_flag = False
         for ele in self.values:
@@ -296,7 +307,10 @@ class Browse(discord.ui.Button["SearchView"]):
         )
 
     async def callback(self, interaction: discord.Interaction):
-        await interaction.response.defer()
+        # Make sure it's the author using the component
+        if interaction.user.id != interaction.message.interaction.user.id:
+            return await interaction.response.send_message("You're not authorized!", ephemeral=True)
+
         pages = list(map(lambda ele: RNBPage(ele["dataclass"]), self.search_view.results[self.search_view.search_type]))
         paginator = RNBPaginator(pages=pages, trigger_on_display=True, show_indicator=False, author_check=False)
         paginator.add_button(Send())
@@ -312,6 +326,10 @@ class Delete(discord.ui.Button["SearchView"]):
         )
 
     async def callback(self, interaction: discord.Interaction):
+        # Make sure it's the author using the component
+        if interaction.user.id != interaction.message.interaction.user.id:
+            return await interaction.response.send_message("You're not authorized!", ephemeral=True)
+        
         await interaction.response.defer()
         await interaction.delete_original_response()
 
