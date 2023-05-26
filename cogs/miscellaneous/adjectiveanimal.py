@@ -8,11 +8,18 @@ ADJECTIVE_ANIMAL = {"nouns":["Aardvark","Alpaca","Ant","Armadillo","Badger","Bat
 class AdjectiveAnimal(discord.ui.View):
     def __init__(self):
         super().__init__()
+        # Component timeout
+        self.timeout = 30
+        self.disable_on_timeout = True
         
-    @discord.ui.button(label="Another!")
+    @discord.ui.button(label="Another!", style=discord.ButtonStyle.primary)
     async def another(
         self, button: discord.ui.Button, interaction: discord.Interaction
     ):
+        # Make sure it's the author using the component
+        if interaction.user.id != interaction.message.interaction.user.id:
+            return await interaction.response.send_message("You're not authorized!", ephemeral=True)
+
         name = self.randomize()
         await interaction.response.edit_message(content=name, view=self)
         
