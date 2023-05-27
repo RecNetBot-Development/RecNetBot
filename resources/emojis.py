@@ -110,6 +110,7 @@ class Icons:
     rro = "https://i.imgur.com/vqIv7fU.png"
     ugc = "https://i.imgur.com/SUowLzO.png"
     unknown = "https://i.imgur.com/paO6CDA.png"
+    rectnet = "https://i.imgur.com/paO6CDA.png"
     photo = "https://i.imgur.com/NCoPFNq.png"
     room = "https://i.imgur.com/8o1oFRn.png"
     helpful = "https://i.imgur.com/Vr5983F.png"

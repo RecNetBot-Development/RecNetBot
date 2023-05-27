@@ -9,6 +9,9 @@ from discord import ApplicationCommandError, Forbidden
 from .ModuleCollector import ModuleCollector
 from discord.commands import ApplicationCommand, SlashCommand, SlashCommandGroup, UserCommand
 from exceptions import ConnectionNotFound
+from recnetpy.rest.exceptions import HTTPError, InternalServerError, BadRequest, NotFound
+from resources import get_icon
+from embeds import get_default_embed
 
 if TYPE_CHECKING:
     from .CogManager import CogManager
@@ -128,61 +131,92 @@ class Cog(commands.Cog):
         original = exception.original
         if hasattr(original, "embed"):
             if isinstance(original, ConnectionNotFound) and "{}" in original.embed.description:
-                # Plug in the link command
-                group = discord.utils.get(self.__cog_commands__, name='profile')
-                
-                if group:  # counter a weird bug in which it doesn't find the command.
-                    command = discord.utils.get(group.walk_commands(), name='link')
-                    cmd_name = command.mention
-                else:
-                    cmd_name = "`/profile link`"
+                # Fetch the link command
+                user_cog = self.bot.get_cog("User")
+                group = discord.utils.get(user_cog.__cog_commands__, name='profile')
+                cmd = discord.utils.get(group.walk_commands(), name='link')
                     
-                original.embed.description = original.embed.description.format(cmd_name)
+                # Plug in the link command
+                original.embed.description = original.embed.description.format(cmd.mention)
             
             await ctx.respond(embed=original.embed)
         else:
-            # Permission error?
-            if isinstance(original, Forbidden):
-                em = discord.Embed(
-                    title = "Missing Permissions!",
-                    description = "This command does not work as expected because I do not have sufficient permissions.\n" \
-                                  "### Solutions:\n" \
-                                  f"- [Re-invite the bot]({self.bot.config['invite_link']}) to reset permissions\n"
-                                  "- Make sure the bot does not have interfering roles\n"
-                                  "- Make sure the channel permissions do not overlap with the bot's required permissions\n"
-                                  f"- If all hope is lost, get help from [the support server]({self.bot.config['server_link']})",
-                    color = discord.Color.orange()
-                )
+            # Fetch the bug report command
+            misc_cog = self.bot.get_cog("Miscellaneous")
+            bug_cmd = discord.utils.get(misc_cog.__cog_commands__, name='bugreport')
 
-                return await ctx.respond(embed=em)
+            # Embed template
+            em = get_default_embed()
+            em.set_thumbnail(url=get_icon("rectnet"))
+
+            # Check for miscallenous errors
+            if isinstance(original, Forbidden):  # Lacking permissions
+                # Create embed
+                em.title = "Missing Permissions!"
+                em.description = "This command does not work as expected because I do not have sufficient permissions.\n" \
+                                  "### Solutions:\n" \
+                                  f"- [Re-invite the bot]({self.bot.config['invite_link']}) to reset permissions\n" \
+                                  "- Make sure the bot does not have interfering roles\n" \
+                                  "- Make sure the channel permissions do not overlap with the bot's required permissions\n" \
+                                  f"- If all hope is lost, get help from [the support server]({self.bot.config['server_link']})"
+            
+                await ctx.respond(embed=em)
+                return  # Don't report to log channel
+            
+            elif isinstance(original,  InternalServerError | HTTPError | BadRequest | NotFound):  # Error sending request to RecNet
+                # Fetch the API status command
+                api_cog = self.bot.get_cog("API")
+                api_cmd = discord.utils.get(api_cog.__cog_commands__, name='apistatus')
+
+                # Create embed
+                em.title = "Server error!"
+                em.description = "RecNet failed to handle my request for data.\n" \
+                                  "### Possible reasons:\n" \
+                                  "- A freak error. Try again.\n" \
+                                  "- RecNet had a breaking change and I need to be updated.\n" \
+                                  f"- RecNet's servers are down. Check with {api_cmd.mention}.\n" \
+                                  f"- If this error lasts for days, shoot us a {bug_cmd.mention}!"
+
+                await ctx.respond(embed=em)
+
+            else:  # Unknown error
+                # Create embed
+                em.title = "Something unexpected happened!"
+                em.description = f"```{str(original)}```\nConsider telling us about what happened so this bug can be resolved quicker! {bug_cmd.mention}"
+                em.set_footer(text="This error was logged and will be investigated!")
+
+                await ctx.respond(embed=em)
+
 
             # Unknown error
             logging.basicConfig(level=logging.WARNING, filename="error.log", filemode="a+",
                             format="%(asctime)-15s %(levelname)-8s %(message)s")
             logging.error(str(exception))
             
-            # Fetch the bug report command
-            misc_cog = self.bot.get_cog("Miscellaneous")
-            cmd = discord.utils.get(misc_cog.__cog_commands__, name='bugreport')
-            
-            # Make an error embed for the user
-            user_em = discord.Embed(
-                title = "Something unexpected happened!",
-                description = f"```{str(original)}```\nConsider telling us about what happened so this bug can be resolved quicker! {cmd.mention}",
-                color = discord.Color.red()
-            )
-            user_em.set_footer(text="This error was logged and will be investigated!")
-            await ctx.respond(embed=user_em)
-            
+            # Create log embed
+            em.title = str(exception)
+            em.description = f"```{str(original)}```"
+
+            # Which command
+            em.description += "\n**Command**" \
+                              f"\n{ctx.command.mention}"
+
+            # List params
+            em.description += "\n\n**Parameters**"
+            if ctx.selected_options:
+                for param in ctx.selected_options:
+                    em.description += f"\n- `{param['name']}` = `{param['value']}`"
+            else:
+                em.description += "\nEmpty"
+
+            # Who ran the command
+            em.set_author(name=ctx.author, icon_url=ctx.author.avatar)
+
+            # Clear the footer
+            em.set_footer(text="")
+
             # Send error to RNB log channel
-            log_em = discord.Embed(
-                title=str(exception),
-                description=str(original),
-                color = discord.Color.red()
-            )
-            log_em.set_author(name=ctx.author, icon_url=ctx.author.avatar)
-            log_em.set_footer(text=ctx.command.name)
-            await self.bot.log_channel.send(embed=log_em)
+            await self.bot.log_channel.send(embed=em)
             
             # Raise it anyways for better debugging
             raise original
