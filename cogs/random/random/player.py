@@ -14,7 +14,8 @@ LAST_ACCOUNT_IDS = {
     2018: 1_290_001,
     2019: 3_314_552,
     2020: 11_159_630,
-    2021: 40_734_808
+    2021: 40_734_808,
+    2022: 83_276_444
 }
 
 class RandomAccount(discord.ui.View):
@@ -99,7 +100,7 @@ class RandomAccount(discord.ui.View):
 async def player(
     self, 
     ctx: discord.ApplicationContext,
-    join_date: Option(int, "Choose join date if any", choices=[2016, 2017, 2018, 2019, 2020, 2021], required=False),
+    join_date: Option(int, "Choose join date if any", choices=[2016, 2017, 2018, 2019, 2020, 2021, 2022], required=False),
     amount: Option(int, "How many you'd like", min_value=1, max_value=5, default=1)
 ):
     view = RandomAccount(self.bot.RecNet, year=join_date, amount=amount)
