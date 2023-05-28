@@ -26,7 +26,7 @@ class HelpView(discord.ui.View):
         self.paginator = None
 
         # Component timeout
-        self.timeout = 180
+        self.timeout = 600
         self.disable_on_timeout = True
         
         self.add_item(Dropdown(self))

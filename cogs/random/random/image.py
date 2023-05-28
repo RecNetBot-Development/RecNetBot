@@ -10,7 +10,7 @@ class RandomImage(discord.ui.View):
     def __init__(self, rec_net: recnetpy.Client, amount: int = 1):
         super().__init__()
         self.RecNet = rec_net
-        self.timeout = 30
+        self.timeout = 600
         self.disable_on_timeout = True
         self.amount = amount
         self.image_pool = []

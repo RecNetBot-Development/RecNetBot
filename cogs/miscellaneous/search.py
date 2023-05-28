@@ -51,7 +51,7 @@ class SearchView(discord.ui.View):
         self.lock = lock
 
         # Component timeout
-        self.timeout = 180
+        self.timeout = 600
         self.disable_on_timeout = True
 
 

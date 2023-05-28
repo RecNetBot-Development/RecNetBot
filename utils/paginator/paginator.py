@@ -135,7 +135,7 @@ class RNBPaginator(pages.Paginator):
         super().__init__(*args, **kwargs)
 
         # Component timeout
-        self.timeout = 180
+        self.timeout = 600
         self.disable_on_timeout = True
 
         # For indicator

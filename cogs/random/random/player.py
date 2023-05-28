@@ -25,7 +25,7 @@ class RandomAccount(discord.ui.View):
         self.bio_only = bio_only
         self.amount = amount
         # Interaction timeout
-        self.timeout = 30
+        self.timeout = 600
         self.disable_on_timeout = True
         # Timeout for fetching accounts
         self.time_out = 10

@@ -9,7 +9,7 @@ class AdjectiveAnimal(discord.ui.View):
     def __init__(self):
         super().__init__()
         # Component timeout
-        self.timeout = 30
+        self.timeout = 600
         self.disable_on_timeout = True
         
     @discord.ui.button(label="Another!", style=discord.ButtonStyle.primary)

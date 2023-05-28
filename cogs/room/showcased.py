@@ -44,7 +44,7 @@ class ShowcaseView(discord.ui.View):
         self.account = account
 
         # Component timeout
-        self.timeout = 180
+        self.timeout = 600
         self.disable_on_timeout = True
 
 

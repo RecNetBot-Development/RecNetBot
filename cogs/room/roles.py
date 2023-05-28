@@ -24,7 +24,7 @@ class RoleView(discord.ui.View):
         self.roles = room.roles
 
         # Component timeout
-        self.timeout = 180
+        self.timeout = 600
         self.disable_on_timeout = True
         
         # Sort roles by the account's display_name
