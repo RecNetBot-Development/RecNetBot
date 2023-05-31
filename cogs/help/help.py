@@ -1,9 +1,10 @@
 import discord
-import time
+from datetime import datetime
 from resources import get_emoji
 from embeds import get_default_embed
 from discord.commands import slash_command, SlashCommand
 from discord.ext.commands import Context
+from utils import get_changelog
 
 class DetailsView(discord.ui.View):
     def __init__(self, invite_link: str = None, server_link: str = None, help_command: SlashCommand = None, context: Context = None):
@@ -86,6 +87,9 @@ async def help(self, ctx: discord.ApplicationContext):
         },
         "Help": {
             "commands": {"mention": None, "description": "View the rest of the commands...", "command": None}
+        },
+        "Miscellaneous": {
+            "changelog": {"hidden": True}  # Fetch for later
         }
     }
     
@@ -117,18 +121,25 @@ async def help(self, ctx: discord.ApplicationContext):
                 "When linked, I will automatically fill `username` slots in commands.\n" \
                 f"To get started, use {cmds['User']['link']['mention']} {get_emoji('helpful')}"
         em.add_field(name="Account Linking", value=linking, inline=False)
-    
+
     # Information segment
     info = f"{get_emoji('stats')} I am in `{len(self.bot.guilds):,}` servers!\n" \
            f"{get_emoji('helpful')} `{self.bot.cm.get_connection_count():,}` people have linked their Rec Room account!"
-           
+    
+    # Update segment
+    resp = await get_changelog(self.bot)
+    if not resp.get("error"):
+        last_updated = resp.get('created_timestamp', 0)
+
+        info += f"\n{get_emoji('update')} I was last updated <t:{last_updated}:R> {cmds['Miscellaneous']['changelog']['mention']}"
+
     # Add github link if in cfg
     if 'github_link' in cfg:
         info += f"\n{get_emoji('github')} I am open source! Check out my [GitHub organization]({cfg['github_link']})." 
-        
-        
-    em.add_field(name="Information", value=info, inline=False)
     
+    # Add the segment
+    em.add_field(name="Information", value=info, inline=False)
+
     # Get link buttons + commands
     view = DetailsView(
         invite_link=cfg.get('invite_link', None),

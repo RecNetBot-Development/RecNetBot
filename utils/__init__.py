@@ -3,6 +3,7 @@ from .rec_net_urls import *
 from .date_to_unix import date_to_unix
 from .chunks import chunks
 from .shorten import shorten
+from .get_changelog import get_changelog
 
 from .sanitize_bio import sanitize_bio
 from .sanitize_text import sanitize_text
