@@ -61,7 +61,7 @@ async def help(self, ctx: discord.ApplicationContext):
     
     em = get_default_embed()
     em.title = "RecNetBot"
-    em.description = f"Use me to view data and statistics from RecNet! {get_emoji('rr')}"
+    em.description = f"Your sidekick of all things RecNet! {get_emoji('rr')}"
     em.set_footer(text="RecNetBot is NOT affiliated with Rec Room Inc.")
     
     # Fetch commands to display
@@ -118,7 +118,7 @@ async def help(self, ctx: discord.ApplicationContext):
     check_discord = self.bot.cm.get_discord_connection(ctx.author.id)
     if not check_discord:
         linking = "You can link your Rec Room account through me!\n" \
-                "When linked, I will automatically fill `username` slots in commands.\n" \
+                "Once linked, I will autofill `username` slots in commands.\n" \
                 f"To get started, use {cmds['User']['link']['mention']} {get_emoji('helpful')}"
         em.add_field(name="Account Linking", value=linking, inline=False)
 
