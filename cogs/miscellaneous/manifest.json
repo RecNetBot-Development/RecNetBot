@@ -2,5 +2,5 @@
     "name": "Miscellaneous",
     "icon": "category_misc",
     "description": "Contains all uncategorized commands!",
-    "scripts": ["bugreport", "adjectiveanimal", "loadingscreens", "changelog"]
+    "scripts": ["bugreport", "adjectiveanimal", "loadingscreens"]
 }

@@ -88,9 +88,9 @@ async def help(self, ctx: discord.ApplicationContext):
         "Help": {
             "commands": {"mention": None, "description": "View the rest of the commands...", "command": None}
         },
-        "Miscellaneous": {
-            "changelog": {"hidden": True}  # Fetch for later
-        }
+        #"Miscellaneous": {
+        #    "changelog": {"hidden": True}  # Fetch for later
+        #}
     }
     
     # Find the wanted commands cuz 'get_command' doesn't work. At least this is a single iteration to find all the commands.
@@ -127,11 +127,11 @@ async def help(self, ctx: discord.ApplicationContext):
            f"{get_emoji('helpful')} `{self.bot.cm.get_connection_count():,}` people have linked their Rec Room account!"
     
     # Update segment
-    resp = await get_changelog(self.bot)
-    if not resp.get("error"):
-        last_updated = resp.get('created_timestamp', 0)
-
-        info += f"\n{get_emoji('update')} I was last updated <t:{last_updated}:R> {cmds['Miscellaneous']['changelog']['mention']}"
+    #resp = await get_changelog(self.bot)
+    #if not resp.get("error"):
+    #    last_updated = resp.get('created_timestamp', 0)
+    #
+    #    info += f"\n{get_emoji('update')} I was last updated <t:{last_updated}:R>. Join [my server]({cfg['server_link']}) to read the change logs!"
 
     # Add github link if in cfg
     if 'github_link' in cfg:
