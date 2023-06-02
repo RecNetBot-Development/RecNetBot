@@ -31,6 +31,13 @@ async def changelog(
     # Form response
     change_log = resp.get("raw", "This is a placeholder. You are not supposed to see this.")
 
+    # Add attachments as urls
+    attachments = resp["attachments"]
+    if attachments:
+        change_log += "\n\n*Attachments*"
+        for i in attachments:
+            change_log += f"\n{i.url}"
+
     # Add creation date
     change_log += f"\n\n*Updated* <t:{resp.get('created_timestamp', 0)}:R>"
 
