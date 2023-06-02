@@ -66,7 +66,7 @@ class RecNetBot(commands.AutoShardedBot):
         
         await self.change_presence(
             status=discord.Status.online,
-            activity=discord.Game(name=self.config.get("status_message", "/help"))
+            activity=discord.Game(name=self.config.get("status_message", "Rec Room"))
         )
         
         print(
