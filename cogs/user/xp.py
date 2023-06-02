@@ -43,7 +43,6 @@ async def xp(
                   icon_url=img_url(account.profile_image, crop_square=True, resolution=360),
                   url=profile_url(account.username)
     )
-    em.set_footer(text=f"{total_xp + xp} XP in total")
 
     if required_xp:  # if not max lvl
         nearest_tenth = int(round(xp / required_xp * 100, -1)) // 10
@@ -76,11 +75,20 @@ async def xp(
         ) + timedelta(days=1)
 
         # Information on gaining XP
-        em.add_field(name="How to gain XP?", value="- You gain 10 XP per 5 minutes spent in public instances." \
+        em.add_field(name="How to gain XP?", inline=False, value="- You gain 10 XP per 5 minutes spent in public instances." \
                                                 "\n - The daily XP cap is 150 XP, which is 75 minutes of playtime." \
                                                 f"\n - The daily XP cap resets {unix_timestamp(int(midnight.timestamp()), 'R')}."
                                                 "\n- Completing games or quests does NOT give extra XP." \
         )
+
+        """
+        remaining_xp_to_max = PROGRESSION[50]["total_xp"] - (total_xp + xp)
+        remaining_playtime_to_max = math.ceil(remaining_xp_to_max / 10) * 5
+        remaining_days_to_max = math.ceil(remaining_playtime_to_max / 75)
+        max_progress_text = f"{total_xp + xp}/{remaining_xp_to_max} XP remaining ({round((total_xp + xp) / remaining_xp_to_max * 100)}%)" \
+                            f"\n**Remaining Playtime** • {remaining_playtime_to_max} mins ({remaining_days_to_max} day{'' if remaining_days_to_max == 1 else 's'})"
+        em.add_field(name="Progress to LVL 50", value=max_progress_text, inline=False)
+        """
     else:
         # ew hard-coded???
         max = get_emoji("progress_max1") + get_emoji("progress_max2") + get_emoji("progress_max3")
@@ -89,9 +97,15 @@ async def xp(
             progress_text = f"— XP {get_emoji('progress_left')}{max}{get_emoji('progress_right')} — XP"
         else:
             progress_text = f"**1080** XP {get_emoji('progress_left')}{max}{get_emoji('progress_right')} **1080** XP"
-
+    
     # Implement to embed
     em.description = progress_text
+
+    # Progress to lvl 50
+    if level <= 50:
+        xp_to_max = PROGRESSION[50]["total_xp"]
+        percentage = round((total_xp + xp) / PROGRESSION[50]["total_xp"] * 100, 1)
+        em.set_footer(text=f"({int(percentage) if percentage % 10 == 0 else percentage}%) {total_xp + xp}/{xp_to_max} XP in total")
 
     await ctx.respond(
         embed=em,
