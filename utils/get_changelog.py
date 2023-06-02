@@ -34,7 +34,8 @@ async def get_changelog(bot) -> dict:
     data = {
         "raw": change_log,
         "created_timestamp": int(latest.created_at.timestamp()) if latest.created_at else None,
-        "edited_timestamp": int(latest.edited_at.timestamp()) if latest.edited_at else None
+        "edited_timestamp": int(latest.edited_at.timestamp()) if latest.edited_at else None,
+        "attachments": latest.attachments
     }
 
     return data
