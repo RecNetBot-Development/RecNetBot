@@ -90,6 +90,15 @@ class Emoji:
     pico = "<:pico:1045031007222501498>"
     rr = "<:recroom:1045821708071882762>"
     helpful = "<:helpful:1045823274522775596>"
+    reward_box = "<:RNBBox:826478764141576192>"
+    pizza = "<:PizzaBox:825646320978231336>"
+    progress_filled = "<:progress_filled:1114157559125913690>"
+    progress_empty = "<:progress_empty:1114157532836020304>"
+    progress_left = "<:bar_left:1114159132694560788>"
+    progress_right = "<:bar_right:1114159134137385001>"
+    progress_max1 = "<:max1:1114166520994598943>"
+    progress_max2 = "<:max2:1114166523637026956>"
+    progress_max3 = "<:max3:1114166525209878638>"
 
 class CategoryIcons:
     category_api = 963878518960291903  # (Api by Larea from NounProject.com)
