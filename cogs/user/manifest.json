@@ -9,7 +9,8 @@
         "pfp", 
         "platforms", 
         "toxicity",
-        "owoify"
+        "owoify",
+        "xp"
     ],
     "groups": {
         "profile": { 
