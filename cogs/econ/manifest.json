@@ -1,0 +1,12 @@
+{
+    "name": "Economy",
+    "icon": "category_econ",
+    "description": "Economy!",
+    "scripts": [],
+    "groups": {
+        "econ": {
+            "scripts": ["unbox"],
+            "description": "View RecNetBot's {} economy commands."
+        }
+    }
+}
