@@ -1,0 +1,27 @@
+[
+    {
+        "name": "Golden Trophy",
+        "description": "The goblin king stole Coach's Golden Trophy. Team up and embark on an epic quest to recover it!",
+        "image_url": "https://img.rec.net/38e9d0d4eff94556a0b106508249dcf9"
+    },
+    {
+        "name": "Isle of Lost Skulls",
+        "description": "Can your pirate crew get to the Isle, defeat its fearsome guardian, and escape with the gold?",
+        "image_url": "https://img.rec.net/d6zizq6gygpch6aov00ycd747.png"
+    },
+    {
+        "name": "Crimson Cauldron",
+        "description": "Can your band of adventurers brave the enchanted wilds, and lift the curse of the crimson cauldron?",
+        "image_url": "https://img.rec.net/3ab82779dff94d11920ebf38df249395"
+    },
+    {
+        "name": "The Rise of Jumbotron",
+        "description": "Robot invaders threaten the galaxy! Team up with your friends and bring the laser heat!",
+        "image_url": "https://img.rec.net/51296f28105b48178708e389b6daf057"
+    },
+    {
+        "name": "Crescendo of the Blood Moon",
+        "description": "Gather your vampire hunting crew, conquer a legendary castle, and restore peace to Rec Room!",
+        "image_url": "https://img.rec.net/d0df003353914adfaecdd23f428208b6"
+    }
+]

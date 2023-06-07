@@ -5,7 +5,7 @@
     "scripts": [],
     "groups": {
         "econ": {
-            "scripts": ["unbox"],
+            "scripts": ["unbox", "inventory", "profile", "quest", "beg", "sell"],
             "description": "View RecNetBot's {} economy commands."
         }
     }

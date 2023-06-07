@@ -1,0 +1,137 @@
+{    
+    "penalty":
+        [
+            {
+                "response": "You were false reported for your excessive begging.",
+                "item_id": null,
+                "tokens": 0,
+                "penalty": 10
+            },
+            {
+                "response": "You were votekicked for your excessive begging.",
+                "item_id": null,
+                "tokens": 0,
+                "penalty": 5
+            }
+        ],
+    "common":
+        [
+            {
+                "response": "Nobody could hear you begging over someone blasting music.",
+                "item_id": null,
+                "tokens": 0,
+                "penalty": 0
+            },
+            {
+                "response": "Everybody was busy staring at themselves in the mirror.",
+                "item_id": null,
+                "tokens": 0,
+                "penalty": 0
+            },
+            {
+                "response": "You were ignored.",
+                "item_id": null,
+                "tokens": 0,
+                "penalty": 0
+            },
+            {
+                "response": "The rich people left to play Paintball as soon as you arrived.",
+                "item_id": null,
+                "tokens": 0,
+                "penalty": 0
+            },
+            {
+                "response": "Nobody could hear your begging over someone blasting music.",
+                "item_id": null,
+                "tokens": 0,
+                "penalty": 0
+            },
+            {
+                "response": "People didn't feel your vibe.",
+                "item_id": null,
+                "tokens": 0,
+                "penalty": 0
+            },
+            {
+                "response": "You ran to a toxic instance.",
+                "item_id": null,
+                "tokens": 0,
+                "penalty": 0
+            },
+            {
+                "response": "People disliked your outfit.",
+                "item_id": null,
+                "tokens": 0,
+                "penalty": 0
+            },
+            {
+                "response": "You accidentally left your voice pitch on high which annoyed everyone.",
+                "item_id": null,
+                "tokens": 0,
+                "penalty": 0
+            },
+            {
+                "response": "Your mic was accidentally turned off and nobody heard your pleading.",
+                "item_id": null,
+                "tokens": 0,
+                "penalty": 0
+            },
+            {
+                "response": "The person you begged from had just lost a game of Rec Royale and felt grumpy.",
+                "item_id": null,
+                "tokens": 0,
+                "penalty": 0
+            },
+            {
+                "response": "Someone's soundboard drowned your begs.",
+                "item_id": null,
+                "tokens": 0,
+                "penalty": 0
+            },
+            {
+                "response": "Apparently nobody had any tokens left.",
+                "item_id": null,
+                "tokens": 0,
+                "penalty": 0
+            },
+            {
+                "response": "People suddenly lost all their tokens after flexing them once you arrived.",
+                "item_id": null,
+                "tokens": 0,
+                "penalty": 0
+            },
+            {
+                "response": "People didn't feel generous today.",
+                "item_id": null,
+                "tokens": 0,
+                "penalty": 0
+            }
+        ],
+    "uncommon":
+        [
+            {
+                "response": "Someone felt generous today!",
+                "item_id": null,
+                "tokens": 100,
+                "penalty": 0
+            },
+            {
+                "response": "\"I'm gonna pay you 100 tokens to duck off.\"",
+                "item_id": null,
+                "tokens": 100,
+                "penalty": 0
+            },
+            {
+                "response": "You attended a pizza party!",
+                "item_id": 21,
+                "tokens": 100,
+                "penalty": 0
+            },
+            {
+                "response": "You attended a pizza party!",
+                "item_id": 22,
+                "tokens": 100,
+                "penalty": 0
+            }
+        ]
+}

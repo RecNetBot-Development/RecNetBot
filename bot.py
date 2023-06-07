@@ -7,7 +7,7 @@ import sqlite3
 from discord.ext import commands
 from recnetpy import Client
 from modules import CogManager
-from database import ConnectionManager, RoomCacheManager, InventionCacheManager, BookmarkManager
+from database import *
 from googleapiclient import discovery
 
 class RecNetBot(commands.AutoShardedBot):
@@ -51,6 +51,8 @@ class RecNetBot(commands.AutoShardedBot):
         self.rcm = RoomCacheManager(self.db)
         self.icm = InventionCacheManager(self.db)
         self.bcm = BookmarkManager(self.db)
+        self.ucm = UpdateManager(self.db)
+        self.ecm = EconManager(self.db)
 
         # Initialize
         self.cog_manager.buildCogs()
@@ -86,4 +88,6 @@ class RecNetBot(commands.AutoShardedBot):
 
     def run(self):
         super().run(self.config['discord_token'])
+
+
 
