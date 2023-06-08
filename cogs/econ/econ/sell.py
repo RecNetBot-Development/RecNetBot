@@ -32,7 +32,7 @@ class Confirm(discord.ui.View):
 
 async def get_items(ctx: discord.AutocompleteContext):
     """Returns a list of items that begin with the characters entered so far."""
-    return [item['name'] for item in ITEMS if item["name"].lower().startswith(ctx.value.lower())]
+    return [item.name for item in ITEMS if item.name.lower().startswith(ctx.value.lower())]
 
 @slash_command(
     name="sell",
@@ -49,18 +49,18 @@ async def sell(
         return await ctx.respond("Item doesn't exist!")
 
     # How many does the user have
-    owned = self.bot.ecm.get_item_amount(ctx.author.id, item["id"])
+    owned = self.bot.ecm.get_item_amount(ctx.author.id, item.id)
     if owned < amount:
-        return await ctx.respond(f"You can't sell (x{amount}) {item['emoji_icon']} **{item['name']}** because you only have {owned}!")
+        return await ctx.respond(f"You can't sell (x{amount}) {item.emoji_icon} **{item.name}** because you only have {owned}!")
 
     # How much money
-    tokens = item['tokens'] * amount
+    tokens = item.tokens * amount
 
     # Confirm selling
     view = Confirm()
     
     # Edit to sell phase
-    sell_prompt = f"You are about to sell (x{amount}) {item['emoji_icon']} **{item['name']}** for {get_emoji('token')}**{tokens}**."
+    sell_prompt = f"You are about to sell (x{amount}) {item.emoji_icon} **{item.name}** for {get_emoji('token')}**{tokens}**."
     await ctx.respond(
         content=sell_prompt,
         view=view
@@ -70,11 +70,11 @@ async def sell(
     if not view.value:
         return await ctx.interaction.edit_original_response(content=f"~~{sell_prompt}~~", embeds=[], view=None)
     
-    self.bot.ecm.add_item(ctx.author.id, item["id"], -amount)
+    self.bot.ecm.add_item(ctx.author.id, item.id, -amount)
     self.bot.ecm.add_tokens(ctx.author.id, tokens)
 
     await ctx.interaction.edit_original_response(content=
-        f"Sold (x{amount}) {item['emoji_icon']} **{item['name']}** for {get_emoji('token')}**{tokens}**!",
+        f"Sold (x{amount}) {item.emoji_icon} **{item.name}** for {get_emoji('token')}**{tokens}**!",
         view=None    
     )
         

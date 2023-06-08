@@ -1,11 +1,11 @@
 import sqlite3
 import json
-from typing import Optional
+from typing import Optional, TypedDict
 from sqlite3 import Connection
 from enum import Enum
 from datetime import datetime
 from dataclasses import dataclass
-from economy import get_item, load_items
+from economy import get_item, load_items, Item, create_item_dataclass
 
 ITEMS: list = load_items()
 
@@ -61,7 +61,7 @@ class EconManager():
             return profile
         return None
     
-    def get_inventory(self, discord_id: int) -> Optional[dict]:
+    def get_inventory(self, discord_id: int):
         """
         Fetch a user's inventory with data + amount
         """
@@ -117,6 +117,18 @@ class EconManager():
                 """, 
                 {"tokens": tokens, "discord_id": discord_id}
             )
+
+    def get_tokens(self, discord_id: int) -> None:
+        """
+        Get user balance
+        """
+        self.c.execute(f"""SELECT tokens FROM econ_profile WHERE discord_id = :discord_id""", 
+                       {"discord_id": discord_id})
+        data = self.c.fetchone()
+        if data: 
+            tokens = data[0]
+            return tokens
+        return 0
 
     def set_penalty(self, discord_id: int, minutes: int) -> None:
         """

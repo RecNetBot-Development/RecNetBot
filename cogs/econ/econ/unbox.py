@@ -4,8 +4,9 @@ import json
 from embeds import get_default_embed
 from resources import get_emoji
 from discord.commands import slash_command, Option
-from economy import get_rarity_color, load_items, get_item
+from economy import get_rarity_color, load_items, get_item, Item
 from enum import Enum
+from typing import List
 
 ITEMS = load_items()
 
@@ -17,7 +18,7 @@ class BoxOption(discord.ui.Button):
     def __init__(self, option: int):
         self.option = option
         item = get_item(item_id=self.option)
-        name = item["name"]
+        name = item.name
  
         super().__init__(style=discord.ButtonStyle.primary, label=name, custom_id=str(self.option))
 
@@ -58,24 +59,24 @@ class InventoryButton(discord.ui.Button):
 
 
 class SellButton(discord.ui.Button):
-    def __init__(self, item: dict, ecm):
+    def __init__(self, item: Item, ecm):
         super().__init__(style=discord.ButtonStyle.green)
         self.ecm = ecm
         self.item = item
 
         # Button label
-        self.label = f"Sell for {self.item['tokens']}"
+        self.label = f"Sell for {self.item.tokens}"
 
     async def callback(self, interaction: discord.Interaction):
         self.disabled = True
         await interaction.message.edit(view=self.view)
 
         # Remove item from inv
-        self.ecm.add_item(interaction.user.id, self.item['id'], -1)
+        self.ecm.add_item(interaction.user.id, self.item.id, -1)
         # Add tokens
-        self.ecm.add_tokens(interaction.user.id, self.item['tokens'])
+        self.ecm.add_tokens(interaction.user.id, self.item.tokens)
 
-        await interaction.response.send_message(f"Sold {self.item['emoji_icon']}** {self.item['name']}** for {get_emoji('token')}**{self.item['tokens']}**!")
+        await interaction.response.send_message(f"Sold {self.item.emoji_icon}** {self.item.name}** for {get_emoji('token')}**{self.item.tokens}**!")
 
 
 class BoxMenu(discord.ui.View):
@@ -94,7 +95,7 @@ class BoxMenu(discord.ui.View):
 
         # Reward buttons
         for i in self.items:
-            self.add_item(BoxOption(i["id"]))
+            self.add_item(BoxOption(i.id))
 
         # Bot
         self.bot = bot
@@ -115,13 +116,13 @@ class BoxMenu(discord.ui.View):
         self.clear_items()
 
         # Get the chosen reward
-        reward = get_item(item_id=item_id)
+        item = get_item(item_id=item_id)
 
         # Again button
         self.add_item(BoxAgain(self.box_type))
 
         # Sell button
-        self.add_item(SellButton(reward, self.bot.ecm))
+        self.add_item(SellButton(item, self.bot.ecm))
 
         # Inventory button
         if self.inv_cmd:
@@ -130,14 +131,14 @@ class BoxMenu(discord.ui.View):
         # Reward embed
         em = get_default_embed()
         em.title = "Reward chosen!"
-        em.description = f"**{reward['name']}** (x{amount})" \
-                         f"\n{get_emoji('token')} {reward['tokens']:,}" \
-                         f"\n{get_emoji('level') * reward['rarity']}"
-        em.set_thumbnail(url=reward['img_url'])
+        em.description = f"**{item.name}** (x{amount})" \
+                         f"\n{get_emoji('token')} {item.tokens:,}" \
+                         f"\n{get_emoji('level') * item.rarity}"
+        em.set_thumbnail(url=item.img_url)
         em.set_footer(text=f"{self.ctx.author.name}'s reward")
         
         # Reward rarity indicator
-        em.color = get_rarity_color(reward["rarity"])
+        em.color = get_rarity_color(item.rarity)
 
         await interaction.response.edit_message(embed=em, view=self)
 
@@ -145,15 +146,15 @@ class BoxMenu(discord.ui.View):
         """ Add the item to the user's inventory """
         self.bot.ecm.add_item(self.ctx.author.id, item_id, 1)
 
-    def randomize_items(self, box_type: BoxTypes):
+    def randomize_items(self, box_type: BoxTypes) -> List[Item]:
         # Chooses items for the box
         item_pool = ITEMS.copy()
 
         # Filter the wanted items
         if box_type == BoxTypes.LOW_TIER:
-            item_pool = list(filter(lambda item: item["rarity"] in (1, 2), item_pool))
+            item_pool = list(filter(lambda item: item.rarity in (1, 2), item_pool))
         else:
-            item_pool = list(filter(lambda item: item["rarity"] in (3, 4), item_pool))
+            item_pool = list(filter(lambda item: item.rarity in (3, 4), item_pool))
 
         # Randomly choose from the item pool
         chosen_items = []
@@ -171,7 +172,7 @@ class BoxMenu(discord.ui.View):
         em.set_footer(text=f"{self.ctx.author.name}'s box")
 
         for i in self.items:
-            em.add_field(name=f"{i['emoji_icon']} {i['name']}", value=f"{get_emoji('token')} {i['tokens']:,} {get_emoji('level') * i['rarity']}")
+            em.add_field(name=f"{i.emoji_icon} {i.name}", value=f"{get_emoji('token')} {i.tokens:,} {get_emoji('level') * i.rarity}")
 
         return em
 
@@ -201,11 +202,11 @@ async def unbox(
     self, 
     ctx: discord.ApplicationContext,
     box: Option(str, name="box", description="What type of box would you like to open?", required=False, choices=[
-        "1-2 Stars (Free)", 
-        "3-4 Stars ()"
-    ], default="1-2 Stars (Free)"),
+        "1-2 Stars (80 tokens)", 
+        "3-4 Stars (200 tokens)"
+    ], default="1-2 Stars (80 tokens)"),
 ):
-    box_type = BoxTypes.LOW_TIER if box == "1-2 Stars (Free)" else BoxTypes.HIGH_TIER
+    box_type = BoxTypes.LOW_TIER if box.startswith("1-2 Stars") else BoxTypes.HIGH_TIER
 
     # Get inventory command
     group = discord.utils.get(self.__cog_commands__, name='econ')

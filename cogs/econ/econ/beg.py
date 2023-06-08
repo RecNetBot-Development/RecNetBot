@@ -7,7 +7,8 @@ from embeds import get_default_embed
 from resources import get_emoji
 from discord.commands import slash_command
 from discord.ext import commands
-from economy import load_begs, load_items
+from economy import load_begs, load_items, get_item
+from utils import unix_timestamp
 
 BEGS = load_begs()
 ITEMS = load_items()
@@ -38,6 +39,18 @@ class BegMenu(discord.ui.View):
     async def handle_message(self, ctx: discord.ApplicationContext, edit: bool = False):
         self.ctx = ctx
 
+        # Check for begging penalties
+        penalty = self.bot.ecm.get_penalty(ctx.author.id)
+        now_timestamp = int(datetime.now().timestamp())
+        if penalty > now_timestamp:
+            content = f"You were votekicked out. You're able to beg again {unix_timestamp(penalty, 'R')}"
+            self.clear_items()
+            if edit:
+                await ctx.interaction.response.edit_message(content=content, view=self)
+            else:
+                await ctx.interaction.response.send_message(content=content, view=self)
+            return
+
         # Gamble
         chance = random.randint(0, 100)
 
@@ -53,11 +66,12 @@ class BegMenu(discord.ui.View):
         response = reward["response"]
         # Reward
         if reward["item_id"]:
-            # Add to inventory
-            self.bot.ecm.add_item(ctx.author.id, reward["item_id"], 1)
+            item = get_item(item_id=reward["item_id"])
 
-            item = ITEMS[reward["item_id"]]
-            response += F"\n\n*You got* {item['emoji_icon']} **{item['name']}**"
+            # Add to inventory
+            self.bot.ecm.add_item(ctx.author.id, item.id, 1)
+
+            response += F"\n\n*You got* {item.emoji_icon} **{item.name}**"
         elif reward["tokens"]:
             # Add to balance
             self.bot.ecm.add_tokens(ctx.author.id, reward["tokens"])
@@ -87,16 +101,6 @@ async def beg(
     self, 
     ctx: discord.ApplicationContext
 ):
-    # Check for begging penalties
-    penalty = self.bot.ecm.get_penalty(ctx.author.id)
-    now_timestamp = int(datetime.now().timestamp())
-    if penalty > now_timestamp:
-        seconds = penalty - now_timestamp
-        await ctx.respond(content=
-            f"You were punished for begging. You're able to beg again in {math.ceil(seconds / 60)} minute{'s.' if seconds // 60 != 1 else '.'}"
-        )
-        return
-
     view = BegMenu(self.bot)
     await view.respond(ctx)
         

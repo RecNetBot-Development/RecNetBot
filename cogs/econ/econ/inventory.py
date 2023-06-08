@@ -32,8 +32,8 @@ async def inventory(
         0: []
     }  
     for i in inv:
-        rarity_inv[i['item']['rarity']].append(i)
-        net_worth += i['item']['tokens']
+        rarity_inv[i['item'].rarity].append(i)
+        net_worth += i['item'].tokens
 
     # Let's sort each item by amount and make embed
     for rarity, inv in rarity_inv.items():
@@ -50,7 +50,7 @@ async def inventory(
             if item['amount'] <= 0: continue
 
             items.append(
-                f"{item['item']['emoji_icon']} {item['item']['name']} (x{item['amount']})"
+                f"{item['item'].emoji_icon} {item['item'].name} (x{item['amount']})"
             )
 
         # Don't make a category for items you don't own
@@ -68,7 +68,7 @@ async def inventory(
     total_net_worth = profile.tokens + net_worth
     em.add_field(
         name="Information",
-        value=f"{get_emoji('token')}{profile.tokens} • Balance" \
+        value=f"{get_emoji('token')}{profile.tokens:,} • Balance" \
               f"\n{get_emoji('token')}{total_net_worth:,} • Net Worth",
         inline=False
     )

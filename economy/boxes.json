@@ -1,0 +1,26 @@
+[
+    {
+        "id": 1,
+        "name": "Pizza Box",
+        "description": "Host a pizza party!",
+        "emoji_icon": "",
+        "img_url": "",
+        "rewards": {
+            "categories": ["pizza"],
+            "rarities": [],
+            "items": []
+        }
+    },
+    {
+        "id": 2,
+        "name": "Donut Box",
+        "description": "Host a donut party!",
+        "emoji_icon": "",
+        "img_url": "",
+        "rewards": {
+            "categories": ["donuts"],
+            "rarities": [],
+            "items": []
+        }
+    }
+]
