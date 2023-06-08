@@ -64,9 +64,21 @@ async def inventory(
         )
 
     # Additional information
+    profile = self.bot.ecm.get_profile(ctx.author.id)
+    total_net_worth = profile.tokens + net_worth
     em.add_field(
         name="Information",
-        value=f"{get_emoji('token')}{net_worth:,} • Net Worth",
+        value=f"{get_emoji('token')}{profile.tokens} • Balance" \
+              f"\n{get_emoji('token')}{total_net_worth:,} • Net Worth",
+        inline=False
+    )
+
+    # Useful commands
+    group = discord.utils.get(self.__cog_commands__, name='econ')
+    sell_cmd = discord.utils.get(group.walk_commands(), name='sell')
+    em.add_field(
+        name="Shortcuts",
+        value=f"{sell_cmd.mention} • Sell Items",
         inline=False
     )
 
