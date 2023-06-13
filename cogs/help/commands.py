@@ -68,7 +68,7 @@ class HelpView(discord.ui.View):
         return self.embeds
         
         
-    def register_selections(self, selections: List[List[commands.Cog]]):
+    def register_selections(self, selections):
         """
         Takes in selected cogs and creates the command list
         """
@@ -83,18 +83,20 @@ class HelpView(discord.ui.View):
             for cmd in cog.walk_commands():
                 if not isinstance(cmd, discord.SlashCommand): continue  # Only allow slash commands for now
                 
-                if cmd.is_subcommand:  # Add the group
+                if cmd.is_subcommand:
                     # Make sure there's no duplicate groups
                     group = cmd.parent
                     if group in groups: continue
                     groups.append(cmd.parent)
                     
-                    # Make a mockup class for the help command
-                    commands.append(
+                    for sub_cmd in group.subcommands:
+                        #print(sub_cmd.__dict__)
+                        commands.append(
                         Group(
-                            group.name, group.description.format(len(group.subcommands)), f"</{group.name}:0>"
+                                sub_cmd.name, sub_cmd.description, f"</{group.name} {sub_cmd.name}:{group.id}>"
+                            )
                         )
-                    )
+
                     continue
                 
                 commands.append(cmd)

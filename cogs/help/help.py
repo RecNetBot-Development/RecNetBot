@@ -4,7 +4,6 @@ from resources import get_emoji
 from embeds import get_default_embed
 from discord.commands import slash_command, SlashCommand
 from discord.ext.commands import Context
-from utils import get_changelog
 
 class DetailsView(discord.ui.View):
     def __init__(self, invite_link: str = None, server_link: str = None, help_command: SlashCommand = None, context: Context = None):
@@ -29,7 +28,7 @@ class DetailsView(discord.ui.View):
         # Join discord button
         if server_link:
             server_btn = discord.ui.Button(
-                label="Join Discord",
+                label="Join Server",
                 url=server_link,
                 style=discord.ButtonStyle.link
             )
@@ -123,7 +122,7 @@ async def help(self, ctx: discord.ApplicationContext):
         em.add_field(name="Account Linking", value=linking, inline=False)
 
     # Information segment
-    info = f"{get_emoji('stats')} I am in `{len(self.bot.guilds):,}` servers!\n" \
+    info = f"{get_emoji('stats')} I am in `{len(self.bot.guilds):,}` servers and counting!\n" \
            f"{get_emoji('helpful')} `{self.bot.cm.get_connection_count():,}` people have linked their Rec Room account!"
     
     # Update segment
