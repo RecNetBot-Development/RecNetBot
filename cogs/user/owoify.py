@@ -5,6 +5,7 @@ from embeds import fetch_profile_embed
 from exceptions import ConnectionNotFound
 from owoify import owoify
 from owoify.owoify import Owoness
+from utils.autocompleters import account_searcher
 
 
 @slash_command(
@@ -15,7 +16,7 @@ from owoify.owoify import Owoness
 async def _owoify(
     self,   
     ctx: discord.ApplicationContext,
-    account: Option(FetchAccount, name="usewnyame", description="Entew RR u-u-usewnyame", default=None, required=False)
+    account: Option(FetchAccount, name="usewnyame", description="Entew RR u-u-usewnyame", default=None, required=False, autocomplete=account_searcher)
 ):
     await ctx.interaction.response.defer()
     

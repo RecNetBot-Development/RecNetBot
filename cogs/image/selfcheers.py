@@ -7,6 +7,7 @@ from utils import img_url, profile_posts_url
 from utils.converters import FetchAccount
 from exceptions import ConnectionNotFound
 from utils.paginator import RNBPaginator, RNBPage
+from utils.autocompleters import account_searcher
 
 @slash_command(
     name="selfcheers",
@@ -15,7 +16,7 @@ from utils.paginator import RNBPaginator, RNBPage
 async def selfcheers(
     self, 
     ctx: discord.ApplicationContext,
-    account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False)
+    account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False, autocomplete=account_searcher)
 ):
     await ctx.interaction.response.defer()
 

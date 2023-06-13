@@ -2,6 +2,7 @@ import discord
 from discord.commands import slash_command, Option
 from utils.converters import FetchAccount
 from exceptions import ConnectionNotFound
+from utils.autocompleters import account_searcher
 
 @slash_command(
     name="minmax",
@@ -10,7 +11,7 @@ from exceptions import ConnectionNotFound
 async def minmax(
     self, 
     ctx: discord.ApplicationContext,
-    account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False),
+    account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False, autocomplete=account_searcher),
     min_cheers: Option(int, name="minimum_cheers", description="Filter out posts that don't have at least this many cheers", default=0, required=False, min_value=0),
     max_cheers: Option(int, name="maximum_cheers", description="Filter out posts that exceed this many cheers", default=10**10, required=False, min_value=0),
     min_comments: Option(int, name="minimum_comments", description="Filter out posts that don't have at least this many comments", default=0, required=False, min_value=0),

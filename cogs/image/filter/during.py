@@ -2,6 +2,7 @@ import discord
 from discord.commands import slash_command, Option
 from utils.converters import FetchAccount
 from exceptions import ConnectionNotFound
+from utils.autocompleters import account_searcher
 
 @slash_command(
     name="during",
@@ -12,7 +13,7 @@ async def during(
     ctx: discord.ApplicationContext,
     events: Option(str, name="events", description="Filter by which RR events can be featured (separate by spaces, enter event ids)", required=False, default=None),
     exclude: Option(str, name="exclude", description="Filter by which RR rooms SHOULDN'T be featured (separate by spaces, enter event ids)", required=False, default=None),
-    account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False)
+    account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False, autocomplete=account_searcher)
 ):
     if not events and not exclude:
         await ctx.interaction.response.send_message("Fill in `events` or `exclude` params!", ephemeral=True)

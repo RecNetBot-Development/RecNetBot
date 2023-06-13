@@ -8,6 +8,7 @@ from exceptions import ConnectionNotFound
 from recnetpy.dataclasses.account import Account
 from utils import img_url, profile_url, unix_timestamp
 from datetime import datetime, timezone, timedelta
+from utils.autocompleters import account_searcher
 
 @slash_command(
     name="xp",
@@ -16,7 +17,7 @@ from datetime import datetime, timezone, timedelta
 async def xp(
     self,   
     ctx: discord.ApplicationContext,
-    account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False)
+    account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False, autocomplete=account_searcher)
 ):
     await ctx.interaction.response.defer()
     

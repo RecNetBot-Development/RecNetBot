@@ -12,6 +12,7 @@ from recnetpy.dataclasses.account import Account
 from typing import List
 from discord.commands import slash_command, Option
 from utils.converters import FetchAccount
+from utils.autocompleters import account_searcher
 
         
 class Send(PaginatorButton):
@@ -172,7 +173,7 @@ class Delete(discord.ui.Button["ShowcaseView"]):
 async def showcased(
     self, 
     ctx: ApplicationContext, 
-    account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False)
+    account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False, autocomplete=account_searcher)
 ):
     if not account:  # Check for a linked RR account
         account = await self.bot.cm.get_linked_account(self.bot.RecNet, ctx.author.id)
@@ -181,7 +182,7 @@ async def showcased(
     showcased = await account.get_showcased_rooms()
     if not showcased:
         em = get_default_embed()
-        em.description = "This Rec Room account doesn't have any showcased rooms!"
+        em.description = f"[{account.display_name} @{account.username}](<{profile_url(account.username)}>) doesn't have any showcased rooms!"
         return await ctx.respond(embed=em)
     
     view = ShowcaseView(self.bot, showcased, account)

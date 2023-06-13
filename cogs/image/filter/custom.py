@@ -4,6 +4,7 @@ from utils.converters import FetchAccount
 from exceptions import ConnectionNotFound, ImagesNotFound
 from utils.paginator import RNBPaginator, RNBPage
 from embeds import get_default_embed
+from utils.autocompleters import account_searcher
 
 @slash_command(
     name="custom",
@@ -12,7 +13,7 @@ from embeds import get_default_embed
 async def custom(
     self, 
     ctx: discord.ApplicationContext,
-    taken_by: Option(FetchAccount, name="taken_by", description="Enter the RR username who took the photos (not required if you used together)", default=None, required=False) = None,
+    taken_by: Option(FetchAccount, name="taken_by", description="Enter the RR username who took the photos (not required if you used together)", default=None, required=False, autocomplete=account_searcher) = None,
     _sort: Option(str, name="sort", description="Choose what to sort by", required=False, choices=[
         "Oldest to Newest", 
         "Cheers: Highest to Lowest",

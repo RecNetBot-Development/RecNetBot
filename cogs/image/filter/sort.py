@@ -2,6 +2,7 @@ import discord
 from discord.commands import slash_command, Option
 from utils.converters import FetchAccount
 from exceptions import ConnectionNotFound
+from utils.autocompleters import account_searcher
 
 @slash_command(
     name="sort",
@@ -16,7 +17,7 @@ async def sort(
         "Comments: Highest to Lowest",
         "Tags: Highest to Lowest",
     ]),
-    account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False)
+    account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False, autocomplete=account_searcher)
 ):
     if not account:  # Check for a linked RR account
         account = await self.bot.cm.get_linked_account(self.bot.RecNet, ctx.author.id)

@@ -4,6 +4,8 @@ from embeds import get_default_embed
 from utils.converters import FetchAccount
 from discord.commands import slash_command, Option
 from exceptions import ConnectionNotFound
+from utils.autocompleters import account_searcher
+from utils import profile_url
 
 @slash_command(
     name="pfp",
@@ -12,7 +14,7 @@ from exceptions import ConnectionNotFound
 async def pfp(
     self,   
     ctx: discord.ApplicationContext,
-    account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False)
+    account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False, autocomplete=account_searcher)
 ):
     await ctx.interaction.response.defer()
     
@@ -28,7 +30,8 @@ async def pfp(
         
     #await ctx.respond(img_url(account.profile_image, raw=True), embed=em)
     
-    await ctx.respond(img_url(account.profile_image, raw=True)) 
+    response = f"[{account.display_name} @{account.username}](<{profile_url(account.username)}>)'s full profile picture:\n"
+    await ctx.respond(response + img_url(account.profile_image, raw=True)) 
         
     
     

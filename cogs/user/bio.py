@@ -4,6 +4,7 @@ from utils import sanitize_bio, profile_url
 from utils.converters import FetchAccount
 from embeds import get_default_embed
 from discord.commands import slash_command, Option
+from utils.autocompleters import account_searcher
 
 @slash_command(
     name="bio",
@@ -12,7 +13,7 @@ from discord.commands import slash_command, Option
 async def bio(
     self, 
     ctx: discord.ApplicationContext, 
-    account: Option(FetchAccount, name="username", description="Enter RR username", default="", required=False)
+    account: Option(FetchAccount, name="username", description="Enter RR username", default="", required=False, autocomplete=account_searcher)
 ):
     await ctx.interaction.response.defer()
     
@@ -22,16 +23,17 @@ async def bio(
     
     bio = await account.get_bio()
     
-    if not bio: # Check if the user has a bio
-        em = get_default_embed()
-        em.description = f"[{account.display_name}]({profile_url(account.username)}) hasn't written a bio!"
-        return await ctx.respond(
-            embed=em
-        )
+    # Embed skeleton
+    em = get_default_embed()
 
-    await ctx.respond(
-        content=sanitize_bio(bio)
-    )
+    if not bio: # Check if the user has a bio
+        em.description = f"[{account.display_name} @{account.username}](<{profile_url(account.username)}>) hasn't set a bio yet!"
+        return await ctx.respond(embed=em) 
+
+    em.title = f"{account.display_name} @{account.username}'s bio"
+    em.description = sanitize_bio(bio)
+
+    await ctx.respond(embed=em)
         
 
         

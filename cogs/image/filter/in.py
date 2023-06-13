@@ -2,6 +2,7 @@ import discord
 from discord.commands import slash_command, Option
 from utils.converters import FetchAccount
 from exceptions import ConnectionNotFound
+from utils.autocompleters import account_searcher
 
 @slash_command(
     name="in",
@@ -12,7 +13,7 @@ async def _in(
     ctx: discord.ApplicationContext,
     rooms: Option(str, name="rooms", description="Filter by which RR rooms can be featured (separate by spaces)", required=False, default=None),
     exclude: Option(str, name="exclude", description="Filter by which RR rooms SHOULDN'T be featured (separate by spaces)", required=False, default=None),
-    account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False)
+    account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False, autocomplete=account_searcher)
 ):
     if not rooms and not exclude:
         await ctx.interaction.response.send_message("Fill in `rooms` or `exclude` params!", ephemeral=True)

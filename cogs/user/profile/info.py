@@ -1,6 +1,7 @@
 import discord
 from discord.commands import slash_command, Option
 from utils.converters import FetchAccount
+from utils.autocompleters import account_searcher
 from embeds import fetch_profile_embed
 from resources import get_emoji
 from exceptions import ConnectionNotFound
@@ -72,7 +73,14 @@ class ProfileView(discord.ui.View):
 async def info(
     self,   
     ctx: discord.ApplicationContext,
-    account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False)
+    account: Option(
+        FetchAccount, 
+        name="username", 
+        description="Enter RR username", 
+        default=None, 
+        required=False, 
+        autocomplete=account_searcher
+    )
 ):
     await ctx.interaction.response.defer()
     

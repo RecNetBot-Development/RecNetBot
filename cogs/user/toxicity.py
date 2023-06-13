@@ -7,6 +7,7 @@ from utils import sanitize_bio, img_url
 from recnetpy.dataclasses.account import Account
 from googleapiclient.http import HttpError
 from exceptions import ConnectionNotFound
+from utils.autocompleters import account_searcher
 
 @slash_command(
     name="toxicity",
@@ -15,7 +16,7 @@ from exceptions import ConnectionNotFound
 async def toxicity(
     self, 
     ctx: ApplicationContext, 
-    account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False)
+    account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False, autocomplete=account_searcher)
 ):
     await ctx.interaction.response.defer()
     

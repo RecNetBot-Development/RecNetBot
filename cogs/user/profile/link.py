@@ -7,6 +7,7 @@ from embeds import get_default_embed, fetch_profile_embed
 from utils import post_url, profile_url, unix_timestamp
 from resources import get_emoji, get_icon
 from datetime import datetime, timedelta
+from utils.autocompleters import account_searcher
 
 # For prompting the user whether or not to link the account
 class Confirm(discord.ui.View):
@@ -62,7 +63,7 @@ class Check(discord.ui.View):
 async def link(
     self, 
     ctx: ApplicationContext, 
-    username: Option(str, "Enter RR username", required=True)
+    username: Option(str, "Enter RR username", required=True, autocomplete=account_searcher)
 ):
     await ctx.interaction.response.defer(ephemeral=True)
     
