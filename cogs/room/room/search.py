@@ -1,6 +1,7 @@
 import discord
 from discord.commands import slash_command, Option
 from cogs.miscellaneous.search import SearchView
+from utils.autocompleters import room_searcher
 
 @slash_command(
     name="search",
@@ -9,7 +10,7 @@ from cogs.miscellaneous.search import SearchView
 async def search(
     self, 
     ctx: discord.ApplicationContext, 
-    query: Option(str, name="search", description="Enter a RR room", required=True)
+    query: Option(str, name="search", description="Enter a RR room", required=True, autocomplete=room_searcher)
 ):
     await ctx.interaction.response.defer()
 

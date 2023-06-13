@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 import discord
 from discord.ext import commands
 from embeds import get_default_embed
@@ -11,7 +10,7 @@ from utils import chunks, profile_url
 from discord.commands import slash_command, Option
 from utils.paginator import RNBPaginator, RNBPage
 from utils.rec_net_urls import img_url, room_url
-
+from utils.autocompleters import room_searcher
 
 class RoleView(discord.ui.View):
     def __init__(self, bot: commands.Bot, context: discord.ApplicationContext, room: Room):
@@ -188,7 +187,7 @@ class Dropdown(discord.ui.Select):
 async def roles(
     self, 
     ctx: discord.ApplicationContext,
-    room: Option(FetchRoom, name="name", description="Enter RR room", required=True)
+    room: Option(FetchRoom, name="name", description="Enter RR room", required=True, autocomplete=room_searcher)
 ):
     await room.resolve_role_owners()
     view = RoleView(self.bot, context=ctx, room=room)

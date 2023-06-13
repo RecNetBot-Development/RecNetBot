@@ -4,6 +4,7 @@ from discord.commands import slash_command, Option
 from utils import room_url
 from embeds import get_default_embed
 from utils.rec_net_urls import img_url
+from utils.autocompleters import room_searcher
 
 @slash_command(
     name="placement",
@@ -12,7 +13,7 @@ from utils.rec_net_urls import img_url
 async def placement(
     self, 
     ctx: discord.ApplicationContext, 
-    room: Option(FetchRoom, name="name", description="Enter RR room", required=True),
+    room: Option(FetchRoom, name="name", description="Enter RR room", required=True, autocomplete=room_searcher),
     filter: Option(str, name="filter", description="Enter keywords or #tags. Example: pvp #contest", required=False)
 ):
     await ctx.interaction.response.defer()

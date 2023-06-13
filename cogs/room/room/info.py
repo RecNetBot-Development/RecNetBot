@@ -5,6 +5,7 @@ from embeds import room_embed
 from bot import RecNetBot
 from recnetpy.dataclasses.room import Room
 from exceptions import RoomNotFound
+from utils.autocompleters import room_searcher
 
 class RoomView(discord.ui.View):
     def __init__(self, room: Room, bot: RecNetBot, author_id: int, only_stats: bool = False):
@@ -61,7 +62,7 @@ class RoomView(discord.ui.View):
 async def info(
     self, 
     ctx: discord.ApplicationContext, 
-    room: Option(FetchRoom, name="name", description="Enter RR room", required=True),
+    room: Option(FetchRoom, name="name", description="Enter RR room", required=True, autocomplete=room_searcher),
     only_stats: Option(bool, name="only_stats", description="Whether or not to only display statistics and leave out details", required=False, default=False)
 ):
     await ctx.interaction.response.defer()

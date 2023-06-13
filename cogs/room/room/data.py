@@ -2,6 +2,7 @@ import discord
 from discord.commands import slash_command, Option
 from utils.converters import FetchRoom
 from utils import format_json_block, shorten
+from utils.autocompleters import room_searcher
 
 @slash_command(
     name="data",
@@ -10,7 +11,7 @@ from utils import format_json_block, shorten
 async def data(
     self, 
     ctx: discord.ApplicationContext, 
-    room: Option(FetchRoom, name="name", description="Enter RR room", required=True)
+    room: Option(FetchRoom, name="name", description="Enter RR room", required=True, autocomplete=room_searcher)
 ):
     await ctx.interaction.response.defer()
 

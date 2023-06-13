@@ -188,4 +188,3 @@ async def showcased(
     view = ShowcaseView(self.bot, showcased, account)
     em = await view.initialize()
     await ctx.respond(view=view, embed=em)
-    
