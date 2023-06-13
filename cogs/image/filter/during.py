@@ -11,8 +11,8 @@ from utils.autocompleters import account_searcher
 async def during(
     self, 
     ctx: discord.ApplicationContext,
-    events: Option(str, name="events", description="Filter by which RR events can be featured (separate by spaces, enter event ids)", required=False, default=None),
-    exclude: Option(str, name="exclude", description="Filter by which RR rooms SHOULDN'T be featured (separate by spaces, enter event ids)", required=False, default=None),
+    events: Option(str, name="events", description="Filter by which RR events can be featured (separate by spaces, enter event IDs)", required=False, default=None),
+    exclude: Option(str, name="exclude", description="Filter by which RR rooms SHOULDN'T be featured (separate by spaces, enter event IDs)", required=False, default=None),
     account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False, autocomplete=account_searcher)
 ):
     if not events and not exclude:

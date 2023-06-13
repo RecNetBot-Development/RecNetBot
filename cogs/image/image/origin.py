@@ -10,7 +10,7 @@ from embeds import fetch_image_embed
 async def origin(
     self, 
     ctx: discord.ApplicationContext, 
-    image: Option(FetchImage, name="image", description="Enter a RecNet link, id, img.rec.net link or image name.", required=True)
+    image: Option(FetchImage, name="image", description="Enter a RecNet link, ID, img.rec.net link or image name.", required=True)
 ):
     await ctx.interaction.response.defer()
 

@@ -182,7 +182,7 @@ class Dropdown(discord.ui.Select):
 async def responses(
     self, 
     ctx: discord.ApplicationContext, 
-    event: Option(FetchEvent, name="event", description="Enter a RecNet link or id", required=True)
+    event: Option(FetchEvent, name="event", description="Enter a RecNet link or ID", required=True)
 ):
     await ctx.interaction.response.defer()
     

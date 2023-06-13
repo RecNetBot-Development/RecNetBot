@@ -10,7 +10,7 @@ from utils import format_json_block
 async def data(
     self, 
     ctx: discord.ApplicationContext, 
-    invention: Option(FetchInvention, name="name", description="Enter a RecNet link or id", required=True)
+    invention: Option(FetchInvention, name="name", description="Enter a RecNet link or ID", required=True)
 ):
     await ctx.interaction.response.defer()
 

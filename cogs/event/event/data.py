@@ -11,7 +11,7 @@ from utils import format_json_block
 async def data(
     self, 
     ctx: discord.ApplicationContext, 
-    event: Option(FetchEvent, name="event", description="Enter a RecNet link or id", required=True)
+    event: Option(FetchEvent, name="event", description="Enter a RecNet link or ID", required=True)
 ):
     await ctx.interaction.response.defer()
 
