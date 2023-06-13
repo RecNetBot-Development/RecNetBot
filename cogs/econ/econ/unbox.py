@@ -4,15 +4,12 @@ import json
 from embeds import get_default_embed
 from resources import get_emoji
 from discord.commands import slash_command, Option
-from economy import get_rarity_color, load_items, get_item, Item
+from economy import get_rarity_color, load_items, get_item, Item, load_boxes, Box, get_box
 from enum import Enum
 from typing import List
 
 ITEMS = load_items()
-
-class BoxTypes(Enum):
-    LOW_TIER = 0
-    HIGH_TIER = 1
+BOXES = load_boxes()
 
 class BoxOption(discord.ui.Button):
     def __init__(self, option: int):
@@ -27,19 +24,17 @@ class BoxOption(discord.ui.Button):
 
 
 class BoxAgain(discord.ui.Button):
-    def __init__(self, box_type: BoxTypes):
-        self.box_type = box_type
-        if self.box_type == BoxTypes.HIGH_TIER:
-            label = "Open 3-4 Star Box"
-        else:
-            label = "Open 1-2 Star Box"
-        super().__init__(style=discord.ButtonStyle.primary, label=label)
+    def __init__(self, box: Box):
+        super().__init__(style=discord.ButtonStyle.primary)
+
+        self.box = box
+        self.label = f"Open {self.box.name}"
 
     async def callback(self, interaction: discord.Interaction):
         self.disabled = True
         await interaction.message.edit(view=self.view)
 
-        view = BoxMenu(self.view.bot, self.box_type)
+        view = BoxMenu(self.view.bot, self.box)
         ctx = await self.view.bot.get_application_context(interaction)
         await view.respond(ctx)
 
@@ -80,7 +75,7 @@ class SellButton(discord.ui.Button):
 
 
 class BoxMenu(discord.ui.View):
-    def __init__(self, bot, box_type: BoxTypes, inv_cmd = None):
+    def __init__(self, bot, box: Box, inv_cmd = None):
         super().__init__(
             timeout=600,
             disable_on_timeout=True
@@ -90,8 +85,8 @@ class BoxMenu(discord.ui.View):
         self.inv_cmd = inv_cmd
 
         # Rewards
-        self.box_type = box_type
-        self.items = self.randomize_items(self.box_type)
+        self.box = box
+        self.items = self.randomize_items(self.box)
 
         # Reward buttons
         for i in self.items:
@@ -119,7 +114,7 @@ class BoxMenu(discord.ui.View):
         item = get_item(item_id=item_id)
 
         # Again button
-        self.add_item(BoxAgain(self.box_type))
+        self.add_item(BoxAgain(self.box))
 
         # Sell button
         self.add_item(SellButton(item, self.bot.ecm))
@@ -146,15 +141,19 @@ class BoxMenu(discord.ui.View):
         """ Add the item to the user's inventory """
         self.bot.ecm.add_item(self.ctx.author.id, item_id, 1)
 
-    def randomize_items(self, box_type: BoxTypes) -> List[Item]:
+    def randomize_items(self, box: Box) -> List[Item]:
         # Chooses items for the box
-        item_pool = ITEMS.copy()
+        all_items = ITEMS.copy()
 
         # Filter the wanted items
-        if box_type == BoxTypes.LOW_TIER:
-            item_pool = list(filter(lambda item: item.rarity in (1, 2), item_pool))
-        else:
-            item_pool = list(filter(lambda item: item.rarity in (3, 4), item_pool))
+        if box.categories:
+            item_pool: List[Item] = list(filter(lambda item: item.category in box.categories, all_items))
+
+        if box.rarities:
+            item_pool: List[Item] = list(filter(lambda item: item.rarity in box.rarities, all_items))
+
+        if box.items:
+            item_pool: List[Item] = list(filter(lambda item: item in box.items, all_items))
 
         # Randomly choose from the item pool
         chosen_items = []
@@ -193,6 +192,9 @@ class BoxMenu(discord.ui.View):
         else:
             await ctx.interaction.response.send_message(embed=em, view=self)
         
+async def get_boxes(ctx: discord.AutocompleteContext):
+    """Returns a list of items that begin with the characters entered so far."""
+    return [box.name for box in BOXES if box.name.lower().startswith(ctx.value.lower())]
 
 @slash_command(
     name="unbox",
@@ -201,18 +203,18 @@ class BoxMenu(discord.ui.View):
 async def unbox(
     self, 
     ctx: discord.ApplicationContext,
-    box: Option(str, name="box", description="What type of box would you like to open?", required=False, choices=[
-        "1-2 Stars (80 tokens)", 
-        "3-4 Stars (200 tokens)"
-    ], default="1-2 Stars (80 tokens)"),
+    box: Option(str, name="box", description="What type of box would you like to open?", autocomplete=get_boxes)
 ):
-    box_type = BoxTypes.LOW_TIER if box.startswith("1-2 Stars") else BoxTypes.HIGH_TIER
+    # Get the box
+    box = get_box(box_name=box)
+    if not box:
+        return await ctx.respond("Box doesn't exist!")
 
     # Get inventory command
     group = discord.utils.get(self.__cog_commands__, name='econ')
     inv_cmd = discord.utils.get(group.walk_commands(), name='inventory')
 
-    view = BoxMenu(self.bot, box_type, inv_cmd)
+    view = BoxMenu(self.bot, box, inv_cmd)
     await view.respond(ctx)
 
     

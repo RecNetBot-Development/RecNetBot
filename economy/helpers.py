@@ -1,8 +1,8 @@
 import discord
 import json
 from enum import Enum
-from typing import List
-from .dataclasses.box import Box
+from typing import List, Optional
+from .dataclasses.box import Box, create_box_dataclass
 from .dataclasses.item import Item, create_item_dataclass
 from .dataclasses.item_categories import ItemCategories, get_category
 #from .dataclasses import ItemCategories, Item, Box, create_item_dataclass, get_category
@@ -40,7 +40,7 @@ def load_items() -> List[Item]:
     return ITEMS
 
 
-def get_item(item_name: str = None, item_id: int = None) -> Item:
+def get_item(item_name: str = None, item_id: int = None) -> Optional[Item]:
     """
     Get an item by its name or ID
     """
@@ -79,31 +79,12 @@ def load_begs():
     return BEGS
 
 
+""" Load all boxes and make Box dataclasses for them """
 with open("economy/boxes.json") as boxes:
     RAW_BOXES: list = json.load(boxes)
     BOXES: List[Box] = []
-    for i in BOXES:
-        # Create item dataclasses
-        raw_items, items = i["rewards"]["items"], []
-        for i in raw_items:
-            items.append(create_item_dataclass(i))
-
-        # Get categories
-        raw_categories, categories = i["rewards"]["categories"], []
-        for i in raw_categories:
-            categories.append(get_category(i))
-
-        box = Box(
-            id=i["id"],
-            name=i["name"],
-            description=i["description"],
-            emoji_icon=i["emoji_icon"],
-            img_url=i["img_url"],
-            reward_categories=categories,
-            reward_rarities=i["rewards"]["rarities"],
-            reward_items=items
-        )
-
+    for i in RAW_BOXES:
+        box = create_box_dataclass(i)
         BOXES.append(box)
 
 def load_boxes() -> List[Box]:
@@ -111,3 +92,21 @@ def load_boxes() -> List[Box]:
     Load all box data
     """
     return BOXES
+
+def get_box(box_name: str = None, box_id: int = None) -> Optional[Box]:
+    """
+    Get a box by its name or ID
+    """
+    for box in BOXES:
+        if box_name:
+            if box.name.lower() == box_name.lower():
+                return box
+            
+        elif box_id:
+            if box.id == box_id:
+                return box
+            
+        else:
+            break
+        
+    return None

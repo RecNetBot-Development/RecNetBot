@@ -3,6 +3,7 @@
         "id": 1,
         "name": "Pizza Box",
         "description": "Host a pizza party!",
+        "tokens": 0,
         "emoji_icon": "",
         "img_url": "",
         "rewards": {
@@ -15,11 +16,25 @@
         "id": 2,
         "name": "Donut Box",
         "description": "Host a donut party!",
+        "tokens": 0,
         "emoji_icon": "",
         "img_url": "",
         "rewards": {
             "categories": ["donuts"],
             "rarities": [],
+            "items": []
+        }
+    },
+    {
+        "id": 3,
+        "name": "1 Star Box",
+        "description": "A measly box for peasants.",
+        "tokens": 0,
+        "emoji_icon": "",
+        "img_url": "",
+        "rewards": {
+            "categories": [],
+            "rarities": [1],
             "items": []
         }
     }
