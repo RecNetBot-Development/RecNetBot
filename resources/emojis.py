@@ -110,6 +110,7 @@ class CategoryIcons:
     category_room = 962027535196098570
     category_user = 962793028026777640
     category_invention = 1029082660217307286  # https://www.flaticon.com/free-icons/idea" Idea icons created by Freepik - Flaticon
+    category_cv2 = 1029120796880285747
 
 class Icons:
     """
