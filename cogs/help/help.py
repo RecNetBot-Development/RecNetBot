@@ -70,6 +70,7 @@ async def help(self, ctx: discord.ApplicationContext):
     cmds = {
         "User": {
             "info": {"mention": None, "description": "View someone's profile"},
+            "xp": {"mention": None, "description": "View a player's level & XP progress with details", "updated": True},
             "link": {"mention": None, "description": "Link your Rec Room profile", "hidden": True}  # Keep it here for later
         },
         "Room": {
@@ -87,6 +88,9 @@ async def help(self, ctx: discord.ApplicationContext):
         "Help": {
             "commands": {"mention": None, "description": "View the rest of the commands...", "command": None}
         },
+        "Circuits V2": {
+            "chip": {"mention": None, "description": "Lookup a CV2 chip and view its ports and properties", "updated": True}
+        }
         #"Miscellaneous": {
         #    "changelog": {"hidden": True}  # Fetch for later
         #}
@@ -105,13 +109,22 @@ async def help(self, ctx: discord.ApplicationContext):
                     
     # Gather the commands in the meant order
     beginner_guide = ""
+    new_updated = ""
     for cog in cmds.values():
         for cmd in cog.values():
             if "hidden" in cmd: continue
-            beginner_guide += f"{cmd['mention']} • {cmd['description']}\n"
+            cmd_text = f"{cmd['mention']} • {cmd['description']}\n"
+
+            if "updated" in cmd:
+                new_updated += cmd_text
+            else:
+                beginner_guide += cmd_text
     
     # Getting started segment
     em.add_field(name="Getting Started", value=beginner_guide)
+
+    # New or updates commands
+    em.add_field(name="New & updated", inline=False, value=new_updated)
     
     # Account linking info if not linked
     check_discord = self.bot.cm.get_discord_connection(ctx.author.id)
