@@ -23,7 +23,7 @@ class Menu(discord.ui.View):
 
 @slash_command(
     name="chip",
-    description="Lookup a CV2 chip and its ports and properties."
+    description="Lookup a CV2 chip and view its ports and properties."
 )
 async def chip(
     self, 
