@@ -1,0 +1,11 @@
+{
+    "name": "Circuits V2",
+    "icon": "category_cv2",
+    "description": "A toolset for Circuits V2.",
+    "groups": {
+        "cv2": {
+            "scripts": ["chip", "resources"],
+            "description": "View RecNetBot's {} CV2 commands."
+        }
+    }
+}
