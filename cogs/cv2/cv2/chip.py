@@ -120,5 +120,6 @@ async def chip(
     # UUID
     em.set_footer(text=f"UUID: {chip.uuid}")
 
-    menu_view = Menu(chip=chip)
-    await ctx.respond(embed=em, view=menu_view)
+    #menu_view = Menu(chip=chip)
+    #await ctx.respond(embed=em, view=menu_view)
+    await ctx.respond(embed=em)
