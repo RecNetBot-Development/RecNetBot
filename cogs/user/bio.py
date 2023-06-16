@@ -1,10 +1,22 @@
 import discord
 from exceptions import ConnectionNotFound
-from utils import sanitize_bio, profile_url
+from utils import sanitize_bio, profile_url, img_url
 from utils.converters import FetchAccount
 from embeds import get_default_embed
 from discord.commands import slash_command, Option
 from utils.autocompleters import account_searcher
+
+class Menu(discord.ui.View):
+    def __init__(self, username: str):
+        super().__init__()
+
+        btn = discord.ui.Button(
+            label="Profile URL",
+            url=profile_url(username),
+            style=discord.ButtonStyle.url
+        )
+
+        self.add_item(btn)
 
 @slash_command(
     name="bio",
@@ -25,15 +37,14 @@ async def bio(
     
     # Embed skeleton
     em = get_default_embed()
+    em.set_author(name=f"@{account.username}", icon_url=img_url(account.profile_image, crop_square=True, resolution=180))
 
     if not bio: # Check if the user has a bio
-        em.description = f"[{account.display_name} @{account.username}](<{profile_url(account.username)}>) hasn't set a bio yet!"
+        em.description = f"User hasn't set a bio yet!"
         return await ctx.respond(embed=em) 
 
-    em.title = f"{account.display_name} @{account.username}'s bio"
     em.description = sanitize_bio(bio)
-
-    await ctx.respond(embed=em)
+    await ctx.respond(embed=em, view=Menu(account.username))
         
 
         

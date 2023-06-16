@@ -1,11 +1,22 @@
 import discord
-from utils import profile_url
+from utils import profile_url, img_url
 from utils.formatters import format_platforms
 from utils.converters import FetchAccount
 from embeds import get_default_embed
 from discord.commands import slash_command, Option
 from exceptions import ConnectionNotFound
 from utils.autocompleters import account_searcher
+
+class Menu(discord.ui.View):
+    def __init__(self, username: str):
+        super().__init__()
+
+        btn = discord.ui.Button(
+            label="Profile URL",
+            url=profile_url(username),
+            style=discord.ButtonStyle.url
+        )
+        self.add_item(btn)
 
 @slash_command(
     name="platforms",
@@ -24,14 +35,14 @@ async def platforms(
     
     # Embed skeleton
     em = get_default_embed()
+    em.set_author(name=f"@{account.username}", icon_url=img_url(account.profile_image, crop_square=True, resolution=180))
 
     if not account.platforms:
-        em.description = f"[{account.display_name} @{account.username}](<{profile_url(account.username)}>) hasn't played on any platforms yet!"
+        em.description = "User hasn't played on any platforms yet!"
         return await ctx.respond(embed=em) 
      
     # Create the embed and send
-    em.title = f"Platforms {account.display_name} @{account.username} has played on"
-    #em.url = profile_url(account.username)
-    em.description = ' '.join(format_platforms(account.platforms))
-    await ctx.respond(embed=em)
+    em.description = "All the platforms this user has played on:\n"
+    em.description += ' '.join(format_platforms(account.platforms))
+    await ctx.respond(embed=em, view=Menu(account.username))
     

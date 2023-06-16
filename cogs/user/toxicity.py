@@ -3,11 +3,23 @@ from discord import ApplicationContext
 from discord.commands import slash_command, Option
 from utils.converters import FetchAccount
 from embeds import get_default_embed
-from utils import sanitize_bio, img_url
+from utils import sanitize_bio, img_url, profile_url
 from recnetpy.dataclasses.account import Account
 from googleapiclient.http import HttpError
 from exceptions import ConnectionNotFound
 from utils.autocompleters import account_searcher
+
+class Menu(discord.ui.View):
+    def __init__(self, username: str):
+        super().__init__()
+
+        btn = discord.ui.Button(
+            label="Profile URL",
+            url=profile_url(username),
+            style=discord.ButtonStyle.url
+        )
+        self.add_item(btn)
+
 
 @slash_command(
     name="toxicity",
@@ -56,7 +68,8 @@ async def toxicity(
    
     # Form response
     await ctx.respond(
-        embed=toxicity_embed(account, results)
+        embed=toxicity_embed(account, results),
+        view=Menu(account.username)
     )
     
     
@@ -76,7 +89,6 @@ def toxicity_embed(account: Account, toxicity_ratings: dict) -> discord.Embed:
     )
     
     em.set_thumbnail(url=img_url(account.profile_image, crop_square=True))
-    
     em.set_footer(text="This is powered by Perspective API. Results shouldn't be taken seriously.")
     
     return em
