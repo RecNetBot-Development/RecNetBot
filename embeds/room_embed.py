@@ -60,8 +60,28 @@ def room_embed(room: Room, cached_stats: RoomStats = "None", hide_details: bool 
             f"{get_emoji('limit')} `{room.max_players}` — Player Limit",
             f"{get_emoji('update')} In `{latest_updated_subroom.name}` at {unix_timestamp(latest_updated_subroom.data_saved_at if latest_updated_subroom.data_saved_at else room.created_at)} — Latest Update",
         ]
+
+        # Properties
+        properties = []
+        properties.append(
+            {"description": "Cloning Allowed", "enabled": room.cloning_allowed}
+        )
+        properties.append(
+            {"description": "Encrypted Voice Chat", "enabled": room.encrypted_voice_chat}
+        )
+        properties.append(
+            {"description": "Voice Moderation", "enabled": room.voice_moderated}
+        )
+        properties.sort(key=lambda x: x["enabled"], reverse=True)
+
+        properties_text = ""
+        for i in properties:
+            emoji = get_emoji("correct") if i["enabled"] else get_emoji("incorrect")
+            properties_text += f"`{emoji} {i['description']} ` "
+
         
         if details: em.add_field(name="Details", value="\n".join(details), inline=False)
+        if properties: em.add_field(name="Properties", value=properties_text, inline=False)
         if supported: em.add_field(name="Supported Modes", value=supported, inline=False)
         if unsupported: em.add_field(name="Unsupported Modes", value=unsupported, inline=False)
         if warnings: em.add_field(name="Warnings", value=" ".join(warnings), inline=False)

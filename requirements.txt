@@ -1,4 +1,4 @@
-recnetpy==0.1.49
+recnetpy==0.1.5
 py-cord==2.4.0
 google-api-python-client==2.62.0
 owoify-py==2.0.0
