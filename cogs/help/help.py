@@ -74,7 +74,7 @@ async def help(self, ctx: discord.ApplicationContext):
             "link": {"mention": None, "description": "Link your Rec Room profile", "hidden": True}  # Keep it here for later
         },
         "Room": {
-            "info": {"mention": None, "description": "See detailed information about a room"}  
+            "info": {"mention": None, "description": "New properties, included room save description to updates", "updated": True} 
         },
         "Image": {
             "photos": {"mention": None, "description": "Browse someone's shared photos"}

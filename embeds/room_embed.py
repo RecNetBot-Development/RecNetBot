@@ -53,12 +53,20 @@ def room_embed(room: Room, cached_stats: RoomStats = "None", hide_details: bool 
         # Tags
         tags = list(map(lambda ele: ele.tag, room.tags)) if room.tags else ["..."]
     
+        # Create the update section
+        update = f"{get_emoji('update')} In `{latest_updated_subroom.name}`"
+        if latest_updated_subroom.data_saved_at:
+            update += f" at {unix_timestamp(latest_updated_subroom.data_saved_at)}"
+        if latest_updated_subroom.description:
+            update += f": `\"{latest_updated_subroom.description}\"`"
+        update += " — Latest Update"
+
         details = [
             f"{get_emoji('date')} {unix_timestamp(room.created_at)} — Created At",
             f"{get_emoji('tag')} `{', '.join(tags)}` ({len(room.tags)}) — Tags",
             f"{get_emoji('subrooms')} `{', '.join(subroom_list)}` ({len(room.subrooms)}) — Subrooms",
             f"{get_emoji('limit')} `{room.max_players}` — Player Limit",
-            f"{get_emoji('update')} In `{latest_updated_subroom.name}` at {unix_timestamp(latest_updated_subroom.data_saved_at if latest_updated_subroom.data_saved_at else room.created_at)} — Latest Update",
+            update
         ]
 
         # Properties
@@ -78,7 +86,6 @@ def room_embed(room: Room, cached_stats: RoomStats = "None", hide_details: bool 
         for i in properties:
             emoji = get_emoji("correct") if i["enabled"] else get_emoji("incorrect")
             properties_text += f"`{emoji} {i['description']} ` "
-
         
         if details: em.add_field(name="Details", value="\n".join(details), inline=False)
         if properties: em.add_field(name="Properties", value=properties_text, inline=False)
