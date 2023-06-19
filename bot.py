@@ -101,4 +101,4 @@ class RecNetBot(commands.AutoShardedBot):
             self.lcm.log_command_usage(ctx.author.id, ctx.command.mention)
         else:
             # User commands don't have the mention attribute
-            self.lcm.log_command_usage(ctx.author.id, f"user:{ctx.command.name}")
+            self.lcm.log_command_usage(ctx.author.id, f"other:{ctx.command.name}")
