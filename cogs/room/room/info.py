@@ -8,14 +8,19 @@ from exceptions import RoomNotFound
 from utils.autocompleters import room_searcher
 
 class RoomView(discord.ui.View):
-    def __init__(self, room: Room, bot: RecNetBot, author_id: int, only_stats: bool = False):
+    def __init__(self, room: Room, bot: RecNetBot, author_id: int, only_stats: bool = False, commands: dict = {}):
         super().__init__()
         
+        self.commands = commands
         self.room = room
         self.bot = bot
         self.author_id = author_id
         self.only_stats = only_stats
         
+        # Component timeout
+        self.timeout = 600
+        self.disable_on_timeout = True
+
     def get_embed(self):
         """
         Gets the embed and refreshes cache
@@ -42,7 +47,7 @@ class RoomView(discord.ui.View):
         embed = self.get_embed()
         await ctx.respond(embed=embed, view=self)
         
-    @discord.ui.button(label="Refresh")
+    @discord.ui.button(label="Refresh", style=discord.ButtonStyle.primary)
     async def refresh(self, button: discord.ui.Button, interaction: discord.Interaction):
         # Refresh the room
         await self.fetch_room()
@@ -54,6 +59,20 @@ class RoomView(discord.ui.View):
         else:
             await interaction.response.send_message("I couldn't find the room anymore! It either got privated, or I malfunctioned.", ephemeral=True)
 
+    @discord.ui.button(label="View Roles", style=discord.ButtonStyle.secondary)
+    async def roles(self, button: discord.ui.Button, interaction: discord.Interaction):
+        # Run /roles
+
+        ctx = await self.bot.get_application_context(interaction)
+        await self.commands["roles"](ctx, self.room)
+
+    @discord.ui.button(label="View Placement", style=discord.ButtonStyle.secondary)
+    async def placement(self, button: discord.ui.Button, interaction: discord.Interaction):
+        # Run /placement
+
+        ctx = await self.bot.get_application_context(interaction)
+        await self.commands["placement"](ctx, self.room, None)
+        
 
 @slash_command(
     name="info",
@@ -67,7 +86,16 @@ async def info(
 ):
     await ctx.interaction.response.defer()
     
-    view = RoomView(room, self.bot, ctx.author.id, only_stats)
+    # Get button commands
+    commands = {
+        "roles": None,
+        "placement": None
+    }
+    for i in self.__cog_commands__:
+        if i.name in commands:
+            commands[i.name] = i
+
+    view = RoomView(room, self.bot, ctx.author.id, only_stats, commands)
     await view.respond(ctx)
 
     
