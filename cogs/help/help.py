@@ -6,14 +6,15 @@ from discord.commands import slash_command, SlashCommand
 from discord.ext.commands import Context
 
 class DetailsView(discord.ui.View):
-    def __init__(self, invite_link: str = None, server_link: str = None, help_command: SlashCommand = None, context: Context = None):
+    def __init__(self, invite_link: str = None, server_link: str = None, help_command: SlashCommand = None, tip_jar: SlashCommand = None, context: Context = None):
         super().__init__()
         self.help_cmd = help_command
+        self.tip_jar = tip_jar
         self.ctx = context
         buttons = []
 
         # Component timeout
-        self.timeout = 180
+        self.timeout = 600
         self.disable_on_timeout = True
         
         # Invite bot button
@@ -48,6 +49,13 @@ class DetailsView(discord.ui.View):
         
         await interaction.response.defer()
         await self.help_cmd(self.ctx)
+    
+    @discord.ui.button(label="Tip Jar", style=discord.ButtonStyle.green)
+    async def tip_jar(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ):
+        await interaction.response.defer()
+        await self.tip_jar(self.ctx)
 
 @slash_command(
     name="help",
@@ -90,10 +98,10 @@ async def help(self, ctx: discord.ApplicationContext):
         },
         "Circuits V2": {
             "chip": {"mention": None, "description": "Lookup a CV2 chip and view its ports and properties", "updated": True}
+        },
+        "Miscellaneous": {
+            "tip": {"hidden": True, "command": None}  # Fetch for later
         }
-        #"Miscellaneous": {
-        #    "changelog": {"hidden": True}  # Fetch for later
-        #}
     }
     
     # Find the wanted commands cuz 'get_command' doesn't work. At least this is a single iteration to find all the commands.
@@ -136,7 +144,8 @@ async def help(self, ctx: discord.ApplicationContext):
 
     # Information segment
     info = f"{get_emoji('stats')} I am in `{len(self.bot.guilds):,}` servers and counting!\n" \
-           f"{get_emoji('helpful')} `{self.bot.cm.get_connection_count():,}` people have linked their Rec Room account!"
+           f"{get_emoji('helpful')} `{self.bot.cm.get_connection_count():,}` people have linked their Rec Room account!\n" \
+           f"{get_emoji('token')} {cmds['Miscellaneous']['tip']['mention']} if you would like to thank for RecNetBot!"
     
     # Update segment
     #resp = await get_changelog(self.bot)
@@ -157,6 +166,7 @@ async def help(self, ctx: discord.ApplicationContext):
         invite_link=cfg.get('invite_link', None),
         server_link=cfg.get('server_link', None),
         help_command=cmds["Help"]["commands"]["command"], # yes. confusing.
+        tip_jar=cmds['Miscellaneous']['tip']["command"],
         context=ctx
     )
     await ctx.respond(embed=em, view=view)

@@ -33,6 +33,7 @@ class RecNetBot(commands.AutoShardedBot):
         self.RecNet = None
         self.cog_manager = CogManager(self)
 
+        # Optionally enable Perspective API for /toxicity
         try:
             self.perspective = discovery.build(
                 "commentanalyzer",

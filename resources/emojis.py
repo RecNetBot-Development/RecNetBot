@@ -99,6 +99,8 @@ class Emoji:
     progress_max1 = "<:max1:1114166520994598943>"
     progress_max2 = "<:max2:1114166523637026956>"
     progress_max3 = "<:max3:1114166525209878638>"
+    kofi = "<:kofi:1120441142463434752>"
+    cheer_host = "<:cheer_host:1120445719380242522>"
 
 class CategoryIcons:
     category_api = 963878518960291903  # (Api by Larea from NounProject.com)
@@ -125,6 +127,8 @@ class Icons:
     room = "https://i.imgur.com/8o1oFRn.png"
     helpful = "https://i.imgur.com/Vr5983F.png"
     user_command = "https://i.imgur.com/Q48dhjL.png"
+    heart = "https://i.imgur.com/FqFLYC8.png"
+    kofi = "https://i.imgur.com/ECB0xhF.png"
 
 def get_icon(name: str) -> str:
     """
