@@ -9,6 +9,9 @@ from resources import get_emoji, get_icon
 from datetime import datetime, timedelta
 from utils.autocompleters import account_searcher
 
+BENEFITS = "- autofill the `username` slot in commands\n" \
+           "- list your owned rooms when running room commands so you don't have to type them out."
+
 # For prompting the user whether or not to link the account
 class Confirm(discord.ui.View):
     def __init__(self):
@@ -97,6 +100,9 @@ async def link(
         f"Are you sure you want to link [@{user.username}]({profile_url(user.username)}) to your Discord?",
         "You can only link a Rec Room account that you own. Verification is required. It only takes less than a minute."
     ])
+    prompt_em.add_field(name="Benefits", 
+        value="**Once linked, RecNetBot will**:\n" + BENEFITS
+    )
     view = Confirm()
     
     # Edit to verification phase
@@ -166,9 +172,7 @@ async def link(
     self.bot.cm.create_connection(ctx.author.id, user.id)
     em = get_default_embed()
     em.description = f"Your Discord is now linked to [@{user.username}]({profile_url(user.username)})! {get_emoji('helpful')}\n\n" \
-                      "**RecNetBot will now**:\n" \
-                      "- autofill the `username` slot in commands\n" \
-                      "- default to owned rooms when running room commands."
+                      "**RecNetBot will now**:\n" + BENEFITS
                       
     em.set_image(url=get_icon("user_command"))
     em.set_footer(text="You can also pull up yours or others' linked profiles and more through their Discord!")
