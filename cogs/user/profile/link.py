@@ -165,8 +165,11 @@ async def link(
     # Verification done
     self.bot.cm.create_connection(ctx.author.id, user.id)
     em = get_default_embed()
-    em.description = f"Your Discord is now linked to [@{user.username}]({profile_url(user.username)})! {get_emoji('helpful')}\n" \
-                      "RecNetBot will now autofill the `username` slot in commands.\n\n"
+    em.description = f"Your Discord is now linked to [@{user.username}]({profile_url(user.username)})! {get_emoji('helpful')}\n\n" \
+                      "**RecNetBot will now**:\n" \
+                      "- autofill the `username` slot in commands\n" \
+                      "- default to owned rooms when running room commands."
+                      
     em.set_image(url=get_icon("user_command"))
     em.set_footer(text="You can also pull up yours or others' linked profiles and more through their Discord!")
     await ctx.interaction.edit_original_response(embeds=[profile_em, em], view=None)
