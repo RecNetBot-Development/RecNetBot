@@ -130,7 +130,7 @@ async def help(self, ctx: discord.ApplicationContext):
     check_discord = self.bot.cm.get_discord_connection(ctx.author.id)
     if not check_discord:
         linking = "You can link your Rec Room account through me!\n" \
-                "Once linked, I will autofill `username` slots and default to owned rooms in commands.\n" \
+                "Once linked, I will autofill `username` slots and list owned rooms in commands.\n" \
                 f"To get started, use {cmds['User']['link']['mention']} {get_emoji('helpful')}"
         em.add_field(name="Account Linking", value=linking, inline=False)
 
