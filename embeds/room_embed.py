@@ -15,7 +15,7 @@ def room_embed(room: Room, cached_stats: RoomStats = "None", hide_details: bool 
     em.title = f"^{room.name}"
     em.url = room_url(room.name)
     
-    details, supported, unsupported, warnings, roles = None, None, None, None, None
+    details, supported, warnings, roles = None, None, None, None
     if not hide_details: 
         em.set_image(url=img_url(room.image_name))
         em.description = f"```{room.description}```"
@@ -38,9 +38,8 @@ def room_embed(room: Room, cached_stats: RoomStats = "None", hide_details: bool 
             latest_updated_subroom = sorted(room.subrooms, key=lambda ele: ele.subroom_id)[-1]
             
         # Supported
-        supported_list, unsupported_list = format_accessibilities(room)
-        supported = ', '.join(supported_list) if supported_list else None
-        unsupported = ', '.join(unsupported_list) if unsupported_list else None
+        supported_list = format_accessibilities(room)
+        supported = " ".join(supported_list)
                 
         # Roles
         role_pieces = format_roles(room.roles)
@@ -90,7 +89,6 @@ def room_embed(room: Room, cached_stats: RoomStats = "None", hide_details: bool 
         if details: em.add_field(name="Details", value="\n".join(details), inline=False)
         if properties: em.add_field(name="Properties", value=properties_text, inline=False)
         if supported: em.add_field(name="Supported Modes", value=supported, inline=False)
-        if unsupported: em.add_field(name="Unsupported Modes", value=unsupported, inline=False)
         if warnings: em.add_field(name="Warnings", value=" ".join(warnings), inline=False)
         if room.custom_warning: em.add_field(name="Custom Warning", value=custom_warning, inline=False)
         if roles: em.add_field(name="Roles", value=roles, inline=False)
