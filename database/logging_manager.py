@@ -60,7 +60,7 @@ class LoggingManager():
 
                 log[user_hex]["total_usage"] += 1
             else:
-                log[user_hex] = {"specific": {}, "total_usage": 0}
+                log[user_hex] = {"specific": {cmd_mention: [timestamp]}, "total_usage": 1}
 
         return log
     
