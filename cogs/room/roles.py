@@ -161,8 +161,8 @@ class Dropdown(discord.ui.Select):
         """
 
         # Make sure it's the author using the component
-        if interaction.user.id != interaction.message.interaction.user.id:
-            return await interaction.response.send_message("You're not authorized!", ephemeral=True)
+        #if interaction.user.id != interaction.message.interaction.user.id:
+        #    return await interaction.response.send_message("You're not authorized!", ephemeral=True)
         
         role_ids = {
             "Creator": 255,
