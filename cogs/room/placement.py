@@ -18,6 +18,7 @@ async def placement(
 ):
     await ctx.interaction.response.defer()
     em = get_default_embed()
+    em.title = "Hot Placement"
     scope = 10_000  # How many rooms to fetch
     
     if filter:
@@ -48,7 +49,7 @@ async def placement(
             f"The room scope is `{scope:,}`."
             
         ]
-        if tags: pieces.insert(1, f"Room tags: `{','.join(tags)}`",)
+        if tags: pieces.insert(1, f"Room tags: `{', '.join(tags)}`",)
         em.description = "\n".join(pieces)
         return await ctx.respond(embed=em)
     
