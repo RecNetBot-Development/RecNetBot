@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 from utils.autocompleters import account_searcher
 
 BENEFITS = "- autofill the `username` slot in commands\n" \
-           "- list your owned rooms when running room commands so you don't have to type them out."
+           "- list your owned rooms in `room` slots so you don't have to type them out."
 
 # For prompting the user whether or not to link the account
 class Confirm(discord.ui.View):
