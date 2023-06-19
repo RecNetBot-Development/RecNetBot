@@ -11,7 +11,7 @@ async def room_searcher(ctx: discord.AutocompleteContext) -> List[str]:
     try:
         rooms: List[Room] = await ctx.bot.RecNet.rooms.search(query=ctx.value)
     except BadRequest:
-        return []
+        rooms: List[Room] = await ctx.bot.RecNet.rooms.hot(take=20)
 
     # Return results
     return [room.name for room in rooms]
