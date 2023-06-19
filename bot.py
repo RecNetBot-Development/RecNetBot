@@ -9,6 +9,7 @@ from recnetpy import Client
 from modules import CogManager
 from database import ConnectionManager, RoomCacheManager, InventionCacheManager, BookmarkManager, LoggingManager
 from googleapiclient import discovery
+from googleapiclient.errors import HttpError
 
 class RecNetBot(commands.AutoShardedBot):
     def __init__(self, production: bool):
@@ -31,13 +32,18 @@ class RecNetBot(commands.AutoShardedBot):
         # Add Modules
         self.RecNet = None
         self.cog_manager = CogManager(self)
-        self.perspective = discovery.build(
-            "commentanalyzer",
-            "v1alpha1",
-            developerKey=self.config.get("perspective_api_key"),
-            discoveryServiceUrl="https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1",
-            static_discovery=False,
-        )
+
+        try:
+            self.perspective = discovery.build(
+                "commentanalyzer",
+                "v1alpha1",
+                developerKey=self.config.get("perspective_api_key"),
+                discoveryServiceUrl="https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1",
+                static_discovery=False,
+            )
+        except HttpError:
+            self.perspective = None
+            print("Perspective API disabled. Some functionality will be lost!")
 
         # Verify post for RR account links
         self.verify_post = None

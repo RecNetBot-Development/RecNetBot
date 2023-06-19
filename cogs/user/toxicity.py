@@ -32,6 +32,11 @@ async def toxicity(
 ):
     await ctx.interaction.response.defer()
     
+    # Make sure the API code exists
+    if not self.bot.perspective:
+        await ctx.respond("This command is disabled! My config is missing the required API key.")
+        return
+
     if not account:  # Check for a linked RR account
         account = await self.bot.cm.get_linked_account(self.bot.RecNet, ctx.author.id)
         if not account: raise ConnectionNotFound
