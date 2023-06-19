@@ -90,4 +90,8 @@ class RecNetBot(commands.AutoShardedBot):
 
 
     async def on_application_command(self, ctx: discord.ApplicationContext):
-        self.lcm.log_command_usage(ctx.author.id, ctx.command.mention)
+        if hasattr(ctx.command, "mention"):
+            self.lcm.log_command_usage(ctx.author.id, ctx.command.mention)
+        else:
+            # User commands don't have the mention attribute
+            self.lcm.log_command_usage(ctx.author.id, f"user:{ctx.command.name}")
