@@ -1,5 +1,5 @@
 import discord
-from datetime import datetime
+import datetime
 from resources import get_emoji
 from embeds import get_default_embed
 from discord.commands import slash_command, SlashCommand
@@ -77,33 +77,59 @@ async def help(self, ctx: discord.ApplicationContext):
     # The displayed commands in the meant order
     cmds = {
         "User": {
-            "info": {"mention": None, "description": "View someone's profile"},
+            "info": {"mention": None, "beginner": True, "description": "Check someone's Rec Room profile"},
             "xp": {"mention": None, "description": "View a player's level & XP progress with details", "updated": True},
             "link": {"mention": None, "description": "Link your Rec Room profile", "hidden": True}  # Keep it here for later
         },
         "Room": {
-            "info": {"mention": None, "description": "New properties, included room save description to updates", "updated": True} 
+            "info": {"mention": None, "beginner": True, "description": "View room info that cannot be seen otherwise", "updated": True} 
         },
         "Image": {
-            "photos": {"mention": None, "description": "Browse someone's shared photos"}
+            "photos": {"mention": None, "beginner": True, "description": "Browse someone's RecNet photos"}
         },
         "Random": {
-            "image": {"mention": None, "description": "Pull up random images out of context"}
+            "image": {"mention": None, "beginner": True, "description": "Pull up random images out of context"}
         },
         "Invention": {
-            "search": {"mention": None, "description": "Search inventions"}
+            "search": {"mention": None, "beginner": True, "description": "Search Rec Room inventions"}
         },
         "Help": {
-            "commands": {"mention": None, "description": "View the rest of the commands...", "command": None}
+            "commands": {"mention": None, "beginner": True, "description": "Browse the rest of the commands...", "command": None}
         },
         "Circuits V2": {
             "chip": {"mention": None, "description": "Lookup a CV2 chip and view its ports and properties", "updated": True}
         },
         "Miscellaneous": {
-            "tip": {"hidden": True, "command": None}  # Fetch for later
+            "tip": {"mention": None, "command": None, "updated": True}  # Fetch for later
         }
     }
-    
+
+    # Get ran commands from the past month
+    month_ago = datetime.datetime.now() - datetime.timedelta(days=30)
+    logs = self.bot.lcm.get_ran_commands_after_timestamp(int(month_ago.timestamp()))
+
+    total_ran, total_users, command_ran = 0, 0, {}
+    for user, data in logs.items():
+        total_users += 1
+        total_ran += data["total_usage"]
+
+        # Calculate how many times each command has been ran
+        for cmd, usage in data["specific"].items():
+            if cmd in command_ran:
+                command_ran[cmd] += len(usage)
+            else:
+                command_ran[cmd] = len(usage)
+
+    # Sort them by usage and get the top 5
+    usage_sort = {k: v for k, v in sorted(command_ran.items(), key=lambda item: item[1], reverse=True)}
+    leaderboard = []
+    limit, i = 5, 0
+    for cmd, usage in usage_sort.items():
+        if i >= limit: break
+        if cmd.startswith("other:"): continue
+        leaderboard.append(cmd)
+        i += 1
+
     # Find the wanted commands cuz 'get_command' doesn't work. At least this is a single iteration to find all the commands.
     for cog in cogs:
         for cmd in cog.walk_commands():
@@ -116,23 +142,25 @@ async def help(self, ctx: discord.ApplicationContext):
                         cmds[cog.qualified_name][cmd.name]["command"] = cmd
                     
     # Gather the commands in the meant order
-    beginner_guide = ""
-    new_updated = ""
+    beginner_guide, new_updated = [], []
     for cog in cmds.values():
         for cmd in cog.values():
-            if "hidden" in cmd: continue
-            cmd_text = f"{cmd['mention']} • {cmd['description']}\n"
+            if cmd.get("hidden", False): continue
 
-            if "updated" in cmd:
-                new_updated += cmd_text
-            else:
-                beginner_guide += cmd_text
+            if cmd.get("updated", False):
+                new_updated.append(cmd['mention'])
+
+            if cmd.get("beginner", False):
+                beginner_guide.append(f"{cmd['mention']} • {cmd['description']}") 
     
     # Getting started segment
-    em.add_field(name="Getting Started", value=beginner_guide)
+    em.add_field(name="Getting Started", inline=False, value="\n".join(beginner_guide) if beginner_guide else "How empty...")
+
+    # Trending segment
+    em.add_field(name="Trending Commands", inline=False, value=" ".join(leaderboard) if leaderboard else "How empty...")
 
     # New or updates commands
-    em.add_field(name="New & updated", inline=False, value=new_updated)
+    em.add_field(name="New & Updated", inline=False, value=" ".join(new_updated) if new_updated else "How empty...")
     
     # Account linking info if not linked
     check_discord = self.bot.cm.get_discord_connection(ctx.author.id)
