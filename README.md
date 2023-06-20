@@ -25,7 +25,7 @@ RecNetBot is a [Discord](https://discord.gg/S9meE83Xu2) bot that utilizes [RecNe
 - O-Owoify UwU.
 - Plenty of more miscellaneous commands for specific situations.
 
-# Adding the bot
+# Adding the Bot
 RecNetBot can be invited to your Discord server with [this link](https://discord.com/api/oauth2/authorize?client_id=788632031835324456&permissions=322624&scope=bot)! It is the public instance that thousands of servers use and trust.
 
 Feel free to also self-host RNB! Please know that we won't provide you any support as don't have the time to troubleshoot others' issues.
