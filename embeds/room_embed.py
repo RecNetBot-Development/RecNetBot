@@ -142,7 +142,7 @@ def room_embed(room: Room, cached_stats: RoomStats = "None", hide_details: bool 
         
     if statistics:
         em.add_field(name="Statistics", value="\n".join(statistics), inline=False)
-        em.set_footer(text="Engagement is a unofficial metric. Take it with a grain of salt.")
+        em.set_footer(text="Engagement is an unofficial metric. Take it with a grain of salt.")
     
     return em
 

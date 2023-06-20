@@ -1,6 +1,7 @@
 import discord
+from discord.interactions import Interaction
 from utils.converters import FetchRoom
-from utils import room_url, profile_url
+from utils import room_url, profile_url, shorten
 from discord.commands import slash_command, Option
 from embeds import room_embed
 from bot import RecNetBot
@@ -8,20 +9,89 @@ from recnetpy.dataclasses.room import Room
 from exceptions import RoomNotFound
 from utils.autocompleters import room_searcher
 
+class RoleBtn(discord.ui.Button):
+    def __init__(self, command):
+        super().__init__(
+            label="View Roles",
+            style=discord.ButtonStyle.primary
+        )
+
+        self.command = command
+
+    async def callback(self, interaction: discord.Interaction):
+        # Run /roles
+
+        # Make sure it's the author using the component
+        if not self.view.authority_check(interaction):
+            return await interaction.response.send_message("You're not authorized!", ephemeral=True)
+
+        ctx = await self.view.bot.get_application_context(interaction)
+        await self.command(ctx, self.view.room)
+
+
+class PlacementBtn(discord.ui.Button):
+    def __init__(self, command):
+        super().__init__(
+            label="View Placement",
+            style=discord.ButtonStyle.primary
+        )
+
+        self.command = command
+
+    async def callback(self, interaction: discord.Interaction):
+        # Run /placement
+
+        # Make sure it's the author using the component
+        if not self.view.authority_check(interaction):
+            return await interaction.response.send_message("You're not authorized!", ephemeral=True)
+
+        ctx = await self.view.bot.get_application_context(interaction)
+        await self.command(ctx, self.view.room, None)
+
+
+class RefreshBtn(discord.ui.Button):
+    def __init__(self):
+        super().__init__(
+            label="Refresh",
+            style=discord.ButtonStyle.primary
+        )
+
+    async def callback(self, interaction: discord.Interaction):
+        # Make sure it's the author using the component
+        if not self.view.authority_check(interaction):
+            return await interaction.response.send_message("You're not authorized!", ephemeral=True)
+
+        # Refresh the room
+        await self.view.fetch_room()
+        
+        # Create embed and respond
+        if self.view.room:
+            await self.view.update(interaction)
+        else:
+            await self.view.error(interaction)
+
+
 class RoomView(discord.ui.View):
-    def __init__(self, room: Room, bot: RecNetBot, author_id: int, only_stats: bool = False, commands: dict = {}):
+    def __init__(self, room: Room, bot: RecNetBot, only_stats: bool = False, commands: dict = {}):
         super().__init__()
         
         self.commands = commands
         self.room = room
         self.bot = bot
-        self.author_id = author_id
+        self.author_id = 0
         self.only_stats = only_stats
+
+        # Component timeout
+        self.timeout = 600
+        self.disable_on_timeout = True
 
         # Link buttons
         buttons = [
+            RefreshBtn(),
+            RoleBtn(commands["roles"]),
+            PlacementBtn(commands["placement"]),
             discord.ui.Button(
-                label=f"^{self.room.name}",
+                label=shorten(f"^{self.room.name}", 80),
                 url=room_url(self.room.name),
                 style=discord.ButtonStyle.link,
                 row=1
@@ -57,47 +127,26 @@ class RoomView(discord.ui.View):
             self.room = room
         else:
             self.room = None
-            
         
-    async def respond(self, ctx):
+    async def respond(self, ctx: discord.ApplicationContext):
+        self.author_id = ctx.author.id
+
         embed = self.get_embed()
         await ctx.respond(embed=embed, view=self)
         
-    @discord.ui.button(label="Refresh", style=discord.ButtonStyle.primary)
-    async def refresh(self, button: discord.ui.Button, interaction: discord.Interaction):
-        # Refresh the room
-        await self.fetch_room()
+    async def update(self, interaction: discord.Interaction):
+        embed = self.get_embed()
+        await interaction.response.edit_message(embed=embed, view=self)
+
+    def authority_check(self, interaction: discord.Interaction):
+        return interaction.user.id == interaction.message.interaction.user.id
+    
+    async def error(self, interaction: discord.Interaction):
+        """
+        If the room doesn't exist anymore
+        """
+        await interaction.response.send_message("I couldn't find the room anymore! It either got privated, or I malfunctioned.", ephemeral=True)
         
-        # Create embed and respond
-        if self.room:
-            embed = self.get_embed()
-            await interaction.response.edit_message(embed=embed, view=self)
-        else:
-            await interaction.response.send_message("I couldn't find the room anymore! It either got privated, or I malfunctioned.", ephemeral=True)
-
-    @discord.ui.button(label="View Roles", style=discord.ButtonStyle.primary)
-    async def roles(self, button: discord.ui.Button, interaction: discord.Interaction):
-        # Run /roles
-
-        # Make sure it's the author using the component
-        if interaction.user.id != interaction.message.interaction.user.id:
-            return await interaction.response.send_message("You're not authorized!", ephemeral=True)
-
-        ctx = await self.bot.get_application_context(interaction)
-        await self.commands["roles"](ctx, self.room)
-
-    @discord.ui.button(label="View Placement", style=discord.ButtonStyle.primary)
-    async def placement(self, button: discord.ui.Button, interaction: discord.Interaction):
-        # Run /placement
-
-        # Make sure it's the author using the component
-        if interaction.user.id != interaction.message.interaction.user.id:
-            return await interaction.response.send_message("You're not authorized!", ephemeral=True)
-
-        ctx = await self.bot.get_application_context(interaction)
-        await self.commands["placement"](ctx, self.room, None)
-        
-
 @slash_command(
     name="info",
     description="View a room's information and statistics."
@@ -109,7 +158,7 @@ async def info(
     only_stats: Option(bool, name="only_stats", description="Whether or not to only display statistics and leave out details", required=False, default=False)
 ):
     await ctx.interaction.response.defer()
-
+    
     await room.get_creator_player()
     
     # Get button commands
@@ -121,7 +170,7 @@ async def info(
         if i.name in commands:
             commands[i.name] = i
 
-    view = RoomView(room, self.bot, ctx.author.id, only_stats, commands)
+    view = RoomView(room, self.bot, only_stats, commands)
     await view.respond(ctx)
 
     
