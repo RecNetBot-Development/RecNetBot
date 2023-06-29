@@ -46,10 +46,13 @@ async def logs(
     
     # Send database & logs
     files = []
+
+    """
     try:
         files.append(discord.File(r"rnb.db"))
     except FileNotFoundError:
         ...
+    """
 
     try:
         files.append(discord.File(r"error.log"))
