@@ -163,7 +163,7 @@ class Cog(commands.Cog):
                 await ctx.respond(embed=em)
                 return  # Don't report to log channel
             
-            elif isinstance(original,  InternalServerError | HTTPError | BadRequest | NotFound):  # Error sending request to RecNet
+            elif isinstance(original, InternalServerError | HTTPError | BadRequest | NotFound):  # Error sending request to RecNet
                 # Fetch the API status command
                 api_cog = self.bot.get_cog("API")
                 api_cmd = discord.utils.get(api_cog.__cog_commands__, name='apistatus')
@@ -176,6 +176,7 @@ class Cog(commands.Cog):
                                   "- RecNet had a breaking change and I need to be updated.\n" \
                                   f"- RecNet's servers are down. Check with {api_cmd.mention}.\n" \
                                   f"- If this error lasts for days, shoot us a {bug_cmd.mention}!"
+                em.add_field(name="Exception", value=str(original))
 
                 await ctx.respond(embed=em)
 
