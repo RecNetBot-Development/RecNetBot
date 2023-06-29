@@ -10,7 +10,7 @@ class FetchRoom(commands.Converter):
         # Sanitize input
         room_name = room_name.strip().replace("^", "")
         
-        if room_name:
+        if room_name and room_name.isascii():
             room = await ctx.bot.RecNet.rooms.get(room_name, 78)
         else:
             room = None

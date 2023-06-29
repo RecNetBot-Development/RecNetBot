@@ -9,10 +9,11 @@ async def room_searcher(ctx: discord.AutocompleteContext) -> List[str]:
     Returns a list of matching RR rooms
     """
 
+    query = ctx.value.strip().replace("^", "")
     rooms: List[Room] = []
-    if len(ctx.value) > 0:
+    if len(query) > 0 and query.isascii():
         try:
-            rooms = await ctx.bot.RecNet.rooms.search(query=ctx.value)
+            rooms = await ctx.bot.RecNet.rooms.search(query=query)
         except BadRequest:
             rooms = []
 

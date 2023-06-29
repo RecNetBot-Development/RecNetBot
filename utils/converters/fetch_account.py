@@ -14,7 +14,7 @@ class FetchAccount(commands.Converter):
         # Sanitize input
         account_name = account.strip().replace("@", "")
         
-        if account_name:
+        if account_name and account_name.isascii():
             account = await ctx.bot.RecNet.accounts.get(account_name)
         else:
             account = None

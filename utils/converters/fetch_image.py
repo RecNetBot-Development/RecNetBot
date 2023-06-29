@@ -16,7 +16,7 @@ class FetchImage(commands.Converter):
             
             if _image.isdigit():  # If it's a stringified id
                 image_id = _image
-                if image_id and image_id.isdigit():
+                if int(image_id) > 0:
                     image = await ctx.bot.RecNet.images.fetch(image_id)
             else:
                 url = urlparse(_image)
@@ -29,17 +29,19 @@ class FetchImage(commands.Converter):
                     else:
                         raise InvalidURL(path="/image/...")
                     
-                    if image_id:
+                    if image_id.isdigit() and int(image_id) > 0:
                         image = await ctx.bot.RecNet.images.fetch(image_id)
                     
                 elif url.netloc == "img.rec.net":  # If img.rec.net url
                     image_name = url.path.replace("/", "")
 
-                    if image_name:
+                    if image_name and image_name.isascii():
                         image = await ctx.bot.RecNet.images.get(image_name)
                     
                 else:
-                    image = await ctx.bot.RecNet.images.get(_image)  # Test if the param is just the image name
+                    if _image and _image.isascii():
+                        if not _image.startswith('-'):
+                            image = await ctx.bot.RecNet.images.get(_image)  # Test if the param is just the image name
                     if not image: raise InvalidURL
                     
         if not image: raise ImageNotFound

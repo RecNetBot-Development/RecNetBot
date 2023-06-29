@@ -8,10 +8,11 @@ async def account_searcher(ctx: discord.AutocompleteContext) -> List[str]:
     Returns a list of matching RR accounts
     """
 
+    query = ctx.value.strip().replace("@", "")
     accounts: List[Account] = []
-    if len(ctx.value) > 0:
+    if len(query) > 0 and query.isascii():
         try:
-            accounts: List[Account] = await ctx.bot.RecNet.accounts.search(query=ctx.value)
+            accounts: List[Account] = await ctx.bot.RecNet.accounts.search(query=query)
         except BadRequest:
             accounts = []
 

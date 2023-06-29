@@ -29,7 +29,7 @@ class FetchEvent(commands.Converter):
                     raise InvalidURL("/event/...")
                 
         try:
-            if event_id:
+            if event_id.isdigit() and int(event_id) > 0:
                 event = await ctx.bot.RecNet.events.fetch(event_id)
         except BadRequest:  # odd edge case
             event = None

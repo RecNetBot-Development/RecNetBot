@@ -14,7 +14,7 @@ class FetchInvention(commands.Converter):
             # Sanitize input
             _invention = _invention.strip()
             
-            if _invention.isdigit(): 
+            if _invention.isdigit() and int(_invention) > 0: 
                 invention_id = _invention
             else:
                 url = urlparse(_invention)
@@ -27,7 +27,7 @@ class FetchInvention(commands.Converter):
                 else:
                     raise InvalidURL("/invention/...")
         
-        if invention_id:
+        if invention_id.isdigit() and int(invention_id) > 0:
             invention = await ctx.bot.RecNet.inventions.fetch(invention_id)
         if not invention: raise InventionNotFound
         return invention
