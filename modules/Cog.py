@@ -188,15 +188,16 @@ class Cog(commands.Cog):
 
                 await ctx.respond(embed=em)
 
-
             # Unknown error
             logging.basicConfig(level=logging.WARNING, filename="error.log", filemode="a+",
                             format="%(asctime)-15s %(levelname)-8s %(message)s")
             logging.error(str(exception))
             
             # Create log embed
-            em.title = str(exception)
             em.description = f"```{str(original)}```"
+
+            # Error
+            em.description += f"\n```{str(exception)}```"
 
             # Which command
             em.description += "\n**Command**" \
