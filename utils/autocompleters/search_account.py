@@ -13,7 +13,6 @@ async def account_searcher(ctx: discord.AutocompleteContext) -> List[str]:
         try:
             accounts: List[Account] = await ctx.bot.RecNet.accounts.search(query=ctx.value)
         except BadRequest:
-            print("Zero!")
             accounts = []
 
     # If there's no results, push the linked account first
