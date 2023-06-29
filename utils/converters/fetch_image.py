@@ -8,6 +8,7 @@ class FetchImage(commands.Converter):
     Converts a room name param to a RR image
     """
     async def convert(self, ctx: discord.ApplicationContext, _image: str | int):
+        image = None
         image_id = 0
         if isinstance(_image, str):
             # Sanitize input
@@ -15,7 +16,8 @@ class FetchImage(commands.Converter):
             
             if _image.isdigit():  # If it's a stringified id
                 image_id = _image
-                image = await ctx.bot.RecNet.images.fetch(image_id)
+                if image_id and image_id.isdigit():
+                    image = await ctx.bot.RecNet.images.fetch(image_id)
             else:
                 url = urlparse(_image)
                 
@@ -27,11 +29,14 @@ class FetchImage(commands.Converter):
                     else:
                         raise InvalidURL(path="/image/...")
                     
-                    image = await ctx.bot.RecNet.images.fetch(image_id)
+                    if image_id:
+                        image = await ctx.bot.RecNet.images.fetch(image_id)
                     
                 elif url.netloc == "img.rec.net":  # If img.rec.net url
                     image_name = url.path.replace("/", "")
-                    image = await ctx.bot.RecNet.images.get(image_name)
+
+                    if image_name:
+                        image = await ctx.bot.RecNet.images.get(image_name)
                     
                 else:
                     image = await ctx.bot.RecNet.images.get(_image)  # Test if the param is just the image name

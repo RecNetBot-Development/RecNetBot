@@ -10,7 +10,10 @@ class FetchRoom(commands.Converter):
         # Sanitize input
         room_name = room_name.strip().replace("^", "")
         
-        room = await ctx.bot.RecNet.rooms.get(room_name, 78)
+        if room_name:
+            room = await ctx.bot.RecNet.rooms.get(room_name, 78)
+        else:
+            room = None
         if not room: raise RoomNotFound
         #ctx.bot.rcm.cache_stats(ctx.author.id, room.id, room)
         return room

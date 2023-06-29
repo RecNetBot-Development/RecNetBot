@@ -9,6 +9,7 @@ class FetchEvent(commands.Converter):
     Converts a event param to a RR event
     """
     async def convert(self, ctx: discord.ApplicationContext, _event: str | int):
+        event = None
         event_id = 0
         if isinstance(_event, str):
             # Sanitize input
@@ -28,7 +29,8 @@ class FetchEvent(commands.Converter):
                     raise InvalidURL("/event/...")
                 
         try:
-            event = await ctx.bot.RecNet.events.fetch(event_id)
+            if event_id:
+                event = await ctx.bot.RecNet.events.fetch(event_id)
         except BadRequest:  # odd edge case
             event = None
             

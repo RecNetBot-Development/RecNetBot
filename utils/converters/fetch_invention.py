@@ -8,6 +8,7 @@ class FetchInvention(commands.Converter):
     Converts a username param to a RR invention
     """
     async def convert(self, ctx: discord.ApplicationContext, _invention: str):
+        invention = None
         invention_id = 0
         if isinstance(_invention, str):
             # Sanitize input
@@ -26,7 +27,8 @@ class FetchInvention(commands.Converter):
                 else:
                     raise InvalidURL("/invention/...")
         
-        invention = await ctx.bot.RecNet.inventions.fetch(invention_id)
+        if invention_id:
+            invention = await ctx.bot.RecNet.inventions.fetch(invention_id)
         if not invention: raise InventionNotFound
         return invention
     

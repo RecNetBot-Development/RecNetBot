@@ -12,9 +12,13 @@ class FetchAccount(commands.Converter):
             return account
         
         # Sanitize input
-        account = account.strip().replace("@", "")
+        account_name = account.strip().replace("@", "")
         
-        account = await ctx.bot.RecNet.accounts.get(account)
+        if account_name:
+            account = await ctx.bot.RecNet.accounts.get(account_name)
+        else:
+            account = None
+
         if not account: raise AccountNotFound
         return account
     
