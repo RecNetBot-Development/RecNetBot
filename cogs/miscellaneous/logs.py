@@ -32,7 +32,7 @@ async def logs(
     # Sort by usage
     usage_sort = {k: v for k, v in sorted(command_ran.items(), key=lambda item: item[1], reverse=True)}
     leaderboard = ""
-    limit, i = 30, 0
+    limit, i = 20, 0
     for cmd, usage in usage_sort.items():
         if i >= limit: break
         leaderboard += f"- {cmd}: {usage:,}\n"
