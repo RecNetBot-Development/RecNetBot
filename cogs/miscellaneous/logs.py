@@ -32,7 +32,7 @@ async def logs(
     # Sort by usage
     usage_sort = {k: v for k, v in sorted(command_ran.items(), key=lambda item: item[1], reverse=True)}
     leaderboard = ""
-    limit, i = 20, 0
+    limit, i = 30, 0
     for cmd, usage in usage_sort.items():
         if i >= limit: break
         leaderboard += f"- {cmd}: {usage:,}\n"
@@ -44,12 +44,27 @@ async def logs(
     else:
         on_average = 0
     
+    # Send database & logs
+    files = []
+    try:
+        files.append(discord.File(r"rnb.db"))
+    except FileNotFoundError:
+        ...
+
+    try:
+        files.append(discord.File(r"error.log"))
+    except FileNotFoundError:
+        ...
+
     await ctx.respond(
         f"Statistics since {unix_timestamp(timestamp, 'R')}\n\n" \
         f"Commands ran per user on average: {on_average}\n" \
         f"Total commands ran: {total_ran}\n" \
-        f"Total unique users: {total_users}\n\n" \
-        f"Top commands by usage:\n{leaderboard}"
+        f"Total unique users: {total_users}\n" \
+        f"Servers: {len(self.bot.guilds):,}\n" \
+        f"Linked users: {self.bot.cm.get_connection_count():,}\n\n" \
+        f"Top commands by usage:\n{leaderboard}",
+        files=files
     )
 
 
