@@ -44,20 +44,22 @@ async def logs(
     else:
         on_average = 0
     
+    """
     # Send database & logs
     files = []
 
-    """
+    
     try:
         files.append(discord.File(r"rnb.db"))
     except FileNotFoundError:
         ...
-    """
+    
 
     try:
         files.append(discord.File(r"error.log"))
     except FileNotFoundError:
         ...
+    """
 
     await ctx.respond(
         f"Statistics since {unix_timestamp(timestamp, 'R')}\n\n" \
@@ -66,8 +68,7 @@ async def logs(
         f"Total unique users: {total_users}\n" \
         f"Servers: {len(self.bot.guilds):,}\n" \
         f"Linked users: {self.bot.cm.get_connection_count():,}\n\n" \
-        f"Top commands by usage:\n{leaderboard}",
-        files=files
+        f"Top commands by usage:\n{leaderboard}"
     )
 
 
