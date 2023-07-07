@@ -6,7 +6,7 @@
     "groups": {
         "random": {
             "scripts": ["player", "image", "room"],
-            "description": "View RecNetBot's {} random commands."
+            "description": "Fun commands that keep on giving with haphazard results!"
         }
     }
 }

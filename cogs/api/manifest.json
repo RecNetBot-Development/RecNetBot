@@ -1,6 +1,6 @@
 {
     "name": "API",
     "icon": "category_api",
-    "description": "Commands related to RecNet's API!",
+    "description": "Check the status of Rec Room's API!",
     "scripts": ["status"]
 }

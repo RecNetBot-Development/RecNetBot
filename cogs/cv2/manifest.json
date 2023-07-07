@@ -5,7 +5,7 @@
     "groups": {
         "cv2": {
             "scripts": ["chip", "resources"],
-            "description": "View RecNetBot's {} CV2 commands."
+            "description": "Handy commands related to Circuits V2!"
         }
     }
 }

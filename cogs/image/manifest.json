@@ -6,11 +6,11 @@
     "groups": {
         "image": {
             "scripts": ["data", "origin"],
-            "description": "View RecNetBot's {} miscellaneous image commands."
+            "description": "Handy tools for RecNet posts."
         },
         "filter": {
             "scripts": ["custom", "sort", "together", "in", "minmax", "during"],
-            "description": "View RecNetBot's {} image filtering and sorting commands."
+            "description": "Top-notch image filtering tools to pinpoint specific images."
         }
     }
 }
