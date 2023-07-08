@@ -13,9 +13,13 @@ from utils import unix_timestamp
 async def logs(
     self, 
     ctx: discord.ApplicationContext,
-    timestamp: Option(int, name="timestamp_after")
+    timestamp: Option(int, name="timestamp_after", required=False, default=None)
 ):
-    logs = self.bot.lcm.get_ran_commands_after_timestamp(timestamp)
+    # Default to first recorded log
+    if not timestamp:
+        timestamp = self.bot.lcm.get_first_entry_timestamp()
+
+    logs = self.bot.lcm.get_ran_commands_after_timestamp(timestamp if timestamp else self.bot.lcm.get_first_entry_timestamp())
 
     total_ran, total_users, command_ran = 0, 0, {}
     for user, data in logs.items():
@@ -63,7 +67,7 @@ async def logs(
 
     await ctx.respond(
         f"Statistics since {unix_timestamp(timestamp, 'R')}\n\n" \
-        f"Commands ran per user on average: {on_average}\n" \
+        f"Commands ran per user on average: {round(on_average, 2)}\n" \
         f"Total commands ran: {total_ran}\n" \
         f"Total unique users: {total_users}\n" \
         f"Servers: {len(self.bot.guilds):,}\n" \

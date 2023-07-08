@@ -1,9 +1,5 @@
-from dataclasses import dataclass
 import sqlite3
-from typing import Optional
 from sqlite3 import Connection
-from recnetpy.dataclasses.account import Account
-from recnetpy import Client
 import datetime
 import hashlib
 
@@ -37,11 +33,19 @@ class LoggingManager():
         if not data: return 0
         return len(data)
     
+    def get_first_entry_timestamp(self) -> int:
+        self.c.execute(
+            f"""SELECT timestamp FROM logging order by timestamp asc limit 1"""
+        )
+        data = self.c.fetchall()
+        if not data: return 0
+        return data[0][0]
+    
     def get_ran_commands_after_timestamp(self, timestamp_after: int) -> dict:
         self.c.execute(
             f"""
             SELECT * FROM logging
-            WHERE timestamp > :timestamp_after 
+            WHERE timestamp >= :timestamp_after 
             """, 
             {"timestamp_after": timestamp_after}
         )
@@ -85,11 +89,14 @@ class LoggingManager():
             
     
 if __name__ == "__main__":
-    db = sqlite3.connect("test.db")
+    db = sqlite3.connect("tests.db")
     cm = LoggingManager(db)
      
+    print(cm.get_first_entry_timestamp())
+
     for i in range(5):
         cm.log_command_usage(i+2, f"/hello{i}")
+        time.sleep(1)
 
     logs = cm.get_ran_commands_after_timestamp(1686853570)
     print(logs)
@@ -99,3 +106,5 @@ if __name__ == "__main__":
         total += i["total_usage"]
 
     print(total / len(logs.keys()))
+
+    
