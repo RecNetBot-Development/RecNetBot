@@ -44,6 +44,6 @@ class FetchImage(commands.Converter):
                             image = await ctx.bot.RecNet.images.get(_image)  # Test if the param is just the image name
                     if not image: raise InvalidURL
                     
-        if not image: raise ImageNotFound
+        if not image: raise ImageNotFound(_image)
         return image
     

@@ -14,7 +14,7 @@ class FetchRoom(commands.Converter):
             room = await ctx.bot.RecNet.rooms.get(room_name, 78)
         else:
             room = None
-        if not room: raise RoomNotFound
+        if not room: raise RoomNotFound(room_name)
         #ctx.bot.rcm.cache_stats(ctx.author.id, room.id, room)
         return room
     

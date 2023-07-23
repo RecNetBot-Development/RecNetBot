@@ -29,6 +29,6 @@ class FetchInvention(commands.Converter):
         
         if invention_id.isdigit() and int(invention_id) > 0:
             invention = await ctx.bot.RecNet.inventions.fetch(invention_id)
-        if not invention: raise InventionNotFound
+        if not invention: raise InventionNotFound(_invention)
         return invention
     

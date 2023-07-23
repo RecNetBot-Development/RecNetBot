@@ -7,18 +7,18 @@ class FetchAccount(commands.Converter):
     """
     Converts a username param to a RR account
     """
-    async def convert(self, ctx: discord.ApplicationContext, account: str | Account):
-        if isinstance(account, Account):
-            return account
+    async def convert(self, ctx: discord.ApplicationContext, _account: str | Account):
+        if isinstance(_account, Account):
+            return _account
         
         # Sanitize input
-        account_name = account.strip().replace("@", "")
+        account_name = _account.strip().replace("@", "")
         
         if account_name and account_name.isascii():
             account = await ctx.bot.RecNet.accounts.get(account_name)
         else:
             account = None
 
-        if not account: raise AccountNotFound
+        if not account: raise AccountNotFound(_account)
         return account
     

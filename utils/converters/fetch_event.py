@@ -34,5 +34,5 @@ class FetchEvent(commands.Converter):
         except BadRequest:  # odd edge case
             event = None
             
-        if not event: raise EventNotFound
+        if not event: raise EventNotFound(_event)
         return event
