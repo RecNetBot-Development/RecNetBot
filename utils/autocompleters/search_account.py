@@ -16,11 +16,16 @@ async def account_searcher(ctx: discord.AutocompleteContext) -> List[str]:
         except BadRequest:
             accounts = []
 
+    # Check for unlisted accounts
+    if accounts:
+        account_ids = [acc.id for acc in accounts]
+        accounts = await ctx.bot.RecNet.accounts.fetch_many(account_ids)
+
     # If there's no results, push the linked account first
     if not accounts:
         linked_account = await ctx.bot.cm.get_linked_account(ctx.bot.RecNet, ctx.interaction.user.id)
         return [linked_account.username] if linked_account else []
-
+    
     # Otherwise return results
     return [
         f"@{account.username}" for account in accounts
