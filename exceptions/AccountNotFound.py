@@ -12,6 +12,8 @@ class AccountNotFound(RNBException):
 
         if query:
             em.description += f"\n\nQuery: `{query}`"
+            if query.startswith("<@") and query.endswith(">"):
+                em.description += "\n\nLooks like you pinged a Discord user! To prevent this, exclude the at sign (@) from your prompt."
         
         super().__init__(
             message=em.description, 

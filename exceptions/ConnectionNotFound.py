@@ -11,8 +11,9 @@ class ConnectionNotFound(RNBException):
         em = get_default_embed()
         
         if is_self:
-            em.description = "You didn't fill out the `username` option!" \
-                             "\nYou can link your Rec Room account to automatically fill the `username` slot! Get started with {}."
+            em.description = "**You didn't fill out the** `username` **option!**" \
+                             "\n\nYou can link your Rec Room account to automatically fill the `username` slot! Get started with {}."
+            em.set_image(url="https://i.imgur.com/Gr745JF.png")
         else:
             em.description = "This Discord user hasn't linked their Rec Room account!"
         
