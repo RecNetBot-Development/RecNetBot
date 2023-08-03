@@ -28,5 +28,5 @@ async def account_searcher(ctx: discord.AutocompleteContext) -> List[str]:
     
     # Otherwise return results
     return [
-        f"@{account.username}" for account in accounts
+        account.username for account in accounts
     ]
