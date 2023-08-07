@@ -1,6 +1,6 @@
 import discord
 from resources import get_emoji
-from utils import unix_timestamp, img_url, sanitize_bio
+from utils import unix_timestamp, img_url, sanitize_bio, sanitize_name
 from utils.formatters import format_platforms, format_identities, format_pronouns
 from embeds import get_default_embed
 from recnetpy.dataclasses.account import Account
@@ -19,7 +19,7 @@ def profile_embed(account: Account) -> discord.Embed:
     
     em = get_default_embed()
     info = [
-        f"{get_emoji('username')} @{account.username}",
+        f"{get_emoji('username')} @{sanitize_name(account.username)}",
         f"{get_emoji('level')} Level `{account.level.level}`",
         f"{get_emoji('subscribers')} Subscribers `{account.subscriber_count:,}`",
         f"{get_emoji('pronouns')} {format_pronouns(account.personal_pronouns)}" if account.personal_pronouns else None,

@@ -7,5 +7,6 @@ from .get_changelog import get_changelog
 
 from .sanitize_bio import sanitize_bio
 from .sanitize_text import sanitize_text
+from .sanitize_name import sanitize_name
 
 from .format_json_block import format_json_block
