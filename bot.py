@@ -68,7 +68,11 @@ class RecNetBot(commands.AutoShardedBot):
         """
         Do asynchronous setup here
         """
-        self.RecNet = Client()
+
+        # Get Rec Room API key
+        api_key = self.config["rr_api_key"]
+        self.RecNet = Client(api_key=api_key)
+
         self.verify_post = await self.RecNet.images.fetch(self.config["verify_post"])
         self.log_channel = await self.fetch_channel(self.config["log_channel"])
         

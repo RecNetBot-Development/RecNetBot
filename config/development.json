@@ -1,4 +1,5 @@
 {
+    "rr_api_key": "",
     "debug_guilds": [],
     "discord_token": "",
     "sqlite_database": "test.db",
@@ -7,5 +8,6 @@
     "perspective_api_key": "",
     "invite_link": "",
     "server_link": "https://discord.gg/S9meE83Xu2",
-    "github_link": "https://github.com/RecNetBot-Development/RecNetBot"
+    "github_link": "https://github.com/RecNetBot-Development/RecNetBot",
+    "update_channel": 1113503558290133122
 }
