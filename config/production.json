@@ -1,13 +1,12 @@
 {
     "rr_api_key": "",
     "debug_guilds": [],
-    "discord_token": "NzkzMTE0MjkyNDEzMDA1ODU1.GbTKkS.6_l_elD8-uxzR1ELViOxYs7U8t60fLD2Ou4VBc",
-    "sqlite_database": "rnb.db",
+    "discord_token": "",
+    "sqlite_database": "test.db",
     "verify_post": 352672690,
-    "log_channel": 1027914165643378688,
-    "perspective_api_key": "AIzaSyCJbTF_B43PE3YqgBKW-9yF4QiFTY9myFU",
-    "invite_link": "https://discord.com/api/oauth2/authorize?client_id=788632031835324456&permissions=322624&scope=bot%20applications.commands",
+    "log_channel": 0,
+    "perspective_api_key": "",
+    "invite_link": "",
     "server_link": "https://discord.gg/S9meE83Xu2",
-    "github_link": "https://github.com/RecNetBot-Development",
-    "update_channel": 1113503558290133122
+    "github_link": "https://github.com/RecNetBot-Development/RecNetBot"
 }
