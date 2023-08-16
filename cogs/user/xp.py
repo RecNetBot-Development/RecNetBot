@@ -98,6 +98,8 @@ async def xp(
             progress_text = f"— XP {get_emoji('progress_left')}{max}{get_emoji('progress_right')} — XP"
         else:
             progress_text = f"**1080** XP {get_emoji('progress_left')}{max}{get_emoji('progress_right')} **1080** XP"
+
+            em.add_field(name="Congratulations!", value="Good job on reaching level 50! [Now you can finally play the game.](https://youtu.be/tg2PD-dwsIw)")
     
     # Implement to embed
     em.description = progress_text
