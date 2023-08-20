@@ -8,12 +8,12 @@ class BugReportModal(discord.ui.Modal):
         super().__init__(
             discord.ui.InputText(
                 label="Command",
-                placeholder="Tell us what command you used.",
+                placeholder="Tell us what RecNetBot command you used.",
                 style=discord.InputTextStyle.short
             ),
             discord.ui.InputText(
                 label="Short Summary",
-                placeholder="Tell us a short summary of what happened.",
+                placeholder="Tell us a short summary of what went wrong.",
                 style=discord.InputTextStyle.short
             ),
             discord.ui.InputText(
@@ -46,7 +46,7 @@ class BugReportModal(discord.ui.Modal):
 
 @slash_command(
     name="bugreport",
-    description="Report a bug you encountered outside of my server."
+    description="Report a RecNetBot bug."
 )
 async def bugreport(self, ctx: discord.ApplicationContext):
     """A command for reporting a bug"""
