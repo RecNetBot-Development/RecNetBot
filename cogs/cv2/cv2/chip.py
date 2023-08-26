@@ -9,13 +9,10 @@ class Menu(discord.ui.View):
     def __init__(self, chip: Chip):
         super().__init__()
 
-        # Patch name
-        chip_name = chip.name.lower().replace(" ", "-")
-
         # Link button
         link_btn = discord.ui.Button(
             label="Chip",
-            url=f"https://www.recroomcircuits.com/chip/{chip_name}",
+            url=f"https://circuits.pages.dev/docs/documentation/chips/{chip.uuid}",
             style=discord.ButtonStyle.link
         )
         self.add_item(link_btn)
@@ -47,6 +44,8 @@ async def chip(
     
     em.title = chip.name
     em.description = chip.description
+    # remove below line if you want the link button instead
+    em.url = f"https://circuits.pages.dev/docs/documentation/chips/{chip.uuid}"
 
     # Port template
     port = "`{name}` • ({type})"
