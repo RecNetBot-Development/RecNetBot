@@ -21,7 +21,7 @@ class Chip:
 
 def create_dataclass(chip_json: dict, uuid: str = None) -> Chip:
     # Deprecation
-    is_deprecated = True if chip_json["DeprecationStage"] == "Deprecated" else False
+    is_deprecated = chip_json["DeprecationStage"] == "Deprecated"
 
     # Filters
     node_filters = []
