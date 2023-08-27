@@ -1,6 +1,6 @@
 import discord
 from discord.commands import slash_command, Option
-from utils.cv2 import get_chip, Chip
+from utils.cv2 import get_chip, generate_port_listing, Chip
 from utils.autocompleters import cv2_searcher
 from embeds import get_default_embed
 from resources import get_emoji
@@ -44,17 +44,17 @@ async def chip(
     
     em.title = chip.name
     em.description = chip.description
-    # remove below line if you want the link button instead
-    em.url = f"https://circuits.pages.dev/docs/documentation/chips/{chip.uuid}"
 
     # Port template
-    port = "`{name}` • ({type})"
+    port_temp = "{port} {name} • `{type}`"
 
     # Inputs
     inputs = []
     for i in chip.inputs:
-        input = port.format(name=i.name, type=i.type)
+        input = generate_port_listing(i, port_temp)
         inputs.append(input)
+    if not inputs:
+        inputs.append("*None*")
 
     em.add_field(name="Inputs", inline=True, value=
         "\n".join(inputs)
@@ -63,8 +63,10 @@ async def chip(
     # Outputs
     outputs = []
     for i in chip.outputs:
-        output = port.format(name=i.name, type=i.type)
+        output = generate_port_listing(i, port_temp)
         outputs.append(output)
+    if not outputs:
+        outputs.append("*None*")
 
     em.add_field(name="Outputs", inline=True, value=
        "\n".join(outputs)
@@ -119,6 +121,5 @@ async def chip(
     # UUID
     em.set_footer(text=f"UUID: {chip.uuid}")
 
-    #menu_view = Menu(chip=chip)
-    #await ctx.respond(embed=em, view=menu_view)
-    await ctx.respond(embed=em)
+    menu_view = Menu(chip=chip)
+    await ctx.respond(embed=em, view=menu_view)

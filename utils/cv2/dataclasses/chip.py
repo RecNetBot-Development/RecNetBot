@@ -51,9 +51,15 @@ def create_dataclass(chip_json: dict, uuid: str) -> Chip:
             for key, params in type_params.items():
                 type = type.replace(key, params)
             
+            is_list = False
+            if type.startswith("List<"):
+                type = type[5:-1]
+                is_list = True
+            
             port = NodePort(
-                name=i["Name"] if i["Name"] else "—",
-                type=type,
+                name=i["Name"] or "—",
+                type=type.split(" | "),
+                is_list=is_list,
                 description=i["Description"],
                 is_input=True
             )
@@ -66,10 +72,16 @@ def create_dataclass(chip_json: dict, uuid: str) -> Chip:
 
             for key, params in type_params.items():
                 type = type.replace(key, params)
-
+            
+            is_list = False
+            if type.startswith("List<"):
+                type = type[5:-1]
+                is_list = True
+            
             port = NodePort(
-                name=i["Name"] if i["Name"] else "—",
-                type=type,
+                name=i["Name"] or "—",
+                type=type.split(" | "),
+                is_list=is_list,
                 description=i["Description"],
                 is_input=False
             )
