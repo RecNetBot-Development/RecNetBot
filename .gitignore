@@ -1,8 +1,9 @@
-*pyc
+*.pyc
 *.log
 venv/
 config/
 *.db
+
 # ignoring these because requirements.txt is the main method of package control
 Pipfile
 Pipfile.lock
