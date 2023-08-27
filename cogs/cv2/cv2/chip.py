@@ -25,19 +25,19 @@ class Menu(discord.ui.View):
 async def chip(
     self, 
     ctx: discord.ApplicationContext, 
-    chip_name: Option(str, name="chip", description="Enter chip name", required=True, autocomplete=cv2_searcher)
+    chip_uuid: Option(str, name="chip", description="Enter chip name", required=True, autocomplete=cv2_searcher)
 ):
     await ctx.interaction.response.defer()
 
     # Get the chip
-    chip = await get_chip(chip_name)
+    chip = await get_chip(chip_uuid)
 
     # Embed skeleton
     em = get_default_embed()
 
     # Guard clause
     if not chip:
-        em.description = f"Couldn't find `{chip_name}`!\n" \
+        em.description = f"Couldn't find the chip you were looking for!\n" \
                           "- Use the integrated search tool while typing a chip's name.\n" \
                           "- Make sure your Discord client isn't out of date for it to work."
         return await ctx.respond(embed=em)

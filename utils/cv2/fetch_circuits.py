@@ -3,15 +3,15 @@ from os.path import exists
 import datetime
 import json
 import asyncio
-from typing import List, Optional
+from typing import Dict, Optional
 from .dataclasses.chip import Chip, create_dataclass
 
 GITHUB_URL = "https://raw.githubusercontent.com/tyleo-rec/CircuitsV2Resources/master/misc/circuitsv2.json"
 CACHE_DATE_PATH = "resources/cv2/cache_date.txt"
 CV2_JSON = "resources/cv2/cv2.json"
-cached_dataclasses = []
+cached_dataclasses: Dict[str, Chip] = {}
 
-async def fetch_circuits() -> List[Chip]:
+async def fetch_circuits() -> Dict[str, Chip]:
     """ 
     Fetch CV2 json from GitHub 
     The circuits JSON is cached for a week.
@@ -32,14 +32,14 @@ async def fetch_circuits() -> List[Chip]:
         else:
             cv2_json = load_cached_circuits()
 
-    chips = []
+    chips: Dict[str, Chip] = {}
     for i in cv2_json["Nodes"]:
         # Get the chip
         node = cv2_json["Nodes"][i]
 
         # Create dataclass and append
         chip = create_dataclass(node, i)
-        chips.append(chip)
+        chips[i] = (chip)
 
     cached_dataclasses = chips
     return chips

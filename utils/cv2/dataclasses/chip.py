@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List
 from enum import Enum
 from .filter_path import FilterPath
 from .node_port import NodePort
@@ -16,10 +16,10 @@ class Chip:
     filters: List[FilterPath]
     inputs: List[NodePort]
     outputs: List[NodePort]
-    uuid: Optional[str]
+    uuid: str
 
 
-def create_dataclass(chip_json: dict, uuid: str = None) -> Chip:
+def create_dataclass(chip_json: dict, uuid: str) -> Chip:
     # Deprecation
     is_deprecated = chip_json["DeprecationStage"] == "Deprecated"
 
