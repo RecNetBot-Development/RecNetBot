@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List
 
-@dataclass
+@dataclass(kw_only=True)
 class NodePort:
     name: str
     description: str

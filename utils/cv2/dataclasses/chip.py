@@ -5,7 +5,7 @@ from .filter_path import FilterPath
 from .node_port import NodePort
 
 
-@dataclass
+@dataclass(kw_only=True)
 class Chip:
     name: str
     description: str
@@ -19,7 +19,8 @@ class Chip:
     uuid: str
 
 
-def create_dataclass(chip_json: dict, uuid: str) -> Chip:
+def create_chip(chip_json: dict, uuid: str) -> Chip:
+    """Creates a new `Chip` object using the provided JSON and UUID and returns it."""
     # Deprecation
     is_deprecated = chip_json["DeprecationStage"] == "Deprecated"
 
@@ -89,7 +90,7 @@ def create_dataclass(chip_json: dict, uuid: str) -> Chip:
 
     chip = Chip(
         name=chip_json["ReadonlyPaletteName"],
-        description=chip_json["Description"] if chip_json["Description"] else "No description found!",
+        description=chip_json["Description"] or "No description found!",
         is_beta=chip_json["IsBetaChip"],
         is_trolling_risk=chip_json["IsTrollingRisk"],
         is_role_risk=chip_json["IsRoleAssignmentRisk"],

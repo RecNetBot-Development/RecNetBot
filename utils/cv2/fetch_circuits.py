@@ -4,7 +4,7 @@ import datetime
 import json
 import asyncio
 from typing import Dict, Optional
-from .dataclasses.chip import Chip, create_dataclass
+from .dataclasses.chip import Chip, create_chip
 
 GITHUB_URL = "https://raw.githubusercontent.com/tyleo-rec/CircuitsV2Resources/master/misc/circuitsv2.json"
 CACHE_DATE_PATH = "resources/cv2/cache_date.txt"
@@ -38,7 +38,7 @@ async def fetch_circuits() -> Dict[str, Chip]:
         node = cv2_json["Nodes"][i]
 
         # Create dataclass and append
-        chip = create_dataclass(node, i)
+        chip = create_chip(node, i)
         chips[i] = chip
 
     cached_dataclasses = chips
