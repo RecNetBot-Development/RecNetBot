@@ -39,7 +39,7 @@ async def fetch_circuits() -> Dict[str, Chip]:
 
         # Create dataclass and append
         chip = create_dataclass(node, i)
-        chips[i] = (chip)
+        chips[i] = chip
 
     cached_dataclasses = chips
     return chips
