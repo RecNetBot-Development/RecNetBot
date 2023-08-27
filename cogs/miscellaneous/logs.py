@@ -3,11 +3,13 @@ import random
 from embeds import get_default_embed
 from discord.commands import slash_command, Option
 from discord.ext.commands import is_owner
-from utils import unix_timestamp
+from utils import unix_timestamp, load_config
+
+config = load_config(is_production=True)
 
 @slash_command(
     name="logs",
-    guild_ids=[962811082479640576]
+    guild_ids=config.get("debug_guilds", [])
 )
 @is_owner()
 async def logs(

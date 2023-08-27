@@ -4,6 +4,7 @@ import os
 import logging
 import json
 import sqlite3
+from utils import load_config
 from discord.ext import commands
 from recnetpy import Client
 from modules import CogManager
@@ -16,10 +17,7 @@ class RecNetBot(commands.AutoShardedBot):
         super().__init__(help_command=None)
 
         # Load config
-        path = "./config/{}.json"
-        with open(path.format("production" if production else "development"), 'r') as cfg_json:
-            self.config = json.load(cfg_json)
-            
+        self.config = load_config(is_production=production)
         self.debug_guilds = self.config.get("debug_guilds", [])
     
         # Setup logger
