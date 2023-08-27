@@ -266,7 +266,7 @@ def generateVariableLike(svgObject: ET.Element, chip: dict) -> ET.Element:
     
     return svgObject
 
-def setup(chipsDict: dict, portsDict: dict):
+def setup_svg_generator(chipsDict: dict, portsDict: dict):
     """
     Setup is required when using this script as a module.
     `chipsDict`: A dictionary of chips.
@@ -276,7 +276,7 @@ def setup(chipsDict: dict, portsDict: dict):
     myChips = chipsDict
     myPorts = portsDict
 
-def Generate(UUID: str, returnPNGBytes: bool) -> bytes:
+def generate_svg(UUID: str, returnPNGBytes: bool) -> bytes:
     global chipXOffset
     chipXOffset = 72
     svg = ET.Element("svg", xmlns="http://www.w3.org/2000/svg", width="800", height="800", viewbox="0 0 800 800")
@@ -305,7 +305,7 @@ if __name__ == "__main__":
             myPorts = json.load(ports)
         
         with open(outputTarget, "wb") as outputFile:
-            outputFile.write(Generate(uuid, False))
+            outputFile.write(generate_svg(uuid, False))
         
 
     except Exception as ex:
