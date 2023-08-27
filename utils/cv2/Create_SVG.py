@@ -5,10 +5,7 @@ import json
 import xml.etree.ElementTree as ET
 fontSize = titleSize = 18
 
-inlineFont = """
-.ubuntu {
-font-family: "Ubuntu", sans-serif;
-}"""
+inlineFont = ".ubuntu {font-family: 'Ubuntu', sans-serif;}"
 
 # chip values
 portHeight = 19
@@ -25,7 +22,6 @@ chipXOffset = 72 # DefaultValue ports should be rendered, so this is why the chi
 
 myChips = {}
 myPorts = {}
-outputTarget = None
 #
 
 def getStringWidth(string: str, size: int):
@@ -34,6 +30,7 @@ def getStringWidth(string: str, size: int):
     """
     font = ImageFont.truetype("Ubuntu.ttf", size)
     return font.getlength(string)
+
 def appendPort(svgObject: ET.Element, isInput: bool, portType: str | list, isList: bool, portName: str, posX: int | float, posY: int | float) -> int | float:
     color = ""
     model = ""
@@ -179,7 +176,7 @@ def generateExec(svgObject: ET.Element, chip: dict) -> ET.Element:
         })
         title.text = chip["ChipName"]
         return svgObject
-    
+
 def generateConst(svgObject: ET.Element, chip: dict) -> ET.Element:
     chipXOffset = 0
     svgObject.set("height", "48")
@@ -216,6 +213,7 @@ def generateConst(svgObject: ET.Element, chip: dict) -> ET.Element:
     title.text = chip["ChipName"]
 
     return svgObject
+
 def generateVariableLike(svgObject: ET.Element, chip: dict) -> ET.Element:
     textWidth = getStringWidth(chip["ChipName"], titleSize) + 22
     chipLength = max(textWidth + 50, 51)
@@ -271,20 +269,19 @@ def generateVariableLike(svgObject: ET.Element, chip: dict) -> ET.Element:
 def setup(chipsDict: dict, portsDict: dict):
     """
     Setup is required when using this script as a module.
-    ChipsDict: A dictionary of chips.
-    portsDict: A dictionary of port data.
+    `chipsDict`: A dictionary of chips.
+    `portsDict`: A dictionary of port data.
     """
-    global myChips
-    global myPorts
+    global myChips, myPorts
     myChips = chipsDict
     myPorts = portsDict
 
-def Generate(UUID: str, returnPNGBytes: bool):
+def Generate(UUID: str, returnPNGBytes: bool) -> bytes:
     global chipXOffset
     chipXOffset = 72
     svg = ET.Element("svg", xmlns="http://www.w3.org/2000/svg", width="800", height="800", viewbox="0 0 800 800")
     ET.SubElement(ET.SubElement(svg, "defs"), "style").text = inlineFont
-    returnval = ""
+    returnval = None
     chipToGenerate = myChips[UUID]
     match chipToGenerate["Model"]:
         case "Default":
@@ -293,8 +290,6 @@ def Generate(UUID: str, returnPNGBytes: bool):
             returnval = ET.tostring(generateVariableLike(svg, chipToGenerate))
         case "Constant":
             returnval = ET.tostring(generateConst(svg, chipToGenerate))
-        case _:
-            ""
     if returnPNGBytes:
         return svg2png(bytestring=returnval,scale=2)
     else:
