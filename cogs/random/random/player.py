@@ -80,17 +80,19 @@ class RandomAccount(discord.ui.View):
     async def again(
         self, button: discord.ui.Button, interaction: discord.Interaction
     ):
+        await interaction.response.defer()
+
         # Make sure it's the author using the component
         if interaction.user.id != interaction.message.interaction.user.id:
-            return await interaction.response.send_message("You're not authorized!", ephemeral=True)
+            return await interaction.followup.send("You're not authorized!", ephemeral=True)
         
         embeds = await self.fetch_with_embed()
-        await interaction.response.edit_message(embeds=embeds, view=self)
+        await interaction.edit_original_response(embeds=embeds, view=self)
         
         
     async def respond(self, interaction: discord.Interaction):
         embeds = await self.fetch_with_embed()
-        await interaction.response.send_message(embeds=embeds, view=self)
+        await interaction.edit_original_response(embeds=embeds, view=self)
         
 
 @slash_command(
@@ -103,6 +105,8 @@ async def player(
     join_date: Option(int, "Choose join date if any", choices=[2016, 2017, 2018, 2019, 2020, 2021, 2022], required=False),
     amount: Option(int, "How many you'd like", min_value=1, max_value=5, default=1)
 ):
+    await ctx.interaction.response.defer()
+
     view = RandomAccount(self.bot.RecNet, year=join_date, amount=amount)
     await view.respond(ctx.interaction)
 

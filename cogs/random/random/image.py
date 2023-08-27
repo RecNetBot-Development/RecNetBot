@@ -38,17 +38,19 @@ class RandomImage(discord.ui.View):
     async def again(
         self, button: discord.ui.Button, interaction: discord.Interaction
     ):
+        await interaction.response.defer()
+
         # Make sure it's the author using the component
         if interaction.user.id != interaction.message.interaction.user.id:
-            return await interaction.response.send_message("You're not authorized!", ephemeral=True)
+            return await interaction.followup.send("You're not authorized!", ephemeral=True)
         
         links = await self.fetch_with_links()
-        await interaction.response.edit_message(content="\n".join(links), view=self)
+        await interaction.edit_original_response(content="\n".join(links), view=self)
         
         
     async def respond(self, interaction: discord.Interaction):
         links = await self.fetch_with_links()
-        await interaction.response.send_message(content="\n".join(links), view=self)
+        await interaction.edit_original_response(content="\n".join(links), view=self)
         
 
 @slash_command(
@@ -60,6 +62,8 @@ async def image(
     ctx: discord.ApplicationContext,
     amount: Option(int, "How many you'd like", min_value=1, max_value=5, default=1)
 ):
+    await ctx.interaction.response.defer()
+
     view = RandomImage(self.bot.RecNet, amount=amount)
     await view.respond(ctx.interaction)
 
