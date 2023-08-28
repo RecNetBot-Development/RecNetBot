@@ -25,7 +25,7 @@ def profile_embed(account: Account) -> discord.Embed:
         f"{get_emoji('pronouns')} {format_pronouns(account.personal_pronouns)}" if account.personal_pronouns else None,
         f"{get_emoji('identities')} {' '.join(format_identities(account.identity_flags))}" if account.identity_flags else None,
         f"```{sanitize_bio(account.bio)}```" if account.bio else None,
-        f"{get_emoji('junior') if account.is_junior else get_emoji('mature')} {'Junior account!' if account.is_junior else 'Mature account!'}",
+        #f"{get_emoji('junior') if account.is_junior else get_emoji('mature')} {'Junior account!' if account.is_junior else 'Mature account!'}",
         f' '.join(format_platforms(account.platforms)) if account.platforms else None,
         f"{get_emoji('date')} Joined {unix_timestamp(account.created_at)}",
         f"{get_emoji('information')} ID: `{account.id}`"
