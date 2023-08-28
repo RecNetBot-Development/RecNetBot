@@ -6,6 +6,7 @@ import asyncio
 from typing import Dict, Optional
 from .dataclasses.chip import Chip, create_chip
 from .generate_svg_image import setup_svg_generator
+from .generate_svg_json import generate_svg_json
 
 GITHUB_URL = "https://raw.githubusercontent.com/tyleo-rec/CircuitsV2Resources/master/misc/circuitsv2.json"
 CACHE_DATE_PATH = "resources/cv2/cache_date.txt"
@@ -76,6 +77,14 @@ def is_cache_expired() -> bool:
 def cache_circuits(cv2_json: dict) -> None:
     with open(CV2_JSON, 'w', encoding='utf-8') as f:
         json.dump(cv2_json, f, ensure_ascii=False, indent=4)
+    
+    # SVG JSON generation
+    svg_chips, svg_ports = generate_svg_json(cv2_json)
+    
+    with open(SVG_CHIPS_JSON, "w", encoding="utf-8") as f:
+        json.dump(svg_chips, f, ensure_ascii=False, indent=4)
+    with open(SVG_PORTS_JSON, "w", encoding="utf-8") as f:
+        json.dump(svg_ports, f, ensure_ascii=False, indent=4)
 
     # Date for next cache
     next_week = datetime.datetime.now() + datetime.timedelta(weeks=1)
@@ -85,7 +94,7 @@ def cache_circuits(cv2_json: dict) -> None:
         f.write(new_timestamp + f"\n\nThe circuits JSON will be updated on {next_week.date()}")
 
 
-def setup_svg():
+def setup_svg() -> None:
     with open(SVG_CHIPS_JSON, "r", encoding="utf-8") as f:
         svg_chips = json.load(f)
     with open(SVG_PORTS_JSON, "r", encoding="utf-8") as f:

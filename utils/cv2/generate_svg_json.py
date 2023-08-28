@@ -93,7 +93,7 @@ autoAssignModels = [
 ]
 
 def getPorts(jsonSourcet: dict) -> dict:
-    for UUID, chip in jsonSourcet["Nodes"].items():
+    for uuid, chip in jsonSourcet["Nodes"].items():
         for nodedesc in chip["NodeDescs"]:
             hasParams = len(nodedesc["ReadonlyTypeParams"].keys()) > 0
             for param in nodedesc["ReadonlyTypeParams"].values():
@@ -195,7 +195,7 @@ def translateChip(jsonSourceb: dict) -> dict:
         newDict[uuid] = thisChip
     return newDict
 
-def ExtractChipJSON(jsonSrc: dict) -> ():
+def generate_svg_json(jsonSrc: dict) -> tuple[dict, dict]:
     """
     Returns a tuple of dicts that use FunnPunn's format.
     First item is the chips dict.
@@ -212,11 +212,11 @@ if __name__ == "__main__":
     outputPortsTarget = sys.argv[3]
     oldJSON = {}
 
-    with open(jsonSource, encoding="utf8") as jsonSourceFile:
+    with open(jsonSource, encoding="utf-8") as jsonSourceFile:
         oldJSON = json.load(jsonSourceFile)
     
-    chps, prts = ExtractChipJSON(oldJSON)
+    chps, prts = generate_svg_json(oldJSON)
 
-    with open(outputChipsTarget, "wt") as chipsFile, open(outputPortsTarget, "wt") as portsFile:
-        json.dump(chps, chipsFile, indent=4)
-        json.dump(chps, portsFile, indent=4)
+    with open(outputChipsTarget, "w", encoding="utf-8") as chipsFile, open(outputPortsTarget, "w", encoding="utf-8") as portsFile:
+        json.dump(chps, chipsFile, ensure_ascii=False, indent=4)
+        json.dump(chps, portsFile, ensure_ascii=False, indent=4)
