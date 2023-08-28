@@ -5,7 +5,6 @@
     "scripts": [
         "get_rr_profile", 
         "bio", 
-        "banner", 
         "pfp", 
         "platforms", 
         "toxicity",
