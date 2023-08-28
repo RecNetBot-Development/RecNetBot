@@ -88,7 +88,7 @@ def cache_circuits(cv2_json: dict) -> None:
 def setup_svg():
     with open(SVG_CHIPS_JSON, "r", encoding="utf-8") as f:
         svg_chips = json.load(f)
-    with open(SVG_CHIPS_JSON, "r", encoding="utf-8") as f:
+    with open(SVG_PORTS_JSON, "r", encoding="utf-8") as f:
         svg_ports = json.load(f)
     
     setup_svg_generator(svg_chips, svg_ports)

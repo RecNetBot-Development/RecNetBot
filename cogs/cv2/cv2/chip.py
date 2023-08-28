@@ -1,9 +1,10 @@
 import discord
 from discord.commands import slash_command, Option
-from utils.cv2 import get_chip, generate_port_listing, Chip
+from utils.cv2 import get_chip, generate_port_listing, generate_svg, Chip
 from utils.autocompleters import cv2_searcher
 from embeds import get_default_embed
 from resources import get_emoji
+from io import BytesIO
 
 class Menu(discord.ui.View):
     def __init__(self, chip: Chip):
@@ -121,5 +122,11 @@ async def chip(
     # UUID
     em.set_footer(text=f"UUID: {chip.uuid}")
 
+    # SVG image generation
+    svg_image = generate_svg(chip.uuid, True)
+    image_file = discord.File(BytesIO(svg_image), filename="chip.png")
+    
+    em.set_image(url="attachment://chip.png")
+
     menu_view = Menu(chip=chip)
-    await ctx.respond(embed=em, view=menu_view)
+    await ctx.respond(embed=em, view=menu_view, file=image_file)

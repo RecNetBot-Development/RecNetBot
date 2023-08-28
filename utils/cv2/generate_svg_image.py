@@ -3,6 +3,7 @@ from cairosvg import svg2png
 import sys
 import json
 import xml.etree.ElementTree as ET
+
 fontSize = titleSize = 18
 
 inlineFont = ".ubuntu {font-family: 'Ubuntu', sans-serif;}"
@@ -28,7 +29,7 @@ def getStringWidth(string: str, size: int):
     """
     Gets the width of a string in pixels, using the ubuntu font and the given size.
     """
-    font = ImageFont.truetype("Ubuntu.ttf", size)
+    font = ImageFont.truetype("fonts/Ubuntu.ttf", size)
     return font.getlength(string)
 
 def appendPort(svgObject: ET.Element, isInput: bool, portType: str | list, isList: bool, portName: str, posX: int | float, posY: int | float) -> int | float:
@@ -291,7 +292,7 @@ def generate_svg(UUID: str, returnPNGBytes: bool) -> bytes:
         case "Constant":
             returnval = ET.tostring(generateConst(svg, chipToGenerate))
     if returnPNGBytes:
-        return svg2png(bytestring=returnval,scale=2)
+        return svg2png(bytestring=returnval, scale=2)
     else:
         return returnval
 
@@ -300,7 +301,7 @@ if __name__ == "__main__":
         # 1: uuid, 2: chips path, 3: ports path, 4: output target
         uuid = sys.argv[1]
         outputTarget = sys.argv[4]
-        with open(sys.argv[2], encoding="utf8") as chips, open(sys.argv[3], encoding="utf8") as ports:
+        with open(sys.argv[2], encoding="utf-8") as chips, open(sys.argv[3], encoding="utf-8") as ports:
             myChips = json.load(chips)
             myPorts = json.load(ports)
         

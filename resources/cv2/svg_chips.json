@@ -400,7 +400,7 @@
     "b5badf49-acfe-4a42-80e2-5262878e2d89": {
         "ChipName": "AI Look At",
         "PaletteName": "AI Look At",
-        "Description": "Command an AI to look at the input target. If you want the AI to look in a passed in vector as a direction, set the “Look Target Is Direction” parameter to True. To make an AI stop looking, use the AI Stop Looking node.",
+        "Description": "Command an AI to look at the input target. If you want the AI to look in a passed in vector as a direction, set the ï¿½Look Target Is Directionï¿½ parameter to True. To make an AI stop looking, use the AI Stop Looking node.",
         "Model": "Default",
         "IsBeta": true,
         "TrollingRisk": false,
@@ -610,7 +610,7 @@
     "02557d1f-2265-4b6d-8177-92f1802dc106": {
         "ChipName": "AI Set Line of Sight Parameters",
         "PaletteName": "AI Set Line of Sight Parameters",
-        "Description": "Sets an AI’s various LoS paramters. The “Cone” setting acts like a vision cone that sits in front of AIs like eyes, where the “Circle” setting acts like a radius around the AI. The Require LoS For Targetting parameter defines if AIs can see you through walls.",
+        "Description": "Sets an AIï¿½s various LoS paramters. The ï¿½Coneï¿½ setting acts like a vision cone that sits in front of AIs like eyes, where the ï¿½Circleï¿½ setting acts like a radius around the AI. The Require LoS For Targetting parameter defines if AIs can see you through walls.",
         "Model": "Default",
         "IsBeta": true,
         "TrollingRisk": false,
@@ -772,7 +772,7 @@
     "73652899-2656-4aa4-a1b0-4de8d8e56095": {
         "ChipName": "AI Set Target",
         "PaletteName": "AI Set Target",
-        "Description": "Sets the input AI’s current target.",
+        "Description": "Sets the input AIï¿½s current target.",
         "Model": "Default",
         "IsBeta": true,
         "TrollingRisk": false,
@@ -4736,7 +4736,7 @@
     "cefee2a5-d4a8-4dff-8c4e-bad684ca8d34": {
         "ChipName": "Delay",
         "PaletteName": "Delay",
-        "Description": "Fires outputs based on the inputted time to delay. The Run exec fires as soon as the node is executed. The After Delay exec fires once the input delay duration has completed. After Canceled fires after the delay node’s Cancel exec has been fired. Cancel cancels all current delays running from this node, except for delays scheduled for the next tick.",
+        "Description": "Fires outputs based on the inputted time to delay. The Run exec fires as soon as the node is executed. The After Delay exec fires once the input delay duration has completed. After Canceled fires after the delay nodeï¿½s Cancel exec has been fired. Cancel cancels all current delays running from this node, except for delays scheduled for the next tick.",
         "Model": "Default",
         "IsBeta": false,
         "TrollingRisk": false,
@@ -18823,7 +18823,7 @@
     "46e6b40e-2416-4078-b7dc-a0ecc2c2aa20": {
         "ChipName": "Prompt Local Player",
         "PaletteName": "Prompt Local Player",
-        "Description": "Sends a watch notification to a player. The player which it sends a notification to depends on who's machine fires the exec pin. Once this watch notification is opened, the player can type responses into the text box and send back responses. You can define the prompt title and the prompt itself via inputs, and can also receive the player’s response via an output pin.",
+        "Description": "Sends a watch notification to a player. The player which it sends a notification to depends on who's machine fires the exec pin. Once this watch notification is opened, the player can type responses into the text box and send back responses. You can define the prompt title and the prompt itself via inputs, and can also receive the playerï¿½s response via an output pin.",
         "Model": "Default",
         "IsBeta": false,
         "TrollingRisk": false,
@@ -24129,7 +24129,7 @@
     "77afc9dd-baa9-4312-b8b8-7ef479c840e6": {
         "ChipName": "String Format",
         "PaletteName": "String Format",
-        "Description": "Use this chip to combine multiple strings together into a single string output. The \"Format\" input is part of final string output and can include other string inputs by using this syntax: {input pin # starting at 0}. For example, a \"Format\" input with a default value of “Hello, {0}!” with a single additional input pin with the value \"World\" is fully output as \"Hello, World!\". If you had another input pin you would use {1} to denote the 2nd pin. You can add more string inputs by configuring the chip and pressing \"Add Input\".",
+        "Description": "Use this chip to combine multiple strings together into a single string output. The \"Format\" input is part of final string output and can include other string inputs by using this syntax: {input pin # starting at 0}. For example, a \"Format\" input with a default value of ï¿½Hello, {0}!ï¿½ with a single additional input pin with the value \"World\" is fully output as \"Hello, World!\". If you had another input pin you would use {1} to denote the 2nd pin. You can add more string inputs by configuring the chip and pressing \"Add Input\".",
         "Model": "Default",
         "IsBeta": false,
         "TrollingRisk": false,
