@@ -246,7 +246,8 @@ class RNBPaginator(pages.Paginator):
         files = page.update_files()
 
         if interaction:
-            await interaction.response.defer()  # needed to force webhook message edit route for files kwarg support
+            if not interaction.response.is_done():
+                await interaction.response.defer()  # needed to force webhook message edit route for files kwarg support
             await interaction.followup.edit_message(
                 message_id=self.message.id,
                 content=page.content,
