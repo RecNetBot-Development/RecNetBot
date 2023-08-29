@@ -47,6 +47,7 @@ These are additional lists of resources which may contain content not listed her
 - [It's Time For YOU To Learn Circuits V2](<https://www.youtube.com/watch?v=L4yvvoWdpWA>)
 - [CV2 Chip Searcher](<https://cv2.aleteoryx.me>)
 - [This Page on Cloudflare](<https://cv2.pages.dev>)
+- [Circuits Documentation](<https://circuits.pages.dev/>)
     """
 
     await ctx.respond(resources)

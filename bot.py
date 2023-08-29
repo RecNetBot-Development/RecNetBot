@@ -11,6 +11,7 @@ from modules import CogManager
 from database import ConnectionManager, RoomCacheManager, InventionCacheManager, BookmarkManager, LoggingManager
 from googleapiclient import discovery
 from googleapiclient.errors import HttpError
+from google.auth.exceptions import DefaultCredentialsError
 
 class RecNetBot(commands.AutoShardedBot):
     def __init__(self, production: bool):
@@ -40,7 +41,7 @@ class RecNetBot(commands.AutoShardedBot):
                 discoveryServiceUrl="https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1",
                 static_discovery=False,
             )
-        except HttpError:
+        except (HttpError, DefaultCredentialsError):
             self.perspective = None
             print("Perspective API disabled. Some functionality will be lost!")
 

@@ -1,11 +1,11 @@
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List
 from enum import Enum
 from .filter_path import FilterPath
 from .node_port import NodePort
 
 
-@dataclass
+@dataclass(kw_only=True)
 class Chip:
     name: str
     description: str
@@ -16,12 +16,13 @@ class Chip:
     filters: List[FilterPath]
     inputs: List[NodePort]
     outputs: List[NodePort]
-    uuid: Optional[str]
+    uuid: str
 
 
-def create_dataclass(chip_json: dict, uuid: str = None) -> Chip:
+def create_chip(chip_json: dict, uuid: str) -> Chip:
+    """Creates a new `Chip` object using the provided JSON and UUID and returns it."""
     # Deprecation
-    is_deprecated = True if chip_json["DeprecationStage"] == "Deprecated" else False
+    is_deprecated = chip_json["DeprecationStage"] == "Deprecated"
 
     # Filters
     node_filters = []
@@ -51,9 +52,15 @@ def create_dataclass(chip_json: dict, uuid: str = None) -> Chip:
             for key, params in type_params.items():
                 type = type.replace(key, params)
             
+            is_list = False
+            if type.startswith("List<"):
+                type = type[5:-1]
+                is_list = True
+            
             port = NodePort(
-                name=i["Name"] if i["Name"] else "—",
-                type=type,
+                name=i["Name"] or "—",
+                type=type.split(" | "),
+                is_list=is_list,
                 description=i["Description"],
                 is_input=True
             )
@@ -66,10 +73,16 @@ def create_dataclass(chip_json: dict, uuid: str = None) -> Chip:
 
             for key, params in type_params.items():
                 type = type.replace(key, params)
-
+            
+            is_list = False
+            if type.startswith("List<"):
+                type = type[5:-1]
+                is_list = True
+            
             port = NodePort(
-                name=i["Name"] if i["Name"] else "—",
-                type=type,
+                name=i["Name"] or "—",
+                type=type.split(" | "),
+                is_list=is_list,
                 description=i["Description"],
                 is_input=False
             )
@@ -77,7 +90,7 @@ def create_dataclass(chip_json: dict, uuid: str = None) -> Chip:
 
     chip = Chip(
         name=chip_json["ReadonlyPaletteName"],
-        description=chip_json["Description"] if chip_json["Description"] else "No description found!",
+        description=chip_json["Description"] or "No description found!",
         is_beta=chip_json["IsBetaChip"],
         is_trolling_risk=chip_json["IsTrollingRisk"],
         is_role_risk=chip_json["IsRoleAssignmentRisk"],

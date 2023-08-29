@@ -2,3 +2,4 @@ recnetpy==0.2.55
 py-cord-dev==2.5.0rc5
 google-api-python-client==2.62.0
 owoify-py==2.0.0
+CairoSVG==2.7.1

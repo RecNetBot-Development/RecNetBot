@@ -1,5 +1,13 @@
-*pyc
+*.pyc
 *.log
 venv/
 config/
 *.db
+
+# ignoring these because requirements.txt is the main method of dependency control
+Pipfile
+Pipfile.lock
+
+# ignoring these because theyre created by the bot when needed
+resources/cv2/cache_date.txt
+resources/cv2/*.json
