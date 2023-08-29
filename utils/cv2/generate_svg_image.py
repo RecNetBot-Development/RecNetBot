@@ -517,7 +517,7 @@ def setup_svg_generator(chipsDict: dict, portsDict: dict):
     myChips = chipsDict
     myPorts = portsDict
 
-def generate_svg(UUID: str, returnPNGBytes: bool) -> bytes:
+def generate_svg(UUID: str, returnPNGBytes: bool = True) -> bytes:
     global chipXOffset
     chipXOffset = 72
     svg = ET.Element("svg", xmlns="http://www.w3.org/2000/svg", width="800", height="800", viewbox="0 0 800 800")
