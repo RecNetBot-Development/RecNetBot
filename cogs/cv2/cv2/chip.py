@@ -81,28 +81,28 @@ async def chip(
     properties = []
 
     # Role assignment property
-    role_temp = "`{0} Role Assignment Risk `"
+    role_temp = "`{0}\u00a0Role\u00a0Assignment\u00a0Risk\u00a0`"
     properties.insert(
         0 if chip.is_role_risk else 1, 
         role_temp.format(true if chip.is_role_risk else false)
     )
 
     # Trolling property
-    troll_temp = "`{0} Trolling Risk `"
+    troll_temp = "`{0}\u00a0Trolling\u00a0Risk\u00a0`"
     properties.insert(
         0 if chip.is_trolling_risk else 1, 
         troll_temp.format(true if chip.is_trolling_risk else false)
     )
 
     # Beta property
-    beta_temp = "`{0} Beta `"
+    beta_temp = "`{0}\u00a0Beta\u00a0`"
     properties.insert(
         0 if chip.is_beta else 1, 
         beta_temp.format(true if chip.is_beta else false)
     )
 
     # Deprecation property
-    deprecated_temp = "`{0} Deprecated `"
+    deprecated_temp = "`{0}\u00a0Deprecated\u00a0`"
     properties.insert(
         0 if chip.is_deprecated else 1, 
         deprecated_temp.format(true if chip.is_deprecated else false)
