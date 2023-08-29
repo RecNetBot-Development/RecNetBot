@@ -151,7 +151,6 @@ def generateExec(svgObject: ET.Element, chip: dict) -> ET.Element:
     largestInputText = 0
     largestOutputText = 0
     if len(chip["Functions"]) > 0:
-        print("hi")
         funcs = chip["Functions"][0]
 
         inSpacing = outSpacing = topHeight + paddingFromTop
@@ -164,20 +163,22 @@ def generateExec(svgObject: ET.Element, chip: dict) -> ET.Element:
             strSize = getStringWidth(port["Name"], fontSize)
             if strSize > largestInputText:
                 largestInputText = strSize
-            currentPortHeight = appendPort(svgObject, True, port["DataType"], port["IsList"], port["Name"], chipXOffset, inSpacing)
-            inSpacing = inSpacing + currentPortHeight + verticalPadding
-            
-
         
         for port in funcs["Outputs"]:
             strSize = getStringWidth(port["Name"], fontSize)
             if strSize > largestOutputText:
                 largestOutputText = strSize
-            currentPortHeight = appendPort(svgObject, False, port["DataType"], port["IsList"], port["Name"], chipXOffset + max(minimalPadding, topBarWidth), outSpacing)
+
+        for port in funcs["Inputs"]:
+            currentPortHeight = appendPort(svgObject, True, port["DataType"], port["IsList"], port["Name"], chipXOffset, inSpacing)
+            inSpacing = inSpacing + currentPortHeight + verticalPadding
+            
+        for port in funcs["Outputs"]:
+            currentPortHeight = appendPort(svgObject, False, port["DataType"], port["IsList"], port["Name"], chipXOffset + max(minimalPadding, topBarWidth, largestInputText + largestOutputText + horizontalPortPadding + 40), outSpacing)
             outSpacing = outSpacing + currentPortHeight + verticalPadding
         
     newPathHeight = paddingFromTop + paddingFromBottom + max(totalInputSpacing, totalOutputSpacing)
-    chipLength = max(minimalPadding, topBarWidth, largestInputText + largestOutputText + horizontalPortPadding)
+    chipLength = max(minimalPadding, topBarWidth, largestInputText + largestOutputText + horizontalPortPadding + 40)
 
     bottom.set("d", f"M{chipXOffset}, {topHeight} v{newPathHeight - 10} q0,10,10,10 h{chipLength - 20} q10,0,10,-10 v{-newPathHeight + 10} h{chipLength}")
         
@@ -516,7 +517,7 @@ def setup_svg_generator(chipsDict: dict, portsDict: dict):
     myChips = chipsDict
     myPorts = portsDict
 
-def generate_svg(UUID: str, returnPNGBytes: bool = True) -> bytes:
+def generate_svg(UUID: str, returnPNGBytes: bool) -> bytes:
     global chipXOffset
     chipXOffset = 72
     svg = ET.Element("svg", xmlns="http://www.w3.org/2000/svg", width="800", height="800", viewbox="0 0 800 800")
