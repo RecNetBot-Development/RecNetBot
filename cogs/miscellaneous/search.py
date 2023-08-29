@@ -200,10 +200,12 @@ class DropdownSearch(discord.ui.Select["SearchView"]):
                 label="Event",
                 emoji=get_emoji('event')
             ),
+            """
             discord.SelectOption(
                 label="Invention",
                 emoji=get_emoji('light')
             )
+            """
         ]
         super().__init__(
             placeholder="Choose what you're searching for",
@@ -342,7 +344,8 @@ async def search(
     self,   
     ctx: discord.ApplicationContext,
     query: Option(str, name="query", description="Search term", required=True),
-    search_type: Option(str, choices=["Account", "Room", "Event", "Invention"], name="type", description="What are you looking for?", required=False, default="Account")
+    search_type: Option(str, choices=["Account", "Room", "Event"], name="type", description="What are you looking for?", required=False, default="Account")
+    #search_type: Option(str, choices=["Account", "Room", "Event", "Invention"], name="type", description="What are you looking for?", required=False, default="Account")
 ):
     await ctx.interaction.response.defer(invisible=True)
     

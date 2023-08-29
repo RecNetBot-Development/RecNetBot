@@ -20,8 +20,8 @@ async def custom(
         "Comments: Highest to Lowest",
         "Tags: Highest to Lowest",
     ], default=None) = None,
-    together: Option(str, name="together", description="Filter by which RR users are featured in a post (separate by spaces)", required=False, default=None) = None,
-    exclude_together: Option(str, name="exclude_together", description="Filter by which RR users SHOULDN'T be featured in a post (separate by spaces)", required=False, default=None) = None,
+    #together: Option(str, name="together", description="Filter by which RR users are featured in a post (separate by spaces)", required=False, default=None) = None,
+    #exclude_together: Option(str, name="exclude_together", description="Filter by which RR users SHOULDN'T be featured in a post (separate by spaces)", required=False, default=None) = None,
     rooms: Option(str, name="rooms", description="Filter by which RR rooms can be featured (separate by spaces)", required=False, default=None) = None,
     exclude_rooms: Option(str, name="exclude_rooms", description="Filter by which RR rooms SHOULDN'T be featured (separate by spaces)", required=False, default=None) = None,
     events: Option(str, name="events", description="Filter by which RR events can be featured (separate by spaces, enter event IDs)", required=True) = None,
@@ -84,6 +84,7 @@ async def custom(
         if e_events:
             posts = list(filter(lambda image: all(event != str(image.event_id) for event in e_events), posts))
         
+    """
     # Filter by together
     if together:
         t_users = await self.bot.RecNet.accounts.get_many(together.split(" "))
@@ -97,7 +98,8 @@ async def custom(
         
         if e_t_users:
             posts = list(filter(lambda image: all(user.id not in image.tagged_player_ids for user in e_t_users), posts))
-    
+    """
+            
     # Min max filters
     posts = list(filter(lambda image:
          image.cheer_count >= min_cheers and image.cheer_count <= max_cheers and  # Cheers
