@@ -35,4 +35,16 @@ Feel free to also self-host RNB! Please know that we won't provide you any suppo
 - [Add RecNetBot to your server](https://discord.com/api/oauth2/authorize?client_id=788632031835324456&permissions=322624&scope=bot)
 - [GitHub Repository](https://github.com/RecNetBot-Development/RecNetBot/)
 
+# Setup
+```
+pip install -U -r requirements.txt
+```
+
+For Windows users:
+```py
+pip install pipwin
+
+pipwin install cairocffi
+```
+
 *This project is not affiliated with Rec Room Inc.*
