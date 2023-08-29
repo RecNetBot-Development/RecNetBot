@@ -124,9 +124,13 @@ async def chip(
 
     # SVG image generation
     svg_image = generate_svg(chip.uuid, True)
-    image_file = discord.File(BytesIO(svg_image), filename="chip.png")
-    
-    em.set_image(url="attachment://chip.png")
+    if svg_image is not None:
+        image_file = discord.File(BytesIO(svg_image), filename="chip.png")
+
+        em.set_image(url="attachment://chip.png")
 
     menu_view = Menu(chip=chip)
-    await ctx.respond(embed=em, view=menu_view, file=image_file)
+    if svg_image is not None:
+        await ctx.respond(embed=em, view=menu_view, file=image_file)
+    else:
+        await ctx.respond(embed=em, view=menu_view)

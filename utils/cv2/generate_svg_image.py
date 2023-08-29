@@ -4,6 +4,7 @@ from cairosvg import svg2png
 import sys
 import json
 import xml.etree.ElementTree as ET
+from typing import Union
 
 fontSize = titleSize = 18
 
@@ -514,13 +515,15 @@ def setup_svg_generator(chipsDict: dict, portsDict: dict):
     myChips = chipsDict
     myPorts = portsDict
 
-def generate_svg(UUID: str, returnPNGBytes: bool) -> bytes:
+def generate_svg(UUID: str, returnPNGBytes: bool = True) -> Union[bytes, None]:
+    """Returns SVG bytes or PNG bytes if `returnPNGBytes` is `True` or None if the chip couldn't be found."""
     global chipXOffset
     chipXOffset = 72
     svg = ET.Element("svg", xmlns="http://www.w3.org/2000/svg", width="800", height="800", viewbox="0 0 800 800")
     ET.SubElement(ET.SubElement(svg, "defs"), "style").text = inlineFont
     returnval = None
-    chipToGenerate = myChips[UUID]
+    chipToGenerate = myChips.get(UUID, None)
+    if chipToGenerate is None: return
     match chipToGenerate["Model"]:
         case "Default":
             returnval = ET.tostring(generateExec(svg, chipToGenerate))
@@ -534,6 +537,8 @@ def generate_svg(UUID: str, returnPNGBytes: bool) -> bytes:
             returnval = ET.tostring(generateSender(svg, chipToGenerate))
         case "Definition":
             returnval = ET.tostring(generateDefinition(svg, chipToGenerate))
+        case _:
+            return
 
     if returnPNGBytes:
         return svg2png(bytestring=returnval, scale=2)
