@@ -127,6 +127,7 @@ class HelpView(discord.ui.View):
             pieces = []
             em = get_default_embed()
             for cmd in page:
+                if cmd.name == "logs": continue
                 pieces.append(f"{cmd.mention}\n{get_emoji('arrow')} {cmd.description}")
             
             #em.title = title
@@ -139,7 +140,7 @@ class HelpView(discord.ui.View):
     async def refresh(self, interaction: discord.Interaction):
         #await interaction.response.edit_message(embed=self.embed, view=self)
         await interaction.response.defer(invisible=True)
-        await self.paginator.update(pages=self.embeds, custom_view=self)
+        await self.paginator.update(pages=self.embeds, custom_view=self, interaction=interaction)
         
         
 class Dropdown(discord.ui.Select):
