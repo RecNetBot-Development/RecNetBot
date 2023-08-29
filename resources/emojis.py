@@ -101,14 +101,14 @@ class Emoji:
     progress_max3 = "<:max3:1114166525209878638>"
     kofi = "<:kofi:1120441142463434752>"
     cheer_host = "<:cheer_host:1120445719380242522>"
-    port_exec = "<:Exec:1120250033074344016>"
-    port_string = "<:String:1120250030050258964>"
-    port_int = "<:Int:1120250046353514557>"
-    port_float = "<:Float:1120250043044208740>"
-    port_bool = "<:Bool:1120250039084789850>"
-    port_union = "<:Union:1120250034718515210>"
-    port_color = "<:Color:1120250037222514748>"
-    port_yellow = "<:Yellow:1120250040275976274>"
+    port_exec = "<:exec:1146146997443760260>"
+    port_string = "<:string:1146146995841548399>"
+    port_int = "<:int:1146146993333338234>"
+    port_float = "<:float:1146146991924072479>"
+    port_bool = "<:bool:1146146990544125952>"
+    port_union = "<:any:1146146988069507233>"
+    port_color = "<:color:1146146985905225940>"
+    port_yellow = "<:yellow:1146146983308967966>"
 
 class CategoryIcons:
     category_api = 963878518960291903  # (Api by Larea from NounProject.com)
