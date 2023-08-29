@@ -8,6 +8,7 @@ from utils.converters import FetchAccount
 from exceptions import ConnectionNotFound
 from utils.paginator import RNBPaginator, RNBPage
 from utils.autocompleters import account_searcher
+from exceptions import Disabled
 
 @slash_command(
     name="selfcheers",
@@ -19,6 +20,9 @@ async def selfcheers(
     account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False, autocomplete=account_searcher)
 ):
     await ctx.interaction.response.defer()
+
+    # Broken command
+    raise Disabled
 
     if not account:  # Check for a linked RR account
         account = await self.bot.cm.get_linked_account(self.bot.RecNet, ctx.author.id)

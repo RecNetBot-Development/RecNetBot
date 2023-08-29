@@ -5,6 +5,7 @@ from utils.converters import FetchAccount
 from discord.commands import slash_command, Option
 from exceptions import ConnectionNotFound
 from utils.autocompleters import account_searcher
+from exceptions import Disabled
 
 class Menu(discord.ui.View):
     def __init__(self, image_name: str, username: str):
@@ -35,6 +36,9 @@ async def banner(
 ):
     await ctx.interaction.response.defer()
     
+    # Broken command
+    raise Disabled
+
     if not account:  # Check for a linked RR account
         account = await self.bot.cm.get_linked_account(self.bot.RecNet, ctx.author.id)
         if not account: raise ConnectionNotFound

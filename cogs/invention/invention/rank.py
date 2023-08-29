@@ -6,7 +6,7 @@ from typing import List, Optional
 from recnetpy.dataclasses.invention import Invention
 from discord.commands import slash_command, Option
 from utils.paginator import RNBPaginator, RNBPage
-
+from exceptions import Disabled
 
 class RankView(discord.ui.View):
     def __init__(self, bot: commands.Bot, context: discord.ApplicationContext, invention_pool = List[Invention], filters: str = None):
@@ -138,6 +138,9 @@ async def rank(
 ):
     await ctx.interaction.response.defer()
     
+    # Broken command
+    raise Disabled
+
     if filter:
         results = await self.bot.RecNet.inventions.search(filter, take=200)
     else:

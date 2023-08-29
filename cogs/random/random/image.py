@@ -5,6 +5,7 @@ from utils import img_url
 from typing import List
 from recnetpy.dataclasses.image import Image
 from discord.commands import slash_command, Option
+from exceptions import Disabled
 
 class RandomImage(discord.ui.View):
     def __init__(self, rec_net: recnetpy.Client, amount: int = 1):
@@ -63,6 +64,9 @@ async def image(
     amount: Option(int, "How many you'd like", min_value=1, max_value=5, default=1)
 ):
     await ctx.interaction.response.defer()
+
+    # Broken command
+    raise Disabled
 
     view = RandomImage(self.bot.RecNet, amount=amount)
     await view.respond(ctx.interaction)

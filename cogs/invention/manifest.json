@@ -5,7 +5,7 @@
     "scripts": [],
     "groups": {
         "invention": {
-            "scripts_old": ["info", "search", "data", "rank"],
+            "scripts": ["info", "search", "data", "rank"],
             "description": "Invention commands for statistics, ranks and more!"
         }
         

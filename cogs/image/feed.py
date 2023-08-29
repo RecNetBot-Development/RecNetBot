@@ -3,6 +3,7 @@ from discord.commands import slash_command, Option
 from utils.converters import FetchAccount
 from exceptions import ConnectionNotFound
 from utils.autocompleters import account_searcher
+from exceptions import Disabled
 
 @slash_command(
     name="feed",
@@ -13,6 +14,9 @@ async def feed(
     ctx: discord.ApplicationContext,
     account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False, autocomplete=account_searcher)
 ):
+    # Broken command
+    raise Disabled
+
     if not account:  # Check for a linked RR account
         account = await self.bot.cm.get_linked_account(self.bot.RecNet, ctx.author.id)
         if not account: raise ConnectionNotFound

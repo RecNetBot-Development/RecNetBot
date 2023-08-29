@@ -2,6 +2,7 @@ import discord
 from discord.commands import slash_command, Option
 from utils.converters import FetchInvention
 from embeds import fetch_invention_embed
+from exceptions import Disabled
 
 @slash_command(
     name="info",
@@ -13,6 +14,9 @@ async def info(
     invention: Option(FetchInvention, name="name", description="Enter a RecNet link or ID", required=True)
 ):
     await ctx.interaction.response.defer()
+
+    # Broken command
+    raise Disabled
 
     cached_stats = self.bot.icm.get_cached_stats(ctx.author.id, invention.id)
     self.bot.icm.cache_stats(ctx.author.id, invention.id, invention)

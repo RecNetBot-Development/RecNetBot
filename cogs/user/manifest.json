@@ -9,7 +9,8 @@
         "platforms", 
         "toxicity",
         "owoify",
-        "xp"
+        "xp", 
+        "banner"
     ],
     "groups": {
         "profile": { 

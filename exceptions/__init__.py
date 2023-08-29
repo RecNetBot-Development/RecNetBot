@@ -7,3 +7,4 @@ from .InventionNotFound import InventionNotFound
 from .ImageNotFound import ImageNotFound
 from .ImagesNotFound import ImagesNotFound
 from .InvalidURL import InvalidURL
+from .Disabled import Disabled

@@ -1,6 +1,7 @@
 import discord
 from discord.commands import slash_command, Option
 from cogs.miscellaneous.search import SearchView
+from exceptions import Disabled
 
 @slash_command(
     name="search",
@@ -12,6 +13,9 @@ async def search(
     invention: Option(str, name="name", description="Enter RR invention name", required=True)
 ):
     await ctx.interaction.response.defer()
+
+    # Broken command
+    raise Disabled
 
     view = SearchView(self.bot, invention, "Invention", lock=True)
     em = await view.initialize()
