@@ -58,7 +58,7 @@ def create_chip(chip_json: dict, uuid: str) -> Chip:
                 is_list = True
             
             port = NodePort(
-                name=i["Name"] or "—",
+                name=i["Name"],
                 type=type.split(" | "),
                 is_list=is_list,
                 description=i["Description"],
@@ -80,7 +80,7 @@ def create_chip(chip_json: dict, uuid: str) -> Chip:
                 is_list = True
             
             port = NodePort(
-                name=i["Name"] or "—",
+                name=i["Name"],
                 type=type.split(" | "),
                 is_list=is_list,
                 description=i["Description"],
