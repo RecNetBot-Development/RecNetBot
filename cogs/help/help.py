@@ -48,7 +48,7 @@ class DetailsView(discord.ui.View):
             item.disabled = True
     
     @discord.ui.button(label="View Commands", style=discord.ButtonStyle.primary)
-    async def view_cmds(
+    async def btn_view_cmds(
         self, button: discord.ui.Button, interaction: discord.Interaction
     ):
         # Make sure it's the author using the component
@@ -59,7 +59,7 @@ class DetailsView(discord.ui.View):
         await self.help_cmd(self.ctx)
     
     @discord.ui.button(label="Tip Jar", style=discord.ButtonStyle.green)
-    async def tip_jar(
+    async def btn_tip_jar(
         self, button: discord.ui.Button, interaction: discord.Interaction
     ):
         await interaction.response.defer()
