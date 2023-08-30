@@ -15,6 +15,6 @@ def format_warnings(warnings: List[str]):
     formatted = []
         
     for ele in warnings:
-        formatted.append(f"{WARNING_ICONS.get(ele, get_emoji('unknown'))} `{ele}`")
+        formatted.append(f"{WARNING_ICONS.get(ele, get_emoji('unknown'))}\u00a0`{ele}`")
             
     return formatted

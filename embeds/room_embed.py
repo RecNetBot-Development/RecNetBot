@@ -71,20 +71,20 @@ def room_embed(room: Room, cached_stats: RoomStats = "None", hide_details: bool 
         # Properties
         properties = []
         properties.append(
-            {"description": "Cloning Allowed", "enabled": room.cloning_allowed}
+            {"description": "Cloning\u00a0Allowed", "enabled": room.cloning_allowed}
         )
         properties.append(
-            {"description": "Encrypted Voice Chat", "enabled": room.encrypted_voice_chat}
+            {"description": "Encrypted\u00a0Voice\u00a0Chat", "enabled": room.encrypted_voice_chat}
         )
         properties.append(
-            {"description": "Voice Moderation", "enabled": room.voice_moderated}
+            {"description": "Voice\u00a0Moderation", "enabled": room.voice_moderated}
         )
         properties.sort(key=lambda x: x["enabled"], reverse=True)
 
         properties_text = ""
         for i in properties:
             emoji = get_emoji("correct") if i["enabled"] else get_emoji("incorrect")
-            properties_text += f"`{emoji} {i['description']} ` "
+            properties_text += f"`{emoji}\u00a0{i['description']}\u00a0` "
         
         if details: em.add_field(name="Details", value="\n".join(details), inline=False)
         if properties: em.add_field(name="Properties", value=properties_text, inline=False)
