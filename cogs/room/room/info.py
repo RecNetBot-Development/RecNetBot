@@ -107,6 +107,14 @@ class RoomView(discord.ui.View):
         for i in buttons:
             self.add_item(i)
 
+    async def on_timeout(self):
+        # Method override to exempt link buttons from being disabled on timeout.
+        if not self.disable_on_timeout: return
+        for item in self.children:
+            if isinstance(item, discord.ui.Button) and item.style == discord.ButtonStyle.link:
+                continue
+            item.disabled = True
+
     def get_embed(self):
         """
         Gets the embed and refreshes cache

@@ -39,6 +39,14 @@ class DetailsView(discord.ui.View):
         for item in buttons:
             self.add_item(item)
     
+    async def on_timeout(self):
+        # Method override to exempt link buttons from being disabled on timeout.
+        if not self.disable_on_timeout: return
+        for item in self.children:
+            if isinstance(item, discord.ui.Button) and item.style == discord.ButtonStyle.link:
+                continue
+            item.disabled = True
+    
     @discord.ui.button(label="View Commands", style=discord.ButtonStyle.primary)
     async def view_cmds(
         self, button: discord.ui.Button, interaction: discord.Interaction
