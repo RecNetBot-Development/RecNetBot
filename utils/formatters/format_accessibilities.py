@@ -7,15 +7,15 @@ ACCESSIBILITY = [
     {"format": "Screen", "icon": get_emoji('screen')},
     {"format": "Walk", "icon": get_emoji('walk')},
     {"format": "Teleport", "icon": get_emoji('teleport')},
-    {"format": "Quest 1", "icon": get_emoji('quest1')},
-    {"format": "Quest 2", "icon": get_emoji('quest2')},
+    {"format": "Quest\u00a01", "icon": get_emoji('quest1')},
+    {"format": "Quest\u00a02", "icon": get_emoji('quest2')},
     {"format": "Mobile", "icon": get_emoji('mobile')},
     {"format": "Juniors", "icon": get_emoji('junior')}
 ]
 
 def format_ele(ele: dict, allowed: bool) -> str:
     emoji = get_emoji("correct") if allowed else get_emoji("incorrect")
-    return f"`{emoji} {ele['format']} `"
+    return f"`{emoji}\u00a0{ele['format']}\u00a0`"
 
 def format_accessibilities(room: Room) -> Tuple[List[str], List[str]]:
     """

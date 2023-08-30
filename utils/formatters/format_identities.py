@@ -22,6 +22,6 @@ def format_identities(identities: List[str]) -> List[str]:
     if not identities: return []
     formatted = []
     for ele in identities:
-        formatted.append(f"{IDENTITY_INFO.get(ele, get_emoji('unknown'))} `{ele}`")
+        formatted.append(f"{IDENTITY_INFO.get(ele, get_emoji('unknown'))}\u00a0`{ele}`")
         
     return formatted
