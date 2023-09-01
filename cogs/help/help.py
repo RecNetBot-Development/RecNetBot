@@ -4,8 +4,9 @@ from resources import get_emoji
 from embeds import get_default_embed
 from discord.commands import slash_command, SlashCommand
 from discord.ext.commands import Context
+from utils import SaveLinkBtnsView
 
-class DetailsView(discord.ui.View):
+class DetailsView(SaveLinkBtnsView):
     def __init__(self, invite_link: str = None, server_link: str = None, help_command: SlashCommand = None, tip_jar: SlashCommand = None, context: Context = None):
         super().__init__()
         self.help_cmd = help_command
@@ -38,14 +39,6 @@ class DetailsView(discord.ui.View):
         # add buttons
         for item in buttons:
             self.add_item(item)
-    
-    async def on_timeout(self):
-        # Method override to exempt link buttons from being disabled on timeout.
-        if not self.disable_on_timeout: return
-        for item in self.children:
-            if isinstance(item, discord.ui.Button) and item.style == discord.ButtonStyle.link:
-                continue
-            item.disabled = True
     
     @discord.ui.button(label="View Commands", style=discord.ButtonStyle.primary)
     async def btn_view_cmds(

@@ -8,6 +8,7 @@ from bot import RecNetBot
 from recnetpy.dataclasses.room import Room
 from exceptions import RoomNotFound
 from utils.autocompleters import room_searcher
+from utils import SaveLinkBtnsView
 
 class RoleBtn(discord.ui.Button):
     def __init__(self, command):
@@ -71,7 +72,7 @@ class RefreshBtn(discord.ui.Button):
             await self.view.error(interaction)
 
 
-class RoomView(discord.ui.View):
+class RoomView(SaveLinkBtnsView):
     def __init__(self, room: Room, bot: RecNetBot, only_stats: bool = False, commands: dict = {}):
         super().__init__()
         
@@ -106,14 +107,6 @@ class RoomView(discord.ui.View):
 
         for i in buttons:
             self.add_item(i)
-
-    async def on_timeout(self):
-        # Method override to exempt link buttons from being disabled on timeout.
-        if not self.disable_on_timeout: return
-        for item in self.children:
-            if isinstance(item, discord.ui.Button) and item.style == discord.ButtonStyle.link:
-                continue
-            item.disabled = True
 
     def get_embed(self):
         """
