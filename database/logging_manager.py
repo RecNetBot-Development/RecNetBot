@@ -56,6 +56,9 @@ class LoggingManager():
         for i in data:
             user_hex, cmd_mention, timestamp = i[0], i[1], i[2]
 
+            if not cmd_mention.startswith("other:"):
+                cmd_mention = cmd_mention.split("<")[1].split(":")[0]
+
             if user_hex in log:
                 if cmd_mention in log[user_hex]["specific"]:
                     log[user_hex]["specific"][cmd_mention].append(timestamp)

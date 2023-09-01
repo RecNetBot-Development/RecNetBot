@@ -87,17 +87,17 @@ async def help(self, ctx: discord.ApplicationContext):
         "Image": {
             "photos": {"mention": None, "beginner": True, "description": "Browse someone's RecNet photos"}
         },
-        "Random": {
-            "image": {"mention": None, "beginner": True, "description": "Pull up random images out of context"}
+        "Circuits V2": {
+            "chip": {"mention": None, "description": "Lookup a CV2 chip and view its ports and properties", "updated": True, "beginner": True}
         },
-        "Invention": {
-            "search": {"mention": None, "beginner": True, "description": "Search Rec Room inventions"}
-        },
+        #"Random": {
+        #    "image": {"mention": None, "beginner": True, "description": "Pull up random images out of context"}
+        #},
+        #"Invention": {
+        #    "search": {"mention": None, "beginner": True, "description": "Search Rec Room inventions"}
+        #},
         "Help": {
             "commands": {"mention": None, "beginner": True, "description": "Browse the rest of the commands...", "command": None}
-        },
-        "Circuits V2": {
-            "chip": {"mention": None, "description": "Lookup a CV2 chip and view its ports and properties", "updated": True}
         },
         "Miscellaneous": {
             "tip": {"mention": None, "command": None, "updated": True}  # Fetch for later
@@ -127,7 +127,7 @@ async def help(self, ctx: discord.ApplicationContext):
     for cmd, usage in usage_sort.items():
         if i >= limit: break
         if cmd.startswith("other:"): continue
-        leaderboard.append(cmd)
+        leaderboard.append(f"`{cmd}`")
         i += 1
 
     # Find the wanted commands cuz 'get_command' doesn't work. At least this is a single iteration to find all the commands.
