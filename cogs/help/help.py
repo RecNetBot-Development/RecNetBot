@@ -4,8 +4,9 @@ from resources import get_emoji
 from embeds import get_default_embed
 from discord.commands import slash_command, SlashCommand
 from discord.ext.commands import Context
+from utils import SaveLinkBtnsView
 
-class DetailsView(discord.ui.View):
+class DetailsView(SaveLinkBtnsView):
     def __init__(self, invite_link: str = None, server_link: str = None, help_command: SlashCommand = None, tip_jar: SlashCommand = None, context: Context = None):
         super().__init__()
         self.help_cmd = help_command
@@ -40,7 +41,7 @@ class DetailsView(discord.ui.View):
             self.add_item(item)
     
     @discord.ui.button(label="View Commands", style=discord.ButtonStyle.primary)
-    async def view_cmds(
+    async def btn_view_cmds(
         self, button: discord.ui.Button, interaction: discord.Interaction
     ):
         # Make sure it's the author using the component
@@ -51,7 +52,7 @@ class DetailsView(discord.ui.View):
         await self.help_cmd(self.ctx)
     
     @discord.ui.button(label="Tip Jar", style=discord.ButtonStyle.green)
-    async def tip_jar(
+    async def btn_tip_jar(
         self, button: discord.ui.Button, interaction: discord.Interaction
     ):
         await interaction.response.defer()
