@@ -13,8 +13,7 @@ async def resources(
 ):
     await ctx.interaction.response.defer()
 
-    resources = """
-# Circuits V2 Resources
+    resources = """# Circuits V2 Resources
 [Source](<https://tyleo-rec.github.io/CircuitsV2Resources/>)
 
 ## Official Resources
@@ -27,10 +26,8 @@ async def resources(
 - [How To Circuits V2 Blog Post](<https://blog.recroom.com/posts/2020/8/3/how-2-circuits-2>)
 - [The Circuits Handbook Blog Post](<https://blog.recroom.com/posts/2021/5/03/the-circuits-handbook>)
 - [Rec Room Discord](<https://discord.com/channels/193073071802941451/746858632301510708>)
-  - Use the #circuits-v2 channel for CircuitsV2 info.
-  - Need help? Make a thread in #circuits-v2-help.
-- [Circuits V2 Canny](<https://recroom.canny.io/creative-tools?category=circuits-v2-feedback>)
-  - Use this page to report bugs and request or upvote new features.
+  - Use the #circuits channel for Circuits info.
+  - Need help? Make a thread in #circuits-help.
 - [How to Create](<https://recroom.com/howtocreate>)
   - Browse to the **Circuits V2 Beginners** section.
 - [Creative Classes and Events](<https://recroom.com/creative>)
@@ -47,7 +44,6 @@ These are additional lists of resources which may contain content not listed her
 - [It's Time For YOU To Learn Circuits V2](<https://www.youtube.com/watch?v=L4yvvoWdpWA>)
 - [CV2 Chip Searcher](<https://cv2.aleteoryx.me>)
 - [This Page on Cloudflare](<https://cv2.pages.dev>)
-- [Circuits Documentation](<https://circuits.pages.dev/>)
-    """
+- [Circuits Documentation](<https://circuits.pages.dev/>)"""
 
     await ctx.respond(resources)
