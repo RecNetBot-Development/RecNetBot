@@ -2,6 +2,7 @@ import discord
 from discord.commands import slash_command, Option
 from utils.converters import FetchInvention
 from utils import format_json_block
+from embeds import get_default_embed
 
 @slash_command(
     name="resources",
@@ -13,11 +14,13 @@ async def resources(
 ):
     await ctx.interaction.response.defer()
 
-    resources = """# Circuits V2 Resources
-[Source](<https://tyleo-rec.github.io/CircuitsV2Resources/>)
+    em_header = get_default_embed()
+    em_header.title = "Circuits V2 Resources"
+    em_header.description = "[Source](<https://tyleo-rec.github.io/CircuitsV2Resources/>)"
 
-## Official Resources
-
+    em_official = get_default_embed()
+    em_official.title = "Official Resources"
+    em_official.description = """
 - [Designs](<https://tyleo-rec.github.io/CircuitsV2Resources/designs/>)
 - Circuits Design System
   - If you make a Figma account, you can use these to make fancy images of chips and graphs.
@@ -34,16 +37,17 @@ async def resources(
   - This is a curated list of classes and events for learning how to build. Check back periodically for Circuits V2 class availability.
   - [Circuit Think Tank (Rec Room Event Link)](<https://rec.net/room/CircuitThinkTank/events>)
   - [THE Circuits V2 Class](<https://discord.gg/5AvzZt4fFh>)
-- [Chip JSON](<https://github.com/tyleo-rec/CircuitsV2Resources/blob/master/misc/circuitsv2.json>)
-
-## Unofficial Resources (English)
-
-These are additional lists of resources which may contain content not listed here.
+- [Chip JSON](<https://github.com/tyleo-rec/CircuitsV2Resources/blob/master/misc/circuitsv2.json>)"""
+    
+    em_unofficial = get_default_embed()
+    em_unofficial.title = "Unofficial Resources"
+    em_unofficial.description = """These are additional lists of resources which may contain content not listed here.
 
 - [rec-room Fandom Wiki Circuits V2 Page](<https://rec-room.fandom.com/wiki/Circuits_V2>)
 - [It's Time For YOU To Learn Circuits V2](<https://www.youtube.com/watch?v=L4yvvoWdpWA>)
 - [CV2 Chip Searcher](<https://cv2.aleteoryx.me>)
 - [This Page on Cloudflare](<https://cv2.pages.dev>)
 - [Circuits Documentation](<https://circuits.pages.dev/>)"""
+    
 
-    await ctx.respond(resources)
+    await ctx.respond(embeds=[em_header, em_official, em_unofficial])
