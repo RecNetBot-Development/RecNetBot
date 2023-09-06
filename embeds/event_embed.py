@@ -29,6 +29,7 @@ def event_embed(event: Event) -> discord.Embed:
         
     em.add_field(name="Info", value="\n".join(info_field), inline=False)
     
+    """
     broadcast_field = []
     if event.is_multi_instance:
         broadcast_field.append(f"{get_emoji('correct')} Multi Instance")
@@ -36,6 +37,7 @@ def event_embed(event: Event) -> discord.Embed:
         broadcast_field.append(f"{get_emoji('correct')} Live Chat")
     if broadcast_field:
         em.add_field(name="Broadcasting", value="\n".join(broadcast_field), inline=False)
+    """
 
     em.set_author(
         name=event.creator_player.display_name, 
