@@ -18,7 +18,7 @@ async def room_searcher(ctx: discord.AutocompleteContext) -> List[str]:
             rooms = []
 
     # Check if the user is linked
-    if not rooms:
+    if not rooms and ctx.bot.RecNet:
         check_discord = ctx.bot.cm.get_discord_connection(ctx.interaction.user.id)
         if check_discord:
             # If they are, show their created rooms
