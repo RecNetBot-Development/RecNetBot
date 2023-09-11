@@ -21,7 +21,7 @@ def profile_embed(account: Account) -> discord.Embed:
     info = [
         f"{get_emoji('username')} @{sanitize_name(account.username)}",
         f"{get_emoji('level')} Level `{account.level.level}`",
-        f"{get_emoji('subscribers')} Subscribers `{account.subscriber_count:,}`",
+        f"{get_emoji('subscribers')} Subscribers: `{account.subscriber_count:,}`",
         f"{get_emoji('pronouns')} {format_pronouns(account.personal_pronouns)}" if account.personal_pronouns else None,
         f"{get_emoji('identities')} {' '.join(format_identities(account.identity_flags))}" if account.identity_flags else None,
         f"```{sanitize_bio(account.bio)}```" if account.bio else None,
@@ -33,6 +33,9 @@ def profile_embed(account: Account) -> discord.Embed:
     em.description = "\n".join(filter(lambda ele: ele, info))
     
     em.title = account.display_name
+    if account.display_emoji:
+        em.title += f" {account.display_emoji}"
+
     em.url = profile_url(account.username)
     em.set_thumbnail(
         url=img_url(account.profile_image, crop_square=True)

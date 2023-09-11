@@ -2,68 +2,64 @@ import discord
 from discord.commands import slash_command, Option
 from utils.converters import FetchAccount
 from utils.autocompleters import account_searcher
+from utils import profile_url
 from embeds import fetch_profile_embed
 from resources import get_emoji
 from exceptions import ConnectionNotFound
 from database import BookmarkTypes
 from recnetpy.dataclasses.account import Account
+from utils import BaseView
 
-class ProfileView(discord.ui.View):
-    def __init__(self, account: Account, ctx: discord.ApplicationContext):
+class UserBtn(discord.ui.Button):
+    def __init__(self, title: str, command):
+        super().__init__(
+            label=title,
+            style=discord.ButtonStyle.primary
+        )
+
+        self.command = command
+
+    async def callback(self, interaction: discord.Interaction):
+        # Make sure it's the author using the component
+        if not self.view.authority_check(interaction):
+            return await interaction.response.send_message("You're not authorized!", ephemeral=True)
+
+        ctx = await interaction.client.get_application_context(interaction)
+        await self.command(ctx, self.view.account)
+
+
+class ProfileView(BaseView):
+    def __init__(self, account: Account, commands: dict):
         super().__init__()
+
+        # Component timeout
+        self.timeout = 600
+        self.disable_on_timeout = True
+
+        # The account in question
         self.account = account
-        self.ctx = ctx
-        self.image_cog = self.ctx.bot.get_cog("Image")
-        self.room_cog = self.ctx.bot.get_cog("Room")
-        
 
-    @discord.ui.button(label="Photos", style=discord.ButtonStyle.gray, emoji=get_emoji("image"))
-    async def photos_callback(
-        self, button: discord.ui.Button, interaction: discord.Interaction
-    ):
-        cmd = discord.utils.get(self.image_cog.__cog_commands__, name='photos')
-        await cmd(self.ctx, self.account)
-        
-        # Update the view with the disabled button
-        button.disabled = True
-        await interaction.response.edit_message(view=self)
-        
-        
+        # Commands for buttons
+        self.commands = commands
 
-    @discord.ui.button(label="Feed", style=discord.ButtonStyle.gray, emoji=get_emoji("image"))
-    async def feed_callback(
-        self, button: discord.ui.Button, interaction: discord.Interaction
-    ):
-        cmd = discord.utils.get(self.image_cog.__cog_commands__, name='feed')
-        await cmd(self.ctx, self.account)
-        
-        # Update the view with the disabled button
-        button.disabled = True
-        await interaction.response.edit_message(view=self)
-        
-    
-    @discord.ui.button(label="Showcased Rooms", style=discord.ButtonStyle.gray, emoji=get_emoji("room"), row=2)
-    async def showcased_callback(
-        self, button: discord.ui.Button, interaction: discord.Interaction
-    ):
-        cmd = discord.utils.get(self.room_cog.__cog_commands__, name='showcased')
-        await cmd(self.ctx, self.account)
-        
-        # Update the view with the disabled button
-        button.disabled = True
-        await interaction.response.edit_message(view=self)
-        
-        
-    @discord.ui.button(label="Bookmark", style=discord.ButtonStyle.gray, row=2)
-    async def showcased_callback(
-        self, button: discord.ui.Button, interaction: discord.Interaction
-    ):
-        # Update the view with the disabled button
-        button.disabled = True
-        button.label = "Bookmarked!"
-        await interaction.response.edit_message(view=self)
-        
-        self.ctx.bot.bcm.create_bookmark(self.ctx.author.id, BookmarkTypes.ACCOUNTS, self.account.id)
+        # Link buttons
+        buttons = [
+            UserBtn("Level Progression", self.commands["User"]["xp"]) if account.level.level < 50 else None,
+            UserBtn("Photos", self.commands["Image"]["photos"]),
+            UserBtn("Profile Picture", self.commands["User"]["pfp"]),
+            UserBtn("Banner", self.commands["User"]["banner"]) if account.banner_image else None,
+            discord.ui.Button(
+                label=f"@{self.account.username}",
+                url=profile_url(self.account.username),
+                style=discord.ButtonStyle.link,
+                row=1
+            )
+        ]
+
+        for i in buttons:
+            # Ignore NoneTypes
+            if i: self.add_item(i)
+
 
 @slash_command(
     name="info",
@@ -106,9 +102,41 @@ async def info(
     else:
         em.set_footer(text="Not linked to a Discord account.")
     
+    # Get button commands
+    commands = {
+        "User": {
+            "xp": None,
+            "banner": None,
+            "pfp": None
+        },
+        "Image": {
+            "photos": None
+        }  
+    }
+
+    # Get the amount of commands needed so we can stop the following iteration
+    command_count = 0
+    for i in commands:
+        command_count += len(commands.keys())
+
+    # Fetch commands to display
+    cogs = self.bot.cogs.values()
+
+    # Find the wanted commands
+    found_commands = 0
+    for cog in cogs:
+        for cmd in cog.walk_commands():
+            # We found them all!
+            if found_commands >= command_count: break
+
+            if cog.qualified_name in commands:
+                if cmd.name in commands[cog.qualified_name]:
+                    commands[cog.qualified_name][cmd.name] = cmd
+                    found_commands += 1
+
     await ctx.respond(
         embed=em,
-        #view=view
+        view=ProfileView(account=account, commands=commands)
     )
 
         
