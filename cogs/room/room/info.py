@@ -8,7 +8,7 @@ from bot import RecNetBot
 from recnetpy.dataclasses.room import Room
 from exceptions import RoomNotFound
 from utils.autocompleters import room_searcher
-from utils import SaveLinkBtnsView
+from utils import BaseView
 
 class RoleBtn(discord.ui.Button):
     def __init__(self, command):
@@ -72,7 +72,7 @@ class RefreshBtn(discord.ui.Button):
             await self.view.error(interaction)
 
 
-class RoomView(SaveLinkBtnsView):
+class RoomView(BaseView):
     def __init__(self, room: Room, bot: RecNetBot, only_stats: bool = False, commands: dict = {}):
         super().__init__()
         
@@ -138,9 +138,6 @@ class RoomView(SaveLinkBtnsView):
     async def update(self, interaction: discord.Interaction):
         embed = self.get_embed()
         await interaction.response.edit_message(embed=embed, view=self)
-
-    def authority_check(self, interaction: discord.Interaction):
-        return interaction.user.id == interaction.message.interaction.user.id
     
     async def error(self, interaction: discord.Interaction):
         """
