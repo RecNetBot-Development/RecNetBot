@@ -35,9 +35,6 @@ async def banner(
     account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False, autocomplete=account_searcher)
 ):
     await ctx.interaction.response.defer()
-    
-    # Broken command
-    raise Disabled
 
     if not account:  # Check for a linked RR account
         account = await self.bot.cm.get_linked_account(self.bot.RecNet, ctx.author.id)
