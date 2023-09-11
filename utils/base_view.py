@@ -1,7 +1,7 @@
 import discord
 
 
-class SaveLinkBtnsView(discord.ui.View):
+class BaseView(discord.ui.View):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
     
@@ -16,3 +16,7 @@ class SaveLinkBtnsView(discord.ui.View):
         if message:
             m = await message.edit(view=self)
             if m: self._message = m
+
+    def authority_check(self, interaction: discord.Interaction):
+        """Make sure the person using a component is the one who ran the ocmmand"""
+        return interaction.user.id == interaction.message.interaction.user.id

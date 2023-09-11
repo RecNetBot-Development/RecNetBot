@@ -12,4 +12,4 @@ from .sanitize_name import sanitize_name
 from .load_config import load_config
 from .format_json_block import format_json_block
 
-from .save_link_buttons_view import SaveLinkBtnsView
+from .base_view import BaseView
