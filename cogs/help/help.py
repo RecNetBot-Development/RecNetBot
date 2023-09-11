@@ -4,9 +4,9 @@ from resources import get_emoji
 from embeds import get_default_embed
 from discord.commands import slash_command, SlashCommand
 from discord.ext.commands import Context
-from utils import SaveLinkBtnsView
+from utils import BaseView
 
-class DetailsView(SaveLinkBtnsView):
+class DetailsView(BaseView):
     def __init__(self, invite_link: str = None, server_link: str = None, help_command: SlashCommand = None, tip_jar: SlashCommand = None, context: Context = None):
         super().__init__()
         self.help_cmd = help_command
@@ -45,7 +45,7 @@ class DetailsView(SaveLinkBtnsView):
         self, button: discord.ui.Button, interaction: discord.Interaction
     ):
         # Make sure it's the author using the component
-        if interaction.user.id != interaction.message.interaction.user.id:
+        if not self.authority_check(interaction):
             return await interaction.response.send_message("You're not authorized!", ephemeral=True)
         
         await interaction.response.defer()
