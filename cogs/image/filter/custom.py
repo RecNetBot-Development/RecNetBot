@@ -43,7 +43,8 @@ async def custom(
         while len(new_posts) % 1000 == 0 and new_posts:
             new_posts = await taken_by.get_images(skip=1000 * (len(posts) // 1000), take=1000, force=True)  # Skips the previous posts to fetch another 1000
             posts += new_posts
-            
+
+    """    
     elif together:
         # Fetch the first user from together
         # Since the user is required to be in the post, this will work
@@ -55,6 +56,7 @@ async def custom(
             while len(new_posts) % 1000 == 0 and new_posts:
                 new_posts = await first_user.get_feed(skip=1000 * len(posts) // 1000, take=1000, force=True)  # Skips the previous posts to fetch another 1000
                 posts += new_posts
+    """  
         
     # Filter by rooms
     if rooms:
