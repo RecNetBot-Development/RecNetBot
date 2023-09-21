@@ -89,7 +89,7 @@ class RoomView(BaseView):
         # Link buttons
         buttons = [
             RefreshBtn(),
-            RoleBtn(commands["roles"]),
+            #RoleBtn(commands["roles"]),
             PlacementBtn(commands["placement"]),
             discord.ui.Button(
                 label=shorten(f"^{self.room.name}", 80),

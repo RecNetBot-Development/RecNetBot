@@ -5,8 +5,7 @@
     "scripts": [
         "get_showcased_rooms",
         "showcased",
-        "placement",
-        "roles"
+        "placement"
     ],
     "groups": {
         "room": {

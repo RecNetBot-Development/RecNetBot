@@ -34,7 +34,9 @@ def profile_embed(account: Account) -> discord.Embed:
     
     em.title = account.display_name
     if account.display_emoji:
-        em.title += f" {account.display_emoji}"
+        em.title = f"{em.title} {account.display_emoji}"
+    if account.is_influencer:
+        em.title = f"{get_emoji('verified')} {em.title}"
 
     em.url = profile_url(account.username)
     em.set_thumbnail(
@@ -55,5 +57,6 @@ async def fetch_profile_embed(account: Account) -> discord.Embed:
     await account.get_subscriber_count()
     await account.get_level()
     await account.get_bio()
+    await account.get_is_influencer()
     
     return profile_embed(account)

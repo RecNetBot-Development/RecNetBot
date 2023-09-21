@@ -43,11 +43,11 @@ async def placement(
     # if no results were found
     if not placement:
         patched_room = await room.client.rooms.fetch(room.id, include=8)
-        tags = list(map(lambda tag: f"#{tag.tag}", patched_room.tags))
+        #tags = list(map(lambda tag: f"#{tag.tag}", patched_room.tags))
+        tags = []
         pieces = [
-            f"Couldn't find [^{room.name}]({room_url(room.name)}) from hot rooms filtered by `{filter}`.",
+            f"Couldn't find [^{room.name}]({room_url(room.name)}) from hot rooms filtered by `{filter or '-'}`.",
             f"The room scope is `{scope:,}`."
-            
         ]
         if tags: pieces.insert(1, f"Room tags: `{', '.join(tags)}`",)
         em.description = "\n".join(pieces)

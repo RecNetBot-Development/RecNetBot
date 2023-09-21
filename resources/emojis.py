@@ -109,6 +109,7 @@ class Emoji:
     port_union = "<:any:1146146988069507233>"
     port_color = "<:color:1146146985905225940>"
     port_yellow = "<:yellow:1146146983308967966>"
+    verified = "☑"
 
 class CategoryIcons:
     category_api = 963878518960291903  # (Api by Larea from NounProject.com)
