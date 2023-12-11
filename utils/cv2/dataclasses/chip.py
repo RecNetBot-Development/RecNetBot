@@ -13,6 +13,8 @@ class Chip:
     is_trolling_risk: bool
     is_role_risk: bool
     is_deprecated: bool
+    is_valid_rooms1: bool
+    is_valid_rooms2: bool
     filters: List[FilterPath]
     inputs: List[NodePort]
     outputs: List[NodePort]
@@ -54,12 +56,12 @@ def create_chip(chip_json: dict, uuid: str) -> Chip:
             
             is_list = False
             if type.startswith("List<"):
-                type = type[5:-1]
                 is_list = True
             
             port = NodePort(
                 name=i["Name"],
-                type=type.split(" | "),
+                type=type,
+                is_union=type.find("|") != -1,
                 is_list=is_list,
                 description=i["Description"],
                 is_input=True
@@ -81,7 +83,8 @@ def create_chip(chip_json: dict, uuid: str) -> Chip:
             
             port = NodePort(
                 name=i["Name"],
-                type=type.split(" | "),
+                type=type,
+                is_union=type.find("|") != -1,
                 is_list=is_list,
                 description=i["Description"],
                 is_input=False
@@ -95,6 +98,8 @@ def create_chip(chip_json: dict, uuid: str) -> Chip:
         is_trolling_risk=chip_json["IsTrollingRisk"],
         is_role_risk=chip_json["IsRoleAssignmentRisk"],
         is_deprecated=is_deprecated,
+        is_valid_rooms1=chip_json["IsValidInRoom1"],
+        is_valid_rooms2=chip_json["IsValidInRoom2"],
         filters=node_filters,
         inputs=ports["inputs"],
         outputs=ports["outputs"],
