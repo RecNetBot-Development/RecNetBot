@@ -109,13 +109,13 @@ async def chip(
     )
     
     # Rooms validity properties
-    rooms1_temp = "`{0}\u00a0Rooms 1\u00a0`"
+    rooms1_temp = "`{0}\u00a0Rooms\u00a01\u00a0`"
     properties.insert(
         0 if chip.is_valid_rooms1 else 1, 
         rooms1_temp.format(true if chip.is_valid_rooms1 else false)
     )
     
-    rooms2_temp = "`{0}\u00a0Rooms 2\u00a0`"
+    rooms2_temp = "`{0}\u00a0Rooms\u00a02\u00a0`"
     properties.insert(
         0 if chip.is_valid_rooms2 else 1, 
         rooms2_temp.format(true if chip.is_valid_rooms2 else false)
