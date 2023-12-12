@@ -1,6 +1,6 @@
 import discord
 from discord.commands import slash_command, Option
-from utils.cv2 import get_chip, generate_port_listing, generate_svg, Chip
+from utils.cv2 import get_chip, get_formatted_port, generate_svg, Chip
 from utils.autocompleters import cv2_searcher
 from embeds import get_default_embed
 from resources import get_emoji
@@ -52,7 +52,7 @@ async def chip(
     # Inputs
     inputs = []
     for i in chip.inputs:
-        input = generate_port_listing(i, port_temp)
+        input = get_formatted_port(i, port_temp)
         inputs.append(input)
     if not inputs:
         inputs.append("*None*")
@@ -64,7 +64,7 @@ async def chip(
     # Outputs
     outputs = []
     for i in chip.outputs:
-        output = generate_port_listing(i, port_temp)
+        output = get_formatted_port(i, port_temp)
         outputs.append(output)
     if not outputs:
         outputs.append("*None*")
@@ -106,6 +106,19 @@ async def chip(
     properties.insert(
         0 if chip.is_deprecated else 1, 
         deprecated_temp.format(true if chip.is_deprecated else false)
+    )
+    
+    # Rooms validity properties
+    rooms1_temp = "`{0}\u00a0Rooms\u00a01\u00a0`"
+    properties.insert(
+        0 if chip.is_valid_rooms1 else 1, 
+        rooms1_temp.format(true if chip.is_valid_rooms1 else false)
+    )
+    
+    rooms2_temp = "`{0}\u00a0Rooms\u00a02\u00a0`"
+    properties.insert(
+        0 if chip.is_valid_rooms2 else 1, 
+        rooms2_temp.format(true if chip.is_valid_rooms2 else false)
     )
     
     # Add them all together
