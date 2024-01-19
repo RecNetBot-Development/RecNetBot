@@ -44,7 +44,7 @@ OWOIFIED = {
     "Android": "Andwoid- ɾ⚈▿⚈ɹ",
     "Standalone": "Standawonye hehe",
     "LGBTQIA": "WGBTQIA UwU",
-    "Transgender": "Twansgendew (ﾉ´ з `)ノ",
+    "Transgender": "Twansgendew (ﾉ´ з ´)ノ",
     "Bisexual": "Bwisexuaw OwO",
     "Lesbian": "Wesbian >:3",
     "Pansexual": "Phansexuaw hehe",
