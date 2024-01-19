@@ -1,4 +1,4 @@
-recnetpy==0.2.70
+recnetpy==0.2.71
 py-cord @ git+https://github.com/Pycord-Development/pycord@fc7b1042c4a9a942b9996dfe96f56aac059e179c
 google-api-python-client==2.62.0
 owoify-py==2.0.0
