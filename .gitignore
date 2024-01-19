@@ -3,6 +3,7 @@
 venv/
 config/
 *.db
+.env
 
 # ignoring these because requirements.txt is the main method of dependency control
 Pipfile
