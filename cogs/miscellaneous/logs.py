@@ -17,6 +17,8 @@ async def logs(
     ctx: discord.ApplicationContext,
     timestamp: Option(int, name="timestamp_after", required=False, default=None)
 ):
+    await ctx.interaction.response.defer(invisible=True)
+
     # Default to first recorded log
     if not timestamp:
         timestamp = self.bot.lcm.get_first_entry_timestamp()
