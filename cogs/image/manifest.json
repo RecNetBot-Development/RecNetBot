@@ -2,14 +2,14 @@
     "name": "Image",
     "icon": "category_image",
     "description": "Commands relating to shared posts on RecNet!",
-    "scripts": ["photos", "feed", "selfcheers"],
+    "scripts": ["photos"],
     "groups": {
         "image": {
             "scripts": ["data", "origin"],
             "description": "Handy tools for RecNet posts."
         },
         "filter": {
-            "scripts": ["custom", "sort", "together", "in", "minmax", "during"],
+            "scripts": ["custom", "sort", "in", "minmax", "during"],
             "description": "Top-notch image filtering tools to pinpoint specific images."
         }
     }
