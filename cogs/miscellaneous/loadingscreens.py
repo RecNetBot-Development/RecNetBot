@@ -18,7 +18,7 @@ async def loadingscreens(self,  ctx: discord.ApplicationContext):
     
     # Check if successfully fetched the loading screens
     if resp.success:
-        loading_screens = resp.data
+        loading_screens = list(filter(lambda x: x["Visibility"], resp.data))  # filter out hidden ones
         loading_screens.reverse()  # Fresh ones first
     else:
         await ctx.respond(f"Couldn't fetch the loading screens! Error code: {resp.status}")
