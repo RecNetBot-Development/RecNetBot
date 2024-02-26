@@ -2,10 +2,12 @@ import discord
 import recnetpy
 import random
 from utils import img_url
+from utils.paginator import RNBPaginator, RNBPage
 from typing import List
 from recnetpy.dataclasses.image import Image
 from discord.commands import slash_command, Option
-from exceptions import Disabled
+
+MAX_IMAGE_ID = 570000000
 
 class RandomImage(discord.ui.View):
     def __init__(self, rec_net: recnetpy.Client, amount: int = 1):
@@ -15,28 +17,29 @@ class RandomImage(discord.ui.View):
         self.disable_on_timeout = True
         self.amount = amount
         self.image_pool = []
+        self.current_images = []
         
-    async def fetch_image(self, amount: int = 1) -> List[Image]:
-        if not self.image_pool:
-            self.image_pool = await self.RecNet.images.front_page(500)
+    async def get_images(self) -> List[Image]:
+        # Fetch images randomly until amount is met
+        while len(self.image_pool) < self.amount:
+            self.image_pool += await self.RecNet.images.fetch_many(random.sample(range(1, MAX_IMAGE_ID), 100))
         
-        images = random.choices(self.image_pool, k=self.amount)
+        # Check if random images need to be drawn due to low amount
+        if len(self.image_pool) <= self.amount:
+            images = self.image_pool
+            self.image_pool = []
+        else:
+            # Choose random images from image pool
+            images = []
+            for i in range(self.amount):
+                images.append(random.choice(self.image_pool))
+                self.image_pool.remove(images[-1])
 
         return images
             
-    async def fetch_with_links(self) -> List[str]:
-        images = await self.fetch_image(self.amount)
-        
-        # If it times out
-        if not images:
-            return ["Something went wrong and I couldn't find a random image. Try again later!"]
-        
-        links = list(map(lambda image: img_url(image.image_name), images))
-            
-        return links
-            
-    @discord.ui.button(label="Another!", style=discord.ButtonStyle.primary)
-    async def again(
+
+    @discord.ui.button(label="More!", style=discord.ButtonStyle.green)
+    async def more(
         self, button: discord.ui.Button, interaction: discord.Interaction
     ):
         await interaction.response.defer()
@@ -45,30 +48,43 @@ class RandomImage(discord.ui.View):
         if interaction.user.id != interaction.message.interaction.user.id:
             return await interaction.followup.send("You're not authorized!", ephemeral=True)
         
-        links = await self.fetch_with_links()
-        await interaction.edit_original_response(content="\n".join(links), view=self)
+        # Respond using og response function
+        await self.respond(interaction)
+
+
+    @discord.ui.button(label="Browse", style=discord.ButtonStyle.primary)
+    async def browse(
+        self, button: discord.ui.Button, interaction: discord.Interaction
+    ):
+        await interaction.response.defer()
         
+        pages = list(map(lambda ele: RNBPage(ele), self.current_images))
+        paginator = RNBPaginator(pages=pages, trigger_on_display=True, show_indicator=False, author_check=False)
+        await paginator.respond(interaction, ephemeral=True)
         
+
     async def respond(self, interaction: discord.Interaction):
-        links = await self.fetch_with_links()
+        # Respond to interaction with random images
+        images = await self.get_images()
+        self.current_images = images
+
+        # Get img.rec.net links of image objects
+        links = list(map(lambda image: img_url(image.image_name), images))
+
         await interaction.edit_original_response(content="\n".join(links), view=self)
         
 
 @slash_command(
     name="image",
-    description="Lookup random images taken in Rec Room without context."
+    description="Find random images from the depths of RecNet."
 )
 async def image(
     self, 
-    ctx: discord.ApplicationContext,
-    amount: Option(int, "How many you'd like", min_value=1, max_value=5, default=1)
+    ctx: discord.ApplicationContext
 ):
     await ctx.interaction.response.defer()
 
-    # Broken command
-    raise Disabled
-
-    view = RandomImage(self.bot.RecNet, amount=amount)
+    view = RandomImage(self.bot.RecNet, amount=3)
     await view.respond(ctx.interaction)
 
     

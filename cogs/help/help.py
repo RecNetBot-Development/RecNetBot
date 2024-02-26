@@ -79,21 +79,21 @@ async def help(self, ctx: discord.ApplicationContext):
     cmds = {
         "User": {
             "info": {"mention": None, "beginner": True, "description": "Check someone's Rec Room profile"},
-            "xp": {"mention": None, "description": "View a player's level & XP progress with details", "updated": True},
+            "xp": {"mention": None, "description": "View a player's level & XP progress with details"},
             "link": {"mention": None, "description": "Link your Rec Room profile", "hidden": True}  # Keep it here for later
         },
         "Room": {
-            "info": {"mention": None, "beginner": True, "description": "View room info that cannot be seen otherwise", "updated": True} 
+            "info": {"mention": None, "beginner": True, "description": "View room info that cannot be seen otherwise"} 
         },
         "Image": {
             "photos": {"mention": None, "beginner": True, "description": "Browse someone's RecNet photos"}
         },
         "Circuits V2": {
-            "chip": {"mention": None, "description": "Lookup a CV2 chip and view its ports and properties", "updated": True, "beginner": True}
+            "chip": {"mention": None, "description": "Lookup a CV2 chip and view its ports and properties", "beginner": True}
         },
-        #"Random": {
-        #    "image": {"mention": None, "beginner": True, "description": "Pull up random images out of context"}
-        #},
+        "Random": {
+            "image": {"mention": None, "beginner": True, "description": "Find random images from the depths of RecNet", "updated": True}
+        },
         #"Invention": {
         #    "search": {"mention": None, "beginner": True, "description": "Search Rec Room inventions"}
         #},
@@ -101,7 +101,7 @@ async def help(self, ctx: discord.ApplicationContext):
             "commands": {"mention": None, "beginner": True, "description": "Browse the rest of the commands...", "command": None}
         },
         "Miscellaneous": {
-            "tip": {"mention": None, "command": None, "updated": True}  # Fetch for later
+            "tip": {"mention": None, "command": None}  # Fetch for later
         }
     }
 

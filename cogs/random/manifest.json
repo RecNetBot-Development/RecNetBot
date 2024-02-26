@@ -5,7 +5,7 @@
     "scripts": [],
     "groups": {
         "random": {
-            "scripts": ["player", "room"],
+            "scripts": ["player", "room", "image"],
             "description": "Fun commands that keep on giving with haphazard results!"
         }
     }
