@@ -146,55 +146,79 @@ class RNBPaginator(pages.Paginator):
     def update_buttons(self) -> Dict:
         for key, button in self.buttons.items():
             if key == "first":
-                if self.current_page <= 1:
-                    button["hidden"] = True
-                elif self.current_page >= 1:
-                    button["hidden"] = False
+                if self.page_count >= 1:
+                    if self.current_page <= 1:
+                        button["hidden"] = True
+                    elif self.current_page >= 1:
+                        button["hidden"] = False
+                else:
+                    self.hidden_items.append(key)
             elif key == "last":
-                if self.current_page >= self.page_count - 1:
-                    button["hidden"] = True
-                if self.current_page < self.page_count - 1:
-                    button["hidden"] = False
+                if self.page_count >= 1:
+                    if self.current_page >= self.page_count - 1:
+                        button["hidden"] = True
+                    if self.current_page < self.page_count - 1:
+                        button["hidden"] = False
+                else:
+                    self.hidden_items.append(key)
             elif key == "next":
-                if self.current_page == self.page_count:
-                    if not self.loop_pages:
-                        button["hidden"] = True
+                if self.page_count >= 1:
+                    if self.current_page == self.page_count:
+                        if not self.loop_pages:
+                            button["hidden"] = True
+                            button["object"].label = button["label"]
+                        else:
+                            button["object"].label = button["loop_label"]
+                    elif self.current_page < self.page_count:
+                        button["hidden"] = False
                         button["object"].label = button["label"]
-                    else:
-                        button["object"].label = button["loop_label"]
-                elif self.current_page < self.page_count:
-                    button["hidden"] = False
-                    button["object"].label = button["label"]
+                else:
+                    self.hidden_items.append(key)
             elif key == "next10":
-                if self.current_page + 10 > self.page_count:
-                    if not self.loop_pages:
-                        button["hidden"] = True
+                if self.page_count >= 10:
+                    if self.current_page + 10 > self.page_count:
+                        if not self.loop_pages:
+                            button["hidden"] = True
+                            button["object"].label = button["label"]
+                        else:
+                            button["object"].label = button["loop_label"]
+                    elif self.current_page + 10 <= self.page_count:
+                        button["hidden"] = False
                         button["object"].label = button["label"]
-                    else:
-                        button["object"].label = button["loop_label"]
-                elif self.current_page + 10 <= self.page_count:
-                    button["hidden"] = False
-                    button["object"].label = button["label"]
+                else:
+                    self.hidden_items.append(key)
             elif key == "prev10":
-                if self.current_page - 10 < 0:
-                    if not self.loop_pages:
-                        button["hidden"] = True
+                if self.page_count >= 10:
+                    if self.current_page - 10 < 0:
+                        if not self.loop_pages:
+                            button["hidden"] = True
+                            button["object"].label = button["label"]
+                        else:
+                            button["object"].label = button["loop_label"]
+                    elif self.current_page - 10 < self.page_count:
+                        button["hidden"] = False
                         button["object"].label = button["label"]
-                    else:
-                        button["object"].label = button["loop_label"]
-                elif self.current_page - 10 < self.page_count:
-                    button["hidden"] = False
-                    button["object"].label = button["label"]
+                else:
+                    self.hidden_items.append(key)
             elif key == "prev":
-                if self.current_page <= 0:
-                    if not self.loop_pages:
-                        button["hidden"] = True
+                if self.page_count >= 1:
+                    if self.current_page <= 0:
+                        if not self.loop_pages:
+                            button["hidden"] = True
+                            button["object"].label = button["label"]
+                        else:
+                            button["object"].label = button["loop_label"]
+                    elif self.current_page >= 0:
+                        button["hidden"] = False
                         button["object"].label = button["label"]
-                    else:
-                        button["object"].label = button["loop_label"]
-                elif self.current_page >= 0:
+                else:
+                    self.hidden_items.append(key)
+            elif key == "random":
+                if self.page_count >= 1:
                     button["hidden"] = False
-                    button["object"].label = button["label"]
+                else:
+                    self.hidden_items.append(key)
+                    
         self.clear_items()
         if self.show_indicator:
             self.buttons["page_indicator"]["object"].label = f"{self.current_page + 1}/{self.page_count + 1}"
