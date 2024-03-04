@@ -20,10 +20,9 @@ class AttendeeView(discord.ui.View):
         self.embeds = []
         self.paginator = None
         self.event = event
-        self.responses = event.responses
         
         # Sort responses by the account's display_name
-        self.responses = list(filter(lambda resp: hasattr(resp.player, "display_name"), self.responses))  # Temporary fix to deleted accounts
+        self.responses = list(filter(lambda resp: hasattr(resp.player, "display_name"), event.responses))  # Temporary fix to deleted accounts
         self.responses.sort(key=lambda response: response.player.display_name)
         
         self.add_item(Dropdown(self))
