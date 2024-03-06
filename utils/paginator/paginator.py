@@ -96,6 +96,8 @@ class RNBPage(Page):
         if args: self.data = args[0]
         self.index = kwargs.pop("index", 0)
         self.page_count = kwargs.pop("page_count", 0)
+        self.text = kwargs.pop("text", "")
+        self.data = kwargs.pop("data", {})
         
         super().__init__(*args, **kwargs)
     
@@ -129,7 +131,8 @@ class RNBPage(Page):
         elif isinstance(self.content, Cat):
             self.embeds.append(cat_embed(self.data))
             self.content = None
-            
+
+        self.content = self.text
         self.embeds[-1].set_footer(text=f"{self.index:,}/{self.page_count:,}")
 
 
