@@ -40,6 +40,23 @@ class CatAPI:
         }
 
         async with self.client.post("https://api.thecatapi.com/v1/favourites", json=data) as resp:
+            if resp.ok:
+                data = await resp.json()
+                return data.get("id", None)
+            else:
+                return None
+        
+    async def unfavorite_cat(self, favorite_id: int) -> bool:
+        """Unfavorite a cat
+
+        Args:
+            favorite_id (int): ID of the favorite
+
+        Returns:
+            bool: success
+        """
+
+        async with self.client.delete(f"https://api.thecatapi.com/v1/favourites/{favorite_id}") as resp:
             return resp.ok
 
     async def get_favorite_cats(self, user_id: int) -> Optional[List[Cat]]:

@@ -16,6 +16,7 @@ class CatView(discord.ui.View):
         self.CatAPI: CatAPI = cat_client
         self.current_cat: Optional[Cat] = None
         self.current_embed = Optional[discord.Embed]
+        self.favorited_ids = {}
 
     @discord.ui.button(label="More!", custom_id="more_btn", style=discord.ButtonStyle.green)
     async def more(
@@ -40,16 +41,29 @@ class CatView(discord.ui.View):
         if interaction.user.id != interaction.message.interaction.user.id:
             return await interaction.followup.send("You're not authorized!", ephemeral=True)
         
-        # Make sure to not let user spam favs
-        if button.style == discord.ButtonStyle.red:
-            return await interaction.followup.send("You have already favorited this cat! 😻", ephemeral=True)
+        if self.current_cat.id in self.favorited_ids:
+            # Already favorited!
+            success = await self.CatAPI.unfavorite_cat(self.favorited_ids[self.current_cat.id])
 
-        await self.CatAPI.favorite_cat(self.current_cat.id, interaction.user.id)
+            if not success:
+                # Unhandled exception
+                button.disabled = True
+                await interaction.edit_original_response(embed=self.current_embed, view=self)
+                await interaction.followup.send("Failed to interact..!", ephemeral=True)
+                return
+            
+            self.favorited_ids.pop(self.current_cat.id)
+            favorited = False
+        else:
+            # New favorite
+            fav_id = await self.CatAPI.favorite_cat(self.current_cat.id, interaction.user.id)
+            self.favorited_ids[self.current_cat.id] = fav_id
+            favorited = True
 
         # Respond using og response function
-        self.refresh_components(fav_activate=True)
+        self.refresh_components(fav_activate=favorited)
         await interaction.edit_original_response(embed=self.current_embed, view=self)
-        await interaction.followup.send("Cat favorited! 😻", ephemeral=True)
+        await interaction.followup.send("Cat favorited! 😻" if favorited else "Cat unfavorited! 💔😿", ephemeral=True)
 
     async def respond(self, interaction: discord.Interaction):
         em = get_default_embed()
@@ -85,6 +99,7 @@ class CatView(discord.ui.View):
 
         # Fav button
         fav_btn = self.get_item(custom_id="fav_btn")
+        fav_btn.disabled = False
 
         if fav_activate:
             fav_btn.label = "💗"
