@@ -1,0 +1,11 @@
+{
+    "name": "Cat",
+    "icon": "",
+    "description": "A whimsical collection of cat commands! :3",
+    "groups": {
+        "cat": {
+            "scripts": ["pls", "favorites"],
+            "description": "Kindly request a feline buddy!"
+        }
+    }
+}
