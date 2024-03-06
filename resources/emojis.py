@@ -110,6 +110,7 @@ class Emoji:
     port_color = "<:color:1146146985905225940>"
     port_yellow = "<:yellow:1146146983308967966>"
     verified = "☑"
+    rectnet = "<:RectNe:873328661590310922>"
 
 class CategoryIcons:
     category_api = 963878518960291903  # (Api by Larea from NounProject.com)
@@ -138,6 +139,7 @@ class Icons:
     user_command = "https://i.imgur.com/Q48dhjL.png"
     heart = "https://i.imgur.com/FqFLYC8.png"
     kofi = "https://i.imgur.com/ECB0xhF.png"
+    rotating_logo = "https://i.imgur.com/9mU3aze.gif"
 
 def get_icon(name: str) -> str:
     """
