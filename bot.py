@@ -2,16 +2,20 @@ import discord
 import platform
 import os
 import logging
-import json
+import time
 import sqlite3
+from datetime import datetime
+from cat_api import CatAPI
 from utils import load_config
-from discord.ext import commands
+from discord.ext import commands, tasks
 from recnetpy import Client
+from typing import List
 from modules import CogManager
-from database import ConnectionManager, RoomCacheManager, InventionCacheManager, BookmarkManager, LoggingManager
+from database import ConnectionManager, RoomCacheManager, InventionCacheManager, BookmarkManager, LoggingManager, FeedManager, FeedTypes, FeedData, AnnouncementManager, Announcement
 from googleapiclient import discovery
 from googleapiclient.errors import HttpError
 from google.auth.exceptions import DefaultCredentialsError
+from embeds import get_default_embed, announcement_embed
 
 class RecNetBot(commands.AutoShardedBot):
     def __init__(self, production: bool):
@@ -31,6 +35,7 @@ class RecNetBot(commands.AutoShardedBot):
         # Add Modules
         self.RecNet = None
         self.cog_manager = CogManager(self)
+        self.CatAPI = CatAPI(api_key=self.config.get("the_cat_api_key"))
 
         # Optionally enable Perspective API for /toxicity
         try:
@@ -58,6 +63,8 @@ class RecNetBot(commands.AutoShardedBot):
         self.icm = InventionCacheManager(self.db)
         self.bcm = BookmarkManager(self.db)
         self.lcm = LoggingManager(self.db)
+        #self.fcm = FeedManager(self.db)
+        self.acm = AnnouncementManager(self.db)
 
         # Initialize
         self.cog_manager.buildCogs()
@@ -71,6 +78,10 @@ class RecNetBot(commands.AutoShardedBot):
         # Get Rec Room API key
         api_key = self.config["rr_api_key"]
         self.RecNet = Client(api_key=api_key)
+
+        # Initialize cat API
+        if self.CatAPI.api_key:
+            await self.CatAPI.initialize()
 
         self.verify_post = await self.RecNet.images.fetch(self.config["verify_post"])
         self.log_channel = await self.fetch_channel(self.config["log_channel"])
@@ -99,9 +110,60 @@ class RecNetBot(commands.AutoShardedBot):
         super().run(self.config['discord_token'])
 
 
-    async def on_application_command(self, ctx: discord.ApplicationContext):
+    async def on_application_command_completion(self, ctx: discord.ApplicationContext):
         if hasattr(ctx.command, "mention"):
             self.lcm.log_command_usage(ctx.author.id, ctx.command.mention)
         else:
             # User commands don't have the mention attribute
             self.lcm.log_command_usage(ctx.author.id, f"other:{ctx.command.name}")
+
+        # Check announcements
+        announcement: Announcement = self.acm.get_unread_announcement(ctx.author.id)
+        if not announcement: return
+        if announcement.expiration_timestamp and announcement.expiration_timestamp < time.time(): return
+        
+        em = announcement_embed(announcement)
+        await ctx.followup.send(embed=em, ephemeral=True)
+
+    
+    #@tasks.loop(seconds=10)
+    async def feed_update(self):
+        # Get feeds
+        feeds = self.fcm.get_all_feeds()
+
+        # Sort feeds
+        image_feeds = {} 
+        room_feeds: List[FeedData] = []
+        event_feeds: List[FeedData] = []
+        for i in feeds:
+            match i.type:
+                case FeedTypes.IMAGE:
+                    if i.rr_id in image_feeds:
+                        image_feeds.append(i)
+                    else:
+                        image_feeds[i.rr_id] = [i]
+
+                case FeedTypes.ROOM:
+                    room_feeds.append(i)
+
+                case FeedTypes.EVENT:
+                    event_feeds.append(i)
+
+                case _: ...
+
+        # Update image feeds
+        if image_feeds:
+            # Sort image ids
+            image_ids = list(image_feeds.keys())
+
+            # Fetch images
+            images = await self.RecNet.images.fetch_many(image_ids)
+
+            # Send to feeds
+            for i in images:
+                feeds = image_feeds[i.id]
+                print(f"Image {i.id} sent to {feeds}")
+
+
+                        
+

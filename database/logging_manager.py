@@ -41,6 +41,36 @@ class LoggingManager():
         if not data: return 0
         return data[0][0]
     
+    def get_ran_commands_by_user_after_timestamp(self, timestamp_after: int, discord_id: id) -> dict:
+        discord_hash = self.hash_discord_id(discord_id)
+
+        self.c.execute(
+            f"""
+            SELECT * FROM logging
+            WHERE timestamp >= :timestamp_after
+            AND discord_hash = :discord_hash
+            """, 
+            {"timestamp_after": timestamp_after, "discord_hash": discord_hash}
+        )
+        data = self.c.fetchall()
+        if not data: return {}
+
+        log = {"specific": {}, "total_usage": 0, "first_date": data[0][2]}
+        for i in data:
+            cmd_mention, timestamp = i[1], i[2]
+
+            if not cmd_mention.startswith("other:"):
+                cmd_mention = cmd_mention.split("<")[1].split(":")[0]
+
+            if cmd_mention in log["specific"]:
+                log["specific"][cmd_mention].append(timestamp)
+            else:
+                log["specific"][cmd_mention] = [timestamp]
+
+            log["total_usage"] += 1
+
+        return log
+
     def get_ran_commands_after_timestamp(self, timestamp_after: int) -> dict:
         self.c.execute(
             f"""
@@ -77,9 +107,7 @@ class LoggingManager():
         """
 
         # Hash user's discord id
-        m = hashlib.sha256()
-        m.update(str.encode(str(discord_id)))
-        discord_hash = m.hexdigest()
+        discord_hash = self.hash_discord_id(discord_id)
 
         # Get current timestamp
         timestamp = int(datetime.datetime.now().timestamp())
@@ -90,6 +118,11 @@ class LoggingManager():
                 {"discord_hash": discord_hash, "command_mention": command_mention, "timestamp": timestamp}
             )
             
+    def hash_discord_id(self, discord_id: int) -> str:
+        # Hash user's discord id
+        m = hashlib.sha256()
+        m.update(str.encode(str(discord_id)))
+        return m.hexdigest()
     
 if __name__ == "__main__":
     db = sqlite3.connect("tests.db")

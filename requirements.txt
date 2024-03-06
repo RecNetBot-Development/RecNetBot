@@ -3,3 +3,4 @@ py-cord @ git+https://github.com/Pycord-Development/pycord@fc7b1042c4a9a942b9996
 google-api-python-client==2.62.0
 owoify-py==2.0.0
 CairoSVG==2.7.1
+aiohttp==3.8.5

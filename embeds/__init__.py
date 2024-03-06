@@ -4,3 +4,5 @@ from .room_embed import room_embed, fetch_room_embed
 from .event_embed import event_embed, fetch_event_embed
 from .invention_embed import invention_embed, fetch_invention_embed
 from .image_embed import image_embed, fetch_image_embed
+from .cat_embed import cat_embed
+from .announcement_embed import announcement_embed
