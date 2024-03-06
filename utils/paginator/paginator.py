@@ -93,7 +93,7 @@ class RNBPaginatorButton(discord.ui.Button):
         
 class RNBPage(Page):
     def __init__(self, *args, **kwargs):
-        if args: self.data = args[0]
+        if args: self.object = args[0]
         self.index = kwargs.pop("index", 0)
         self.page_count = kwargs.pop("page_count", 0)
         self.text = kwargs.pop("text", "")
@@ -108,28 +108,28 @@ class RNBPage(Page):
         """
     
         if isinstance(self.content, Account):
-            self.embeds.append(await fetch_profile_embed(self.data))
+            self.embeds.append(await fetch_profile_embed(self.object))
             self.content = None
             
         elif isinstance(self.content, Room):
-            room = await self.data.client.rooms.fetch(self.data.id, 78)
+            room = await self.object.client.rooms.fetch(self.object.id, 78)
             self.embeds.append(room_embed(room))
             self.content = None
             
         elif isinstance(self.content, Event):
-            self.embeds.append(await fetch_event_embed(self.data))
+            self.embeds.append(await fetch_event_embed(self.object))
             self.content = None
             
         elif isinstance(self.content, Invention):
-            self.embeds.append(await fetch_invention_embed(self.data))
+            self.embeds.append(await fetch_invention_embed(self.object))
             self.content = None
             
         elif isinstance(self.content, Image):
-            self.embeds.append(await fetch_image_embed(self.data))
+            self.embeds.append(await fetch_image_embed(self.object))
             self.content = None
 
         elif isinstance(self.content, Cat):
-            self.embeds.append(cat_embed(self.data))
+            self.embeds.append(cat_embed(self.object))
             self.content = None
 
         self.content = self.text
