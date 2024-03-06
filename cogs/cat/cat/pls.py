@@ -62,8 +62,14 @@ class CatView(discord.ui.View):
 
         # Respond using og response function
         self.refresh_components(fav_activate=favorited)
-        await interaction.edit_original_response(embed=self.current_embed, view=self)
-        await interaction.followup.send("Cat favorited! 😻" if favorited else "Cat unfavorited! 💔😿", ephemeral=True)
+
+        self.current_embed.set_author(name="😻 Added to favorites!" if favorited else "😿 Removed from favorites.")
+
+        await interaction.edit_original_response(
+            embed=self.current_embed, 
+            view=self
+        )
+        #await interaction.followup.send("Cat favorited! 😻" if favorited else "Cat unfavorited! 💔😿", ephemeral=True)
 
     async def respond(self, interaction: discord.Interaction):
         em = get_default_embed()
@@ -88,7 +94,7 @@ class CatView(discord.ui.View):
         self.current_embed = em
         self.refresh_components()
 
-        await interaction.edit_original_response(embed=em, view=self)
+        await interaction.edit_original_response(content="", embed=em, view=self)
 
     def refresh_components(self, fav_activate: bool = False) -> None:
         """Refreshes the view components
