@@ -74,7 +74,7 @@ class AnnouncementModal(discord.ui.Modal):
             unix_timestamp=0,
             description=self.children[1].value,
             image_url=self.children[2].value,
-            expiration_timestamp=int(self.children[3].value)
+            expiration_timestamp=int(self.children[3].value) if self.children[3].value else 0
         )
 
         # Add clarification for expirations
