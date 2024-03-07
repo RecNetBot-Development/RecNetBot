@@ -140,6 +140,7 @@ class Icons:
     heart = "https://i.imgur.com/FqFLYC8.png"
     kofi = "https://i.imgur.com/ECB0xhF.png"
     rotating_logo = "https://i.imgur.com/9mU3aze.gif"
+    notification = "https://i.imgur.com/YrmOjUc.png" # https://www.flaticon.com/free-icons/notification Notification icons created by Pixel perfect - Flaticon
 
 def get_icon(name: str) -> str:
     """

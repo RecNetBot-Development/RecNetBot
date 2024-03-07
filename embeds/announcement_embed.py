@@ -2,6 +2,7 @@ import discord
 from embeds import get_default_embed
 from datetime import datetime
 from database import Announcement
+from resources import get_icon
 
 def announcement_embed(announcement: Announcement) -> discord.Embed:
     """
@@ -14,6 +15,7 @@ def announcement_embed(announcement: Announcement) -> discord.Embed:
     if announcement.unix_timestamp:
         em.timestamp = datetime.utcfromtimestamp(announcement.unix_timestamp)
     em.set_author(name="Unread Announcement")
+    em.set_thumbnail(url=get_icon("notification"))
     if announcement.image_url: em.set_image(url=announcement.image_url)
 
     return em
