@@ -16,5 +16,6 @@ class FetchRoom(commands.Converter):
             room = None
         if not room: raise RoomNotFound(room_name)
         #ctx.bot.rcm.cache_stats(ctx.author.id, room.id, room)
+
         return room
     
