@@ -1,7 +1,7 @@
 import discord
 import recnetpy
 import random
-from utils import img_url
+from utils import img_url, unix_timestamp
 from utils.paginator import RNBPaginator, RNBPage
 from typing import List
 from recnetpy.dataclasses.image import Image
@@ -104,7 +104,10 @@ class RandomImage(discord.ui.View):
         self.current_images = images
 
         # Get img.rec.net links of image objects
-        links = list(map(lambda image: img_url(image.image_name), images))
+        links = list(map(
+            lambda image: f"{images.index(image)+1}. [Image Link]({img_url(image.image_name)}) — {unix_timestamp(image.created_at, 'D')} {unix_timestamp(image.created_at, 'R')}", 
+            images
+        ))
 
         await interaction.edit_original_response(content="\n".join(links), view=self)
         
