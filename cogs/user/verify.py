@@ -59,11 +59,11 @@ class Check(discord.ui.View):
 
 # User can only run the command once every "per" seconds
 @slash_command(
-    name="link",
-    description="Link your Rec Room profile to your Discord!"
+    name="verify",
+    description="Verify your Rec Room profile!"
 )
 @cooldown(rate=2, per=300, type=BucketType.user)
-async def link(
+async def verify(
     self, 
     ctx: ApplicationContext, 
     username: Option(str, "Enter RR username", required=True, autocomplete=account_searcher)

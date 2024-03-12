@@ -133,8 +133,9 @@ class Cog(commands.Cog):
             if isinstance(original, ConnectionNotFound) and "{}" in original.embed.description:
                 # Fetch the link command
                 user_cog = self.bot.get_cog("User")
-                group = discord.utils.get(user_cog.__cog_commands__, name='profile')
-                cmd = discord.utils.get(group.walk_commands(), name='link')
+                cmd = discord.utils.get(user_cog.__cog_commands__, name='verify')
+                #group = discord.utils.get(user_cog.__cog_commands__, name='profile')
+                #cmd = discord.utils.get(group.walk_commands(), name='link')
                     
                 # Plug in the link command
                 original.embed.description = original.embed.description.format(cmd.mention)

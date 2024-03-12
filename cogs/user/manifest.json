@@ -10,11 +10,12 @@
         "toxicity",
         "owoify",
         "xp", 
-        "banner"
+        "banner",
+        "verify"
     ],
     "groups": {
         "profile": { 
-            "scripts": ["info", "link", "search", "data", "unlink", "linked"],
+            "scripts": ["info", "search", "data", "unlink", "linked"],
             "description": "Handy commands for quick profile lookups and more!"
         }
     }
