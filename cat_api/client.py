@@ -95,7 +95,7 @@ class CatAPI:
         # Check if we have any cats left in our shelter
         if len(self.cat_cache) < limit:
             # Hunt more cats to distribute
-            async with self.client.get("https://api.thecatapi.com/v1/images/search?limit=25") as resp:
+            async with self.client.get("https://api.thecatapi.com/v1/images/search?limit=50") as resp:
                 if resp.ok:
                     raw_cats = await resp.json()
                 else:
