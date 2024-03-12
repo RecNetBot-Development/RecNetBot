@@ -5,7 +5,9 @@ from embeds import get_default_embed, cat_embed
 from cat_api import Cat, CatAPI
 from resources import get_icon
 from typing import List, Optional
+from utils import load_config
 
+config = load_config(is_production=True)
 CAT_EMOJIS = ["🐈", "😿", "😾", "🐱", "🙀", "😺", "😽", "😼", "😸", "😹", "😻", "🐅"]
 
 class CatView(discord.ui.View):
@@ -131,7 +133,8 @@ class CatView(discord.ui.View):
 
 @slash_command(
     name="pls",
-    description="Find cute pictures of our feline buddies!"
+    description="Find cute pictures of our feline buddies!",
+    guild_ids=config.get("debug_guilds", [])
 )
 async def pls(
     self, 

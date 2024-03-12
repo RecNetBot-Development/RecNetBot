@@ -11,6 +11,9 @@ from discord.commands import slash_command, Option
 from datetime import datetime
 from resources import get_emoji, get_icon
 from enum import Enum
+from utils import load_config
+
+config = load_config(is_production=True)
 
 class RoomButton(discord.ui.Button):
     def __init__(self, name: str, answer_showcase: bool = None):
@@ -221,7 +224,8 @@ class RoomQuiz(discord.ui.View):
 
 @slash_command(
     name="room",
-    description="Guess the hot room based on its thumbnail!"
+    description="Guess the hot room based on its thumbnail!",
+    guild_ids=config.get("debug_guilds", [])
 )
 async def room(
     self, 

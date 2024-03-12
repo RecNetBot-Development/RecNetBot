@@ -1,13 +1,16 @@
 import discord
 from datetime import datetime
 from discord.commands import slash_command
-from utils import unix_timestamp
+from utils import unix_timestamp, load_config
 from embeds import get_default_embed
 from resources import get_icon, get_emoji
 
+config = load_config(is_production=True)
+
 @slash_command(
     name="usage",
-    description="Find out how much you have used RecNetBot!"
+    description="Find out how much you have used RecNetBot!",
+    guild_ids=config.get("debug_guilds", [])
 )
 async def usage(
     self, 

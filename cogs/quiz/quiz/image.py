@@ -11,6 +11,9 @@ from discord.commands import slash_command, Option
 from datetime import datetime
 from resources import get_emoji, get_icon
 from enum import Enum
+from utils import load_config
+
+config = load_config(is_production=True)
 
 #MAX_IMAGE_ID = 570000000
 MAX_OLD_IMAGE_ID = 4_000_000
@@ -274,7 +277,8 @@ class ImageQuiz(discord.ui.View):
 
 @slash_command(
     name="image",
-    description="Guess the year in which the images were taken!"
+    description="Guess the year in which the images were taken!",
+    guild_ids=config.get("debug_guilds", [])
 )
 async def image(
     self, 

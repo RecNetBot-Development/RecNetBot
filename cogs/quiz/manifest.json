@@ -1,0 +1,12 @@
+{
+    "name": "Quiz",
+    "icon": "",
+    "description": "Quiz yourself with these fun commands!",
+    "scripts": [],
+    "groups": {
+        "quiz": {
+            "scripts": ["image", "room"],
+            "description": "Fun quiz!"
+        }
+    }
+}

@@ -7,6 +7,9 @@ from resources import get_icon
 from typing import List, Optional
 from discord.ext.pages import PaginatorButton
 from utils.paginator import RNBPage, RNBPaginator
+from utils import load_config
+
+config = load_config(is_production=True)
 
 class FavButton(PaginatorButton):
     def __init__(self, cat_api: CatAPI):
@@ -43,7 +46,8 @@ class FavButton(PaginatorButton):
 
 @slash_command(
     name="favorites",
-    description="Browse through your favorite cats!"
+    description="Browse through your favorite cats!",
+    guild_ids=config.get("debug_guilds", [])
 )
 async def favorites(
     self, 
