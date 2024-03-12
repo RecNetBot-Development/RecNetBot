@@ -15,6 +15,7 @@ async def usage(
 ):
     first_entry_timestamp = self.bot.lcm.get_first_entry_timestamp()
     logs = self.bot.lcm.get_ran_commands_by_user_after_timestamp(first_entry_timestamp, ctx.author.id)
+    all_logs = self.bot.lcm.get_ran_commands_after_timestamp(first_entry_timestamp)
 
     em = get_default_embed()
 
@@ -41,16 +42,28 @@ async def usage(
     top_5_least_commands = list(usage_sort.items())[-5:]
 
     # Total ran commands
-    total_ran = logs["total_usage"]
+    user_total_ran = logs["total_usage"]
+    total_ran = 0
+    for user, data in all_logs.items():
+        total_ran += data["total_usage"]
 
     # First time used
     first_timestamp = logs["first_date"]
+
+    # Top user
+    top_percent = (1-user_total_ran/total_ran) * 100
+    print(top_percent)
+    if top_percent >= 1:
+        top_percent = int(top_percent)
+    else:
+        top_percent = round(top_percent, 2)
 
     # Create embed
     em.title = "Your RecNetBot Statistics"
     em.description = "\n".join((
         f"You first started using RecNetBot on {unix_timestamp(first_timestamp, 'D')}.",
-        f"You have ran commands `{total_ran:,}` times."
+        f"You have ran commands `{user_total_ran:,}` times.",
+        f"You are a top `{top_percent}%` RecNetBot user!"
     ))
     em.set_thumbnail(url=get_icon("rotating_logo"))
 
