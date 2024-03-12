@@ -12,10 +12,10 @@ class ConnectionNotFound(RNBException):
         
         if is_self:
             em.description = "**You didn't fill out the** `username` **option!**" \
-                             "\n\nYou can link your Rec Room account to automatically fill the `username` slot! Get started with {}."
-            em.set_image(url="https://i.imgur.com/Gr745JF.png")
+                             "\n\nP.S. You can verify your Rec Room account to autofill the `username` slot! Get started with {}."
+            em.set_image(url=get_icon("verify_command"))
         else:
-            em.description = "This Discord user hasn't linked their Rec Room account!"
+            em.description = "This Discord user hasn't verified their Rec Room account!"
         
         em.set_thumbnail(url=get_icon("helpful"))
         
