@@ -80,7 +80,7 @@ async def help(self, ctx: discord.ApplicationContext):
         "User": {
             "info": {"mention": None, "beginner": True, "description": "Check someone's Rec Room profile"},
             "xp": {"mention": None, "description": "View a player's level & XP progress with details"},
-            "link": {"mention": None, "description": "Link your Rec Room profile", "hidden": True}  # Keep it here for later
+            "verify": {"mention": None, "description": "Verify your Rec Room profile", "hidden": True}  # Keep it here for later
         },
         "Room": {
             "info": {"mention": None, "beginner": True, "description": "View room info that cannot be seen otherwise"} 
@@ -166,9 +166,9 @@ async def help(self, ctx: discord.ApplicationContext):
     # Account linking info if not linked
     check_discord = self.bot.cm.get_discord_connection(ctx.author.id)
     if not check_discord:
-        linking = "You can link your Rec Room account through me!\n" \
-                "Once linked, I will autofill `username` slots and list your owned rooms in `room` slots.\n" \
-                f"To get started, use {cmds['User']['link']['mention']} {get_emoji('helpful')}"
+        linking = "You can verify your Rec Room account!\n" \
+                "Once verified, I will autofill `username` slots and list your owned rooms in `room` slots.\n" \
+                f"To get started, use {cmds['User']['verify']['mention']} {get_emoji('helpful')}"
         em.add_field(name="Account Linking", value=linking, inline=False)
 
     # Information segment
