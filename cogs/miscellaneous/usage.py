@@ -52,7 +52,6 @@ async def usage(
 
     # Top user
     top_percent = (1-user_total_ran/total_ran) * 100
-    print(top_percent)
     if top_percent >= 1:
         top_percent = int(top_percent)
     else:
