@@ -235,7 +235,6 @@ class RoomQuiz(discord.ui.View):
             em = get_default_embed()
             em.title = "Room Quiz Results"
             em.description = "\n".join(stats)
-            em.set_author(name="Timed out!")
             em.set_footer(text="You gave it your Rec Room best! [|=)]")
             em.set_thumbnail(url=get_icon("room"))
             await message.edit(embeds=[em, self.current_embed], view=self)
