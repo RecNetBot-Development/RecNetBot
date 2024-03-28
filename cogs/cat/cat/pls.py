@@ -134,7 +134,7 @@ class CatView(discord.ui.View):
 @slash_command(
     name="pls",
     description="Find cute pictures of our feline buddies!",
-    guild_ids=config.get("debug_guilds", [])
+    #guild_ids=config.get("debug_guilds", [])
 )
 async def pls(
     self, 

@@ -47,7 +47,7 @@ class FavButton(PaginatorButton):
 @slash_command(
     name="favorites",
     description="Browse through your favorite cats!",
-    guild_ids=config.get("debug_guilds", [])
+    #guild_ids=config.get("debug_guilds", [])
 )
 async def favorites(
     self, 

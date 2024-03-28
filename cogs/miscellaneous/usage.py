@@ -9,13 +9,15 @@ config = load_config(is_production=True)
 
 @slash_command(
     name="usage",
-    description="Find out how much you have used RecNetBot!",
-    guild_ids=config.get("debug_guilds", [])
+    description="Find out how much you have used RecNetBot!"
+    #guild_ids=config.get("debug_guilds", [])
 )
 async def usage(
     self, 
     ctx: discord.ApplicationContext
 ):
+    await ctx.interaction.response.defer(invisible=True)
+
     first_entry_timestamp = self.bot.lcm.get_first_entry_timestamp()
     logs = self.bot.lcm.get_ran_commands_by_user_after_timestamp(first_entry_timestamp, ctx.author.id)
     all_logs = self.bot.lcm.get_ran_commands_after_timestamp(first_entry_timestamp)
