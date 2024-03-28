@@ -66,6 +66,23 @@ class NextButton(discord.ui.Button):
         
         await view.respond(interaction)
 
+
+class ResultButton(discord.ui.Button):
+    def __init__(self, correct: bool = True):
+        super().__init__(
+            style=discord.ButtonStyle.green, 
+            label="Results"
+        )
+
+    async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer(invisible=True)
+
+        assert self.view is not None
+        view: ImageQuiz = self.view
+        
+        await view.results(interaction)
+
+
 class LinkButton(discord.ui.Button):
     def __init__(self, link: str):
         super().__init__(
@@ -78,7 +95,7 @@ class ImageQuiz(discord.ui.View):
     def __init__(self, rec_net: recnetpy.Client):
         super().__init__()
         self.RecNet = rec_net
-        self.timeout = 300
+        self.timeout = 180
         self.current_image: Image = None
         self.amount = 1
 
@@ -95,6 +112,7 @@ class ImageQuiz(discord.ui.View):
         self.streak = 0
         self.streak_type = ""
         self.correct_answer = 0
+        self.hint_counter = 0
 
         # If set to true, id range is 1 -> MAX_OLD_IMAGE_ID
         # If set to false, id range is MAX_OLD_IMAGE_ID -> MAX_NEW_IMAGE_ID
@@ -146,6 +164,7 @@ class ImageQuiz(discord.ui.View):
         self.add_item(NextButton(correct))
         self.add_item(YearButton(year, answer_showcase=correct))
         self.add_item(LinkButton(post_url(self.current_image.id)))
+        self.add_item(ResultButton())
 
         # Response
         self.current_embed.set_author(
@@ -158,7 +177,12 @@ class ImageQuiz(discord.ui.View):
         await interaction.edit_original_response(embed=self.current_embed, view=self)
 
 
+    async def results(self, interaction: discord.Interaction):
+        await self.on_timeout()
+
     async def hint(self, interaction: discord.Interaction):
+        self.hint_counter += 1
+
         # Come up with random hints
         hints = []
 
@@ -242,7 +266,7 @@ class ImageQuiz(discord.ui.View):
 
         # Form an embed
         em = get_default_embed()
-        em.set_author(name="Guess which year this picture was taken!")
+        em.set_author(name="Guess what year this picture was taken!")
         em.set_image(url=img_url(image.image_name))
         if self.modifier: em.description = f"**Modifier:** {self.modifier_info}"
         self.current_embed = em
@@ -264,12 +288,12 @@ class ImageQuiz(discord.ui.View):
             stats = [
                 f"Total Guesses: `{correct + incorrect}`",
                 f"Best Streak: `{self.best_streak}`",
+                f"Hints Used: `{self.hint_counter}`",
                 f"✅ `{correct}` / `{incorrect}` ❌"
             ]
             em = get_default_embed()
             em.title = "Image Quiz Results"
             em.description = "\n".join(stats)
-            em.set_author(name="Timed out!")
             em.set_thumbnail(url=get_icon("photo"))
             em.set_footer(text="You gave it your Rec Room best! [|=)]")
             await message.edit(embeds=[em, self.current_embed], view=self)
@@ -278,7 +302,7 @@ class ImageQuiz(discord.ui.View):
 @slash_command(
     name="image",
     description="Guess the year in which the images were taken!",
-    guild_ids=config.get("debug_guilds", [])
+    #guild_ids=config.get("debug_guilds", [])
 )
 async def image(
     self, 
