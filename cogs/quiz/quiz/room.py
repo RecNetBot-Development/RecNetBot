@@ -54,11 +54,26 @@ class LinkButton(discord.ui.Button):
             url=link
         )
 
+class ResultButton(discord.ui.Button):
+    def __init__(self, correct: bool = True):
+        super().__init__(
+            style=discord.ButtonStyle.green, 
+            label="Results"
+        )
+
+    async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer(invisible=True)
+
+        assert self.view is not None
+        view: RoomQuiz = self.view
+        
+        await view.results(interaction)
+
 class RoomQuiz(discord.ui.View):
     def __init__(self, rec_net: recnetpy.Client):
         super().__init__()
         self.RecNet = rec_net
-        self.timeout = 300
+        self.timeout = 180
         self.current_room: Room = None
         self.amount = 5
 
@@ -91,6 +106,9 @@ class RoomQuiz(discord.ui.View):
 
         return room
         
+    async def results(self, interaction: discord.Interaction):
+        await self.on_timeout()
+
     async def answer(self, interaction: discord.Interaction, room_name: str):
         # Check if the answer was correct
         correct = room_name == self.correct_answer
@@ -111,6 +129,7 @@ class RoomQuiz(discord.ui.View):
         self.add_item(NextButton(correct))
         self.add_item(RoomButton(room_name, answer_showcase=correct))
         self.add_item(LinkButton(room_url(self.current_room.name)))
+        self.add_item(ResultButton())
 
         # Response
         self.current_embed.set_author(
