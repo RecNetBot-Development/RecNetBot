@@ -86,6 +86,8 @@ class LoggingManager():
         for i in data:
             user_hex, cmd_mention, timestamp = i[0], i[1], i[2]
 
+            if ":" not in cmd_mention: continue
+
             if not cmd_mention.startswith("other:"):
                 cmd_mention = cmd_mention.split("<")[1].split(":")[0]
 
