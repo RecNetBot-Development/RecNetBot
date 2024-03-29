@@ -131,7 +131,7 @@ class Cog(commands.Cog):
             return await ctx.interaction.response.send_message("Please try again later.", ephemeral=True)
         
         original = None
-        if hasattr(original, "embed"):
+        if hasattr(exception, "original"):
             original = exception.original
 
         if original and hasattr(original, "embed"):
