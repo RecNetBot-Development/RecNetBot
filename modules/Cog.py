@@ -61,7 +61,7 @@ class Cog(commands.Cog):
                         it doesn't accept subcommands (not mod.is_subcommand)
                         nor does it accept subcommand groups (not mod.parent (checks if the group has a parent group))
                         """
-                        if isinstance(mod, SlashCommand) and not mod.is_subcommand or isinstance(mod, SlashCommandGroup) and not mod.parent or isinstance(mod, UserCommand):
+                        if isinstance(mod, SlashCommand) and not mod.is_subcommand or isinstance(mod, SlashCommandGroup) and not mod.parent or isinstance(mod, UserCommand) and mod:
                             self.addCommand(mod)
         
         # Add command groups
@@ -85,8 +85,10 @@ class Cog(commands.Cog):
                             it doesn't accept subcommands (not mod.is_subcommand)
                             nor does it accept subcommand groups (not mod.parent (checks if the group has a parent group))
                             """
-                            if isinstance(mod, SlashCommand) and not mod.is_subcommand or isinstance(mod, SlashCommandGroup) and not mod.parent or isinstance(mod, UserCommand):
+                            if isinstance(mod, SlashCommand) and not mod.is_subcommand or isinstance(mod, SlashCommandGroup) and not mod.parent or isinstance(mod, UserCommand) and mod:
                                 command_group = self.appendCommandToGroup(mod, command_group)
+                            else:
+                                print(f"Failed to load /{script} from {self.__cog_name__}")
                                 
                 command_group.description = metadata.get("description", "No description provided!")
                 self.__cog_commands__.append(command_group)
@@ -128,8 +130,11 @@ class Cog(commands.Cog):
         if isinstance(exception, commands.CommandOnCooldown):
             return await ctx.interaction.response.send_message("Please try again later.", ephemeral=True)
         
-        original = exception.original
+        original = None
         if hasattr(original, "embed"):
+            original = exception.original
+
+        if original and hasattr(original, "embed"):
             if isinstance(original, ConnectionNotFound) and "{}" in original.embed.description:
                 # Fetch the link command
                 user_cog = self.bot.get_cog("User")

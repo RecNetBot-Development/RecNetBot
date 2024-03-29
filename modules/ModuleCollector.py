@@ -8,6 +8,7 @@ class ModuleCollector:
 	def add(self, name):
 		if name in self._modules: raise KeyError("Module already loaded")
 		spec = importlib.util.find_spec(name)
+		if not spec: raise ImportError(f"Failed to load {name}")
 		lib = importlib.util.module_from_spec(spec)
 		sys.modules[name] = lib
 		self._modules[name] = lib
