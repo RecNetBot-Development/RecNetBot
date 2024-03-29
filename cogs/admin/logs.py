@@ -1,23 +1,23 @@
 import discord
-import random
-from embeds import get_default_embed
 from discord.commands import slash_command, Option
-from discord.ext.commands import is_owner
+from discord.ext.commands import check
 from utils import unix_timestamp, load_config
 
 config = load_config(is_production=True)
 
 @slash_command(
-    name="logs",
-    guild_ids=config.get("debug_guilds", [])
+    name="logs"
 )
-@is_owner()
 async def logs(
     self, 
     ctx: discord.ApplicationContext,
     timestamp: Option(int, name="timestamp_after", required=False, default=None)
 ):
     await ctx.interaction.response.defer(invisible=True)
+
+    # dev check
+    if not ctx.author.id in config.get("developers", []):
+        return await ctx.respond("nuh uh!")
 
     # Default to first recorded log
     if not timestamp:

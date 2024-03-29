@@ -1,0 +1,6 @@
+{
+    "name": "Admin",
+    "icon": "category_admin",
+    "description": "Admin commands!",
+    "scripts": ["create_announcement", "announcement_stats", "logs"]
+}
