@@ -63,24 +63,26 @@ class AnnouncementManager():
         if not data: return 0
         return len(data)
 
-    def get_unread_announcement(self, discord_id: int) -> Optional[Announcement]:
-        self.c.execute(f"""SELECT announcements.* FROM announcements INNER JOIN announcement_history ON announcements.id > announcement_history.latest_announcement_id AND announcement_history.discord_id = :discord_id""", {"discord_id": discord_id})
-        data = self.c.fetchone()
+    def get_unread_announcements(self, discord_id: int) -> Optional[Announcement]:
+        self.c.execute(f"""SELECT announcements.* FROM announcements INNER JOIN announcement_history ON announcements.id > announcement_history.latest_announcement_id AND announcement_history.discord_id = :discord_id ORDER BY announcements.id DESC""", {"discord_id": discord_id})
+        data = self.c.fetchall()
+        announcements = []
         if data: 
-            announcement = Announcement(*data)
+            for i in data:
+                announcements.append(Announcement(*i))
         else:
             history = self.get_history(discord_id)
-            if history: return None
-            announcement = self.get_latest_announcement()
-            if not announcement: return None
+            if history: return []
+            announcements.append(self.get_latest_announcement())
+            if not announcements: return []
 
         # Mark as read
         with self.conn:
             self.c.execute(f"""REPLACE INTO announcement_history VALUES (:discord_id, :id)
                            """, 
-                           {"discord_id": discord_id, "id": announcement.id})
+                           {"discord_id": discord_id, "id": announcements[0].id})
 
-        return announcement
+        return announcements
     
     def create_announcement(self, title: str, description: str, image_url: str = "", expiration_timestamp: int = 0):
         with self.conn:

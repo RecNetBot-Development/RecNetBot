@@ -1,11 +1,9 @@
 import discord
-import random
 from embeds import announcement_embed
-from discord.commands import slash_command, Option
-from discord.ext.commands import is_owner
+from discord.commands import slash_command
+from discord.ext.commands import check
 from utils import unix_timestamp, load_config
 from database import Announcement
-
 
 # Define a simple View that gives us a confirmation menu.
 class Confirm(discord.ui.View):
@@ -110,14 +108,16 @@ class AnnouncementModal(discord.ui.Modal):
 config = load_config(is_production=True)
 
 @slash_command(
-    name="create_announcement",
-    guild_ids=config.get("debug_guilds", [])
+    name="create_announcement"
 )
-@is_owner()
 async def announcement(
     self, 
     ctx: discord.ApplicationContext
 ):
+    # dev check
+    if not ctx.author.id in config.get("developers", []):
+        return await ctx.respond("nuh uh!")
+
     acm = self.bot.acm
     modal = AnnouncementModal(title="Send an announcement", manager=acm)
     await ctx.send_modal(modal)   

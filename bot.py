@@ -4,18 +4,17 @@ import os
 import logging
 import time
 import sqlite3
-from datetime import datetime
 from cat_api import CatAPI
 from utils import load_config
-from discord.ext import commands, tasks
+from discord.ext import commands
 from recnetpy import Client
 from typing import List
 from modules import CogManager
-from database import ConnectionManager, RoomCacheManager, InventionCacheManager, BookmarkManager, LoggingManager, FeedManager, FeedTypes, FeedData, AnnouncementManager, Announcement
+from database import ConnectionManager, RoomCacheManager, InventionCacheManager, BookmarkManager, LoggingManager, FeedTypes, FeedData, AnnouncementManager, Announcement
 from googleapiclient import discovery
 from googleapiclient.errors import HttpError
 from google.auth.exceptions import DefaultCredentialsError
-from embeds import get_default_embed, announcement_embed
+from utils.paginator import RNBPage, RNBPaginator
 
 class RecNetBot(commands.AutoShardedBot):
     def __init__(self, production: bool):
@@ -118,12 +117,21 @@ class RecNetBot(commands.AutoShardedBot):
             self.lcm.log_command_usage(ctx.author.id, f"other:{ctx.command.name}")
 
         # Check announcements
-        announcement: Announcement = self.acm.get_unread_announcement(ctx.author.id)
-        if not announcement: return
-        if announcement.expiration_timestamp and announcement.expiration_timestamp < time.time(): return
+        announcements: List[Announcement] = self.acm.get_unread_announcements(ctx.author.id)
+        if not announcements: return
+
+        non_expired_announcements = []
+        for i in announcements:
+            if i.expiration_timestamp and i.expiration_timestamp < time.time():
+                non_expired_announcements.append(i)
         
-        em = announcement_embed(announcement)
-        await ctx.followup.send(embed=em, ephemeral=True)
+        pages = list(map(lambda ele: RNBPage(ele, data=ele), announcements))
+        paginator = RNBPaginator(pages=pages, trigger_on_display=True, show_indicator=False, author_check=True)
+        #await paginator.respond(ctx.interaction)
+
+        await paginator.respond(ctx.interaction, ephemeral=True)
+
+        #await ctx.followup.send(content="unread messages.....", view=paginator, ephemeral=True)
 
     
     #@tasks.loop(seconds=10)

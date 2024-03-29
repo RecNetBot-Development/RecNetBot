@@ -1,22 +1,24 @@
 import discord
 import time
 from embeds import announcement_embed
-from discord.commands import slash_command, Option
-from discord.ext.commands import is_owner
+from discord.commands import slash_command
+from discord.ext.commands import check, CheckFailure
 from utils import unix_timestamp, load_config
 from database import Announcement
 
 config = load_config(is_production=True)
 
 @slash_command(
-    name="announcement_stats",
-    guild_ids=config.get("debug_guilds", [])
+    name="announcement_stats"
 )
-@is_owner()
 async def announcement_stats(
     self, 
     ctx: discord.ApplicationContext
 ):
+    # dev check
+    if not ctx.author.id in config.get("developers", []):
+        return await ctx.respond("nuh uh!")
+
     acm = self.bot.acm
     
     announcement: Announcement = acm.get_latest_announcement()
@@ -32,7 +34,6 @@ async def announcement_stats(
     ]
 
     await ctx.respond("\n".join(info), embed=em) 
-
 
     
     
