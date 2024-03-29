@@ -83,8 +83,8 @@ async def unlink(
             view=None
         )        
     else:
-        group = discord.utils.get(self.__cog_commands__, name='profile')
-        unlink_command = discord.utils.get(group.walk_commands(), name='link')
+        user_cog = self.bot.get_cog("User")
+        cmd = discord.utils.get(user_cog.__cog_commands__, name='verify')
         await ctx.interaction.edit_original_response(
-            content=f"Your Discord account isn't linked to a Rec Room account in the first place! Feel free to link one with {unlink_command.mention}"
+            content=f"Your Discord account isn't linked to a Rec Room account in the first place! Feel free to link one with {cmd.mention}"
         )        
