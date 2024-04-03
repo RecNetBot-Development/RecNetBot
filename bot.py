@@ -5,6 +5,7 @@ import logging
 import time
 import aiosqlite
 import sqlite3
+from datetime import date, datetime
 from logging.handlers import RotatingFileHandler
 from cat_api import CatAPI
 from utils import load_config
@@ -123,6 +124,10 @@ class RecNetBot(commands.AutoShardedBot):
         # Backup the database every 2 days
         print("Backing up database...")
         await self.db.backup(self.backup)
+
+        # Mark date in which backed up
+        with open("backup_date.txt", "w") as f:
+            f.write(f"DATABASE BACKED UP ON {date.today()} AT {int(datetime.now().timestamp())} UNIX")
 
 
     #async def on_error(self, event, *args, **kwargs):
