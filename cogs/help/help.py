@@ -173,9 +173,9 @@ async def help(self, ctx: discord.ApplicationContext):
     cm: ConnectionManager = self.bot.cm
     rr_id = await cm.get_discord_connection(ctx.author.id)
     if not rr_id:
-        linking = "You can verify your Rec Room account!\n" \
-                "Once verified, I will autofill `username` slots and list your owned rooms in `room` slots.\n" \
-                f"To get started, use {cmds['User']['verify']['mention']} {get_emoji('helpful')}"
+        linking = "- You can verify your Rec Room account!\n" \
+                "- Once verified, I will autofill `username` slots and list your owned rooms in `room` slots.\n" \
+                f"- To get started, use {cmds['User']['verify']['mention']} {get_emoji('helpful')}"
         em.add_field(name="Account Linking", value=linking, inline=False)
 
     # Information segment
