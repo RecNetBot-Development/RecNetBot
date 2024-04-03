@@ -69,6 +69,7 @@ def room_embed(room: Room, cached_stats: RoomStats = "None", hide_details: bool 
             f"{get_emoji('tag')} `{', '.join(tags)}` ({len(room.tags)}) — Tags",
             f"{get_emoji('subrooms')} `{', '.join(subroom_list)}` ({len(room.subrooms)}) — Subrooms",
             f"{get_emoji('limit')} `{room.max_players}` — Player Limit",
+            f"{get_emoji('information')} `{room.id}` — Room ID"
             #update
         ]
 
