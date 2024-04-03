@@ -4,6 +4,7 @@ from resources import get_emoji
 from embeds import get_default_embed
 from discord.commands import slash_command, SlashCommand
 from discord.ext.commands import Context
+from database import LoggingManager, ConnectionManager
 from utils import BaseView
 
 class DetailsView(BaseView):
@@ -97,6 +98,10 @@ async def help(self, ctx: discord.ApplicationContext):
         #"Invention": {
         #    "search": {"mention": None, "beginner": True, "description": "Search Rec Room inventions"}
         #},
+        "Quiz": {
+            "image": {"mention": None, "description": "See how well you recognize Rec Room's eras", "command": None, "updated": True, "beginner": True},
+            "room": {"mention": None, "command": None, "updated": True}
+        },
         "Help": {
             "commands": {"mention": None, "beginner": True, "description": "Browse the rest of the commands...", "command": None}
         },
@@ -107,7 +112,8 @@ async def help(self, ctx: discord.ApplicationContext):
 
     # Get ran commands from the past month
     month_ago = datetime.datetime.now() - datetime.timedelta(days=30)
-    logs = self.bot.lcm.get_ran_commands_after_timestamp(int(month_ago.timestamp()))
+    lcm: LoggingManager = self.bot.lcm
+    logs = await lcm.get_ran_commands_after_timestamp(int(month_ago.timestamp()))
 
     total_ran, total_users, command_ran = 0, 0, {}
     for user, data in logs.items():
@@ -164,16 +170,18 @@ async def help(self, ctx: discord.ApplicationContext):
     em.add_field(name="New & Updated", inline=False, value=" ".join(new_updated) if new_updated else "How empty...")
     
     # Account linking info if not linked
-    check_discord = self.bot.cm.get_discord_connection(ctx.author.id)
-    if not check_discord:
+    cm: ConnectionManager = self.bot.cm
+    rr_id = await cm.get_discord_connection(ctx.author.id)
+    if not rr_id:
         linking = "You can verify your Rec Room account!\n" \
                 "Once verified, I will autofill `username` slots and list your owned rooms in `room` slots.\n" \
                 f"To get started, use {cmds['User']['verify']['mention']} {get_emoji('helpful')}"
         em.add_field(name="Account Linking", value=linking, inline=False)
 
     # Information segment
+    linked_users = await cm.get_connection_count()
     info = f"{get_emoji('stats')} I am in `{len(self.bot.guilds):,}` servers and counting!\n" \
-           f"{get_emoji('helpful')} `{self.bot.cm.get_connection_count():,}` people have linked their Rec Room account!\n" \
+           f"{get_emoji('helpful')} `{linked_users:,}` people have linked their Rec Room account!\n" \
            f"{get_emoji('token')} {cmds['Miscellaneous']['tip']['mention']} if you would like to thank for RecNetBot!"
     
     # Update segment
