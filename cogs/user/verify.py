@@ -39,7 +39,7 @@ class Confirm(discord.ui.View):
 # For checking if the user has cheered the post
 class Check(discord.ui.View):
     def __init__(self, post_id: int = 1):
-        super().__init__(timeout=300)
+        super().__init__(timeout=600)
         self.value = None
         
         # Add link to the verification post
