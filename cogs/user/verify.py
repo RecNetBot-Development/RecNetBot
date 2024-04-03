@@ -103,7 +103,7 @@ async def verify(
         "You can only link a Rec Room account that you own. Verification is required. It only takes less than a minute."
     ])
     prompt_em.add_field(name="Benefits", 
-        value="**Once linked, RecNetBot will**:\n" + BENEFITS
+        value="Once linked, RecNetBot will:\n" + BENEFITS
     )
     view = Confirm()
     
