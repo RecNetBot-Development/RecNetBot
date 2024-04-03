@@ -8,11 +8,11 @@ import sqlite3
 from logging.handlers import RotatingFileHandler
 from cat_api import CatAPI
 from utils import load_config
-from discord.ext import commands
+from discord.ext import commands, tasks
 from recnetpy import Client
 from typing import List
 from modules import CogManager
-from database import ConnectionManager, RoomCacheManager, InventionCacheManager, BookmarkManager, LoggingManager, FeedTypes, FeedData, AnnouncementManager, Announcement
+from database import ConnectionManager, RoomCacheManager, LoggingManager, FeedTypes, FeedData, AnnouncementManager, Announcement
 from googleapiclient import discovery
 from googleapiclient.errors import HttpError
 from google.auth.exceptions import DefaultCredentialsError
@@ -59,6 +59,7 @@ class RecNetBot(commands.AutoShardedBot):
 
         # Initialize database
         self.db: aiosqlite.Connection = None
+        self.backup: aiosqlite.Connection = None
         self.cm = ConnectionManager()
         self.rcm = RoomCacheManager()
         #self.icm = InventionCacheManager(self.db)
@@ -87,6 +88,10 @@ class RecNetBot(commands.AutoShardedBot):
         await self.lcm.init(self.db)
         await self.acm.init(self.db)
 
+        # Backup
+        self.backup = await aiosqlite.connect("backup.db", detect_types=sqlite3.PARSE_DECLTYPES)
+        self.backup_database.start()
+
         # Get Rec Room API key
         api_key = self.config["rr_api_key"]
         self.RecNet = Client(api_key=api_key)
@@ -112,6 +117,14 @@ class RecNetBot(commands.AutoShardedBot):
             sep="\n"
         )
     
+
+    @tasks.loop(hours=48)
+    async def backup_database(self):
+        # Backup the database every 2 days
+        print("Backing up database...")
+        await self.db.backup(self.backup)
+
+
     #async def on_error(self, event, *args, **kwargs):
     #    logging.basicConfig(level=logging.WARNING, filename="error.log", filemode="a+",
     #                        format="%(asctime)-15s %(levelname)-8s %(message)s")
