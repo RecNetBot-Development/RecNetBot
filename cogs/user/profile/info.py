@@ -95,10 +95,10 @@ async def info(
     if link_discord:
         if isinstance(link_discord, str):
             em.set_footer(text=f"Linked to {link_discord}")
-        else:
-            user = await self.bot.fetch_user(link_discord.discord_id)
+        else:  # must be an int
+            user = await self.bot.fetch_user(link_discord)
             if user:
-                em.set_footer(text=f"Linked to {user}")
+                em.set_footer(text=f"Linked to @{user}")
     else:
         em.set_footer(text="Not linked to a Discord account.")
     

@@ -21,10 +21,10 @@ async def room_searcher(ctx: discord.AutocompleteContext) -> List[str]:
     # Check if the user is linked
     if not rooms and ctx.bot.RecNet:
         cm: ConnectionManager = ctx.bot.cm
-        check_discord = await cm.get_discord_connection(ctx.interaction.user.id)
-        if check_discord:
+        rr_id = await cm.get_discord_connection(ctx.interaction.user.id)
+        if rr_id:
             # If they are, show their created rooms
-            user: Account = await ctx.bot.RecNet.accounts.fetch(check_discord.rr_id)
+            user: Account = await ctx.bot.RecNet.accounts.fetch(rr_id)
             rooms = await user.get_owned_rooms()
         else:
             # If no rooms, just show hot ones

@@ -22,9 +22,9 @@ async def linked(
 
     # Check if Discord user has already linked an account
     cm: ConnectionManager = self.bot.cm
-    check_discord = await cm.get_discord_connection(discord_user.id)
-    if check_discord:
-        user = await self.bot.RecNet.accounts.fetch(check_discord.rr_id)
+    rr_id = await cm.get_discord_connection(discord_user.id)
+    if rr_id:
+        user = await self.bot.RecNet.accounts.fetch(rr_id)
         
         profile_em = await fetch_profile_embed(user)
         em = get_default_embed()
