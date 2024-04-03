@@ -45,13 +45,14 @@ class RoomCacheManager():
         aiosqlite.register_converter('RoomStats', convert_room_stats)
 
         await self.conn.execute(f"""CREATE TABLE IF NOT EXISTS room_cache (discord_id integer, room_id integer, room_stats RoomStats, PRIMARY KEY (discord_id, room_id))""")
+        await self.conn.execute(f"""CREATE INDEX IF NOT EXISTS idx_room_cache ON room_cache (discord_id, room_id)""")
         await self.conn.commit()
 
     async def get_cached_stats(self, discord_id: int, room_id: int) -> Optional[RoomStats]:
-        async with await self.conn.execute(f"""SELECT * FROM room_cache WHERE discord_id = :discord_id AND room_id = :room_id""", 
+        async with await self.conn.execute(f"""SELECT room_stats FROM room_cache WHERE discord_id = :discord_id AND room_id = :room_id""", 
                     {"discord_id": discord_id, "room_id": room_id}) as cursor:
             data = await cursor.fetchone()
-        if data: return data[2]
+        if data: return data[0]
         return None
     
     async def cache_stats(self, discord_id: int, room_id: int, room: Room):
@@ -85,27 +86,14 @@ class RoomCacheManager():
        
        
 async def main():
-    db = await aiosqlite.connect(":memory:", detect_types=sqlite3.PARSE_DECLTYPES)
-    cm = RoomCacheManager(db)
-    await cm.init()
+    db = await aiosqlite.connect("test.db", detect_types=sqlite3.PARSE_DECLTYPES)
+    cm = RoomCacheManager()
+    await cm.init(db)
 
-    RecNet = Client(token)
-    room = await RecNet.rooms.get("RecCenter")
-    
-    discord_id = 69
-    room_id = 420
-    
-    await cm.cache_stats(discord_id, room_id, room)
-    await cm.cache_stats(1, 2, room)
-    await cm.cache_stats(4, 5, room)
-    print(await cm.get_cached_stats(discord_id, room_id))
-    print(await cm.get_cached_stats(4, 5))
-    await cm.delete_cached_stats(69)
-    print(await cm.get_cached_stats(discord_id, room_id))
-
+    data = await cm.get_cached_stats(293008770957836299, 1701321)
+    print(data)
     
     await db.close()
-    await RecNet.close()
 
   
 

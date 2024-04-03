@@ -24,19 +24,19 @@ class LoggingManager():
         await self.conn.commit()
 
     async def get_total_command_count(self) -> int:
-        async with await self.conn.execute("SELECT * FROM logging") as cursor:
-            data = await cursor.fetchall()
+        async with await self.conn.execute("SELECT COUNT(1) FROM logging") as cursor:
+            data = await cursor.fetchone()
         if not data: return 0
-        return len(data)
+        return data[0]
     
     async def get_command_count(self, command_mention: str) -> int:
         async with await self.conn.execute(
-            f"""SELECT * FROM logging WHERE command_mention = :command_mention""", 
+            f"""SELECT COUNT(1) FROM logging WHERE command_mention = :command_mention""", 
             {"command_mention": command_mention}
         ) as cursor:
-            data = await cursor.fetchall()
+            data = await cursor.fetchone()
         if not data: return 0
-        return len(data)
+        return data[0]
     
     async def get_first_entry_timestamp(self) -> int:
         async with await self.conn.execute(
@@ -134,23 +134,20 @@ class LoggingManager():
     async def close(self):
         await self.conn.close()
 
+import asyncio
+
+async def main():
+    db = await aiosqlite.connect("test.db")
+    cm = LoggingManager()
+    await cm.init(db)
+    
+    print(await cm.get_total_command_count())
+    print(await cm.get_command_count("</logs:1214848908623224833>"))
+
 if __name__ == "__main__":
-    db = sqlite3.connect("tests.db")
-    cm = LoggingManager(db)
+    asyncio.run(main())
+    
      
-    print(cm.get_first_entry_timestamp())
-
-    for i in range(5):
-        cm.log_command_usage(i+2, f"/hello{i}")
-        time.sleep(1)
-
-    logs = cm.get_ran_commands_after_timestamp(1686853570)
-    print(logs)
-
-    total = 0
-    for i in logs.values():
-        total += i["total_usage"]
-
-    print(total / len(logs.keys()))
+    
 
     
