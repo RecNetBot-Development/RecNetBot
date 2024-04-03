@@ -1,4 +1,5 @@
 import discord
+from datetime import datetime
 from discord.commands import slash_command, Option
 from discord.ext.commands import check
 from utils import unix_timestamp, load_config
@@ -72,9 +73,11 @@ async def logs(
         ...
     """
 
+    delta = datetime.now() - datetime.fromtimestamp(timestamp)
     await ctx.respond(
         f"Statistics since {unix_timestamp(timestamp, 'R')}\n\n" \
         f"Commands ran per user on average: {round(on_average, 2)}\n" \
+        f"Commands ran daily on average: {round((total_ran + 1) / (delta.days + 1))}\n" \
         f"Total commands ran: {total_ran}\n" \
         f"Total unique users: {total_users}\n" \
         f"Servers: {len(self.bot.guilds):,}\n" \
