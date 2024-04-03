@@ -1,6 +1,6 @@
 {
     "name": "Cat",
-    "icon": "",
+    "icon": "category_cat",
     "description": "A whimsical collection of cat commands! :3",
     "groups": {
         "cat": {

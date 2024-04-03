@@ -50,8 +50,8 @@ def room_embed(room: Room, cached_stats: RoomStats = "None", hide_details: bool 
         f"{get_emoji('favorite')} `{room.favorite_count:,}`{f' *(+{favorite_dif:,})*' if favorite_dif else ''} — Favorites",
         f"{get_emoji('visitors')} `{room.visitor_count:,}`{f' *(+{visitor_dif:,})*' if visitor_dif else ''} — Visitors",
         f"{get_emoji('visitor')} `{room.visit_count:,}`{f' *(+{visit_dif:,})*' if visit_dif else ''} — Visits",
-        f"{get_emoji('visitors')} `{retention}` — Average Revisits",
-        f"{get_emoji('cheer')} `{cheer_ratio}%` — Cheer to Visitor Ratio"
+        f"{get_emoji('cheervisitor')} `{cheer_ratio}%` — Cheer to Visitor Ratio",
+        f"{get_emoji('revisit')} `{retention}` — Average Revisits",
     ]
     
     if last_check:

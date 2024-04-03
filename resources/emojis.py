@@ -111,6 +111,8 @@ class Emoji:
     port_yellow = "<:yellow:1146146983308967966>"
     verified = "☑"
     rectnet = "<:RectNe:873328661590310922>"
+    revisit = "<:revisit:1225169564803924120>"
+    cheervisitor = "<:cheervisitor:1225170116518482080> "
 
 class CategoryIcons:
     category_api = 963878518960291903  # (Api by Larea from NounProject.com)
@@ -123,6 +125,8 @@ class CategoryIcons:
     category_user = 962793028026777640
     category_invention = 1029082660217307286  # https://www.flaticon.com/free-icons/idea" Idea icons created by Freepik - Flaticon
     category_cv2 = 1029120796880285747
+    category_quiz = 1225168200736444539 # https://www.flaticon.com/free-icons/gaming Gaming icons created by sonnycandra - Flaticon
+    category_cat = 1225168609991725217 # https://www.flaticon.com/free-icons/paw Paw icons created by logisstudio - Flaticon
 
 class Icons:
     """

@@ -1,6 +1,6 @@
 {
     "name": "Quiz",
-    "icon": "",
+    "icon": "category_quiz",
     "description": "Quiz yourself with these fun commands!",
     "scripts": [],
     "groups": {
