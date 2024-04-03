@@ -19,7 +19,7 @@ class HelpView(discord.ui.View):
         super().__init__()
         self.bot = bot
         self.ctx = context
-        self.cogs = list(filter(lambda ele: ele.get_commands(), self.bot.cogs.values()))  # Only include cogs with commands
+        self.cogs = list(filter(lambda ele: ele.get_commands() and ele.qualified_name != "Admin", self.bot.cogs.values()))  # Only include cogs with commands
         self.commands = []
         self.embeds = []
         self.selected_cogs = []
