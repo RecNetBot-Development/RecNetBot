@@ -2,6 +2,7 @@ import discord
 from discord.commands import slash_command, Option
 from discord.ext.commands import check
 from utils import unix_timestamp, load_config
+from database import LoggingManager
 
 config = load_config(is_production=True)
 
@@ -19,11 +20,13 @@ async def logs(
     if not ctx.author.id in config.get("developers", []):
         return await ctx.respond("nuh uh!")
 
+    lcm: LoggingManager = self.bot.lcm
+
     # Default to first recorded log
     if not timestamp:
-        timestamp = self.bot.lcm.get_first_entry_timestamp()
+        timestamp = await lcm.get_first_entry_timestamp()
 
-    logs = self.bot.lcm.get_ran_commands_after_timestamp(timestamp if timestamp else self.bot.lcm.get_first_entry_timestamp())
+    logs = await lcm.get_ran_commands_after_timestamp(timestamp)
 
     total_ran, total_users, command_ran = 0, 0, {}
     for user, data in logs.items():
@@ -75,7 +78,7 @@ async def logs(
         f"Total commands ran: {total_ran}\n" \
         f"Total unique users: {total_users}\n" \
         f"Servers: {len(self.bot.guilds):,}\n" \
-        f"Linked users: {self.bot.cm.get_connection_count():,}\n\n" \
+        f"Linked users: {await self.bot.cm.get_connection_count():,}\n\n" \
         f"Top commands by usage:\n{leaderboard}"
     )
 

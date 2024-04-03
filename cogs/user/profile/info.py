@@ -4,11 +4,10 @@ from utils.converters import FetchAccount
 from utils.autocompleters import account_searcher
 from utils import profile_url
 from embeds import fetch_profile_embed
-from resources import get_emoji
 from exceptions import ConnectionNotFound
-from database import BookmarkTypes
 from recnetpy.dataclasses.account import Account
 from utils import BaseView
+from database import ConnectionManager
 
 class UserBtn(discord.ui.Button):
     def __init__(self, title: str, command):
@@ -81,12 +80,13 @@ async def info(
     await ctx.interaction.response.defer()
     
     link_discord = None
+    cm: ConnectionManager = self.bot.cm
     if not account:  # Check for a linked RR account
-        account = await self.bot.cm.get_linked_account(self.bot.RecNet, ctx.author.id)
+        account = await cm.get_linked_account(self.bot.RecNet, ctx.author.id)
         if not account: raise ConnectionNotFound
         link_discord = str(ctx.author)
     else:
-        link_discord = self.bot.cm.get_rec_room_connection(account.id)
+        link_discord = await cm.get_rec_room_connection(account.id)
     
     # Fetch the profile embed
     em = await fetch_profile_embed(account)

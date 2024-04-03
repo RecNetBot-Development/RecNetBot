@@ -8,6 +8,7 @@ from utils import post_url, profile_url, unix_timestamp
 from resources import get_emoji, get_icon
 from datetime import datetime, timedelta
 from utils.autocompleters import account_searcher
+from database import ConnectionManager
 
 BENEFITS = "- autofill the `username` slot in commands\n" \
            "- list your owned rooms in `room` slots so you don't have to type them out."
@@ -71,7 +72,8 @@ async def verify(
     await ctx.interaction.response.defer(ephemeral=True)
     
     # Check if Discord user has already linked an account
-    check_discord = self.bot.cm.get_discord_connection(ctx.author.id)
+    cm: ConnectionManager = self.bot.cm
+    check_discord = await cm.get_discord_connection(ctx.author.id)
     if check_discord:
         user = await self.bot.RecNet.accounts.fetch(check_discord.rr_id)
         
@@ -90,7 +92,7 @@ async def verify(
     if not user: raise AccountNotFound
     
     # Check if RR account is already linked
-    check_rr = self.bot.cm.get_rec_room_connection(user.id)
+    check_rr = await cm.get_rec_room_connection(user.id)
     if check_rr: raise ConnectionAlreadyDone
     
     # Prompt the user
@@ -149,27 +151,27 @@ async def verify(
     
     await view.wait()
     if view.value is None:
-        self.bot.cm.delete_connection(ctx.author.id)
+        await cm.delete_connection(ctx.author.id)
         return await ctx.interaction.edit_original_response(content="Verification timed out! Try again later.", embeds=[], view=None)
     elif view.value is False:
-        self.bot.cm.delete_connection(ctx.author.id)
+        await cm.delete_connection(ctx.author.id)
         return await ctx.interaction.edit_original_response(content="Could not verify the account's ownership. Try again later.", embeds=[], view=None)
     
     # Check status
     cheer_list = await post.get_cheers(force=True)
     if cheered and user.id in cheer_list or not cheered and user.id not in cheer_list:    
         # Failed to verify
-        self.bot.cm.delete_connection(ctx.author.id)
+        await cm.delete_connection(ctx.author.id)
         return await ctx.interaction.edit_original_response(content="Could not verify the account's ownership. Try again later.", embeds=[], view=None)
         
     # One more security check
-    if self.bot.cm.get_rec_room_connection(user.id):
+    if await cm.get_rec_room_connection(user.id):
         # If someone linked the account already
-        self.bot.cm.delete_connection(ctx.author.id)
+        await cm.delete_connection(ctx.author.id)
         return await ctx.interaction.edit_original_response(content="Someone else already linked this account!", embeds=[], view=None)
     
     # Verification done
-    self.bot.cm.create_connection(ctx.author.id, user.id)
+    await cm.create_connection(ctx.author.id, user.id)
     em = get_default_embed()
     em.description = f"Your Discord is now linked to [@{user.username}]({profile_url(user.username)})! {get_emoji('helpful')}\n\n" \
                       "**RecNetBot will now**:\n" + BENEFITS

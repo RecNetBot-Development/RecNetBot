@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from exceptions import AccountNotFound
 from recnetpy.dataclasses.account import Account
+from database import ConnectionManager
 
 class FetchAccount(commands.Converter):
     """
@@ -15,7 +16,8 @@ class FetchAccount(commands.Converter):
         if _account.startswith("<@") and _account.endswith(">"):
             # This should be a Discord mention!
             discord_id = _account.split("<@")[1].split(">")[0]
-            linked_account = await ctx.bot.cm.get_linked_account(ctx.bot.RecNet, discord_id)
+            cm: ConnectionManager = ctx.bot.cm
+            linked_account = await cm.get_linked_account(ctx.bot.RecNet, discord_id)
             if not linked_account: raise AccountNotFound(_account)
             return linked_account
         else:

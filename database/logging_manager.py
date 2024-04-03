@@ -1,58 +1,63 @@
 import sqlite3
-from sqlite3 import Connection
+import aiosqlite
+from aiosqlite import Connection
 import datetime
 import hashlib
 
 class LoggingManager():
-    def __init__(self, database: Connection):
+    def __init__(self, database: Connection = None):
         self.conn = database
-        self.c = self.conn.cursor()
-        self.create_table()
         
-    def create_table(self):
+    async def init(self, database: Connection):
+        self.conn = database
+        await self.create_table()
+        return self
+
+    async def create_table(self):
         """
         Creates the logging table
             - discord_hash text: a Discord account's ID as sha256
             - command_mention text: a ran command's mention
             - timestamp integer: when was this command ran
         """
-        self.c.execute(f"""CREATE TABLE IF NOT EXISTS logging (discord_hash text, command_mention text, timestamp integer)""")
-    
-    def get_total_command_count(self) -> int:
-        self.c.execute(f"""SELECT * FROM logging""")
-        data = self.c.fetchall()
+        await self.conn.execute(f"""CREATE TABLE IF NOT EXISTS logging (discord_hash text, command_mention text, timestamp integer)""")
+        await self.conn.commit()
+
+    async def get_total_command_count(self) -> int:
+        async with await self.conn.execute("SELECT * FROM logging") as cursor:
+            data = await cursor.fetchall()
         if not data: return 0
         return len(data)
     
-    def get_command_count(self, command_mention: str) -> int:
-        self.c.execute(
+    async def get_command_count(self, command_mention: str) -> int:
+        async with await self.conn.execute(
             f"""SELECT * FROM logging WHERE command_mention = :command_mention""", 
             {"command_mention": command_mention}
-        )
-        data = self.c.fetchall()
+        ) as cursor:
+            data = await cursor.fetchall()
         if not data: return 0
         return len(data)
     
-    def get_first_entry_timestamp(self) -> int:
-        self.c.execute(
+    async def get_first_entry_timestamp(self) -> int:
+        async with await self.conn.execute(
             f"""SELECT timestamp FROM logging order by timestamp asc limit 1"""
-        )
-        data = self.c.fetchall()
+        ) as cursor:
+            data = await cursor.fetchall()
         if not data: return 0
         return data[0][0]
     
-    def get_ran_commands_by_user_after_timestamp(self, timestamp_after: int, discord_id: id) -> dict:
+    async def get_ran_commands_by_user_after_timestamp(self, timestamp_after: int, discord_id: id) -> dict:
         discord_hash = self.hash_discord_id(discord_id)
 
-        self.c.execute(
+        async with await self.conn.execute(
             f"""
             SELECT * FROM logging
             WHERE timestamp >= :timestamp_after
             AND discord_hash = :discord_hash
             """, 
             {"timestamp_after": timestamp_after, "discord_hash": discord_hash}
-        )
-        data = self.c.fetchall()
+        ) as cursor:
+            data = await cursor.fetchall()
         if not data: return {}
 
         log = {"specific": {}, "total_usage": 0, "first_date": data[0][2]}
@@ -71,15 +76,15 @@ class LoggingManager():
 
         return log
 
-    def get_ran_commands_after_timestamp(self, timestamp_after: int) -> dict:
-        self.c.execute(
+    async def get_ran_commands_after_timestamp(self, timestamp_after: int) -> dict:
+        async with await self.conn.execute(
             f"""
             SELECT * FROM logging
             WHERE timestamp >= :timestamp_after 
             """, 
             {"timestamp_after": timestamp_after}
-        )
-        data = self.c.fetchall()
+        ) as cursor:
+            data = await cursor.fetchall()
         if not data: return {}
 
         log = {}
@@ -103,7 +108,7 @@ class LoggingManager():
 
         return log
     
-    def log_command_usage(self, discord_id: int, command_mention: str):
+    async def log_command_usage(self, discord_id: int, command_mention: str):
         """
         Logs a command being ran. Keeps the user anonymous.
         """
@@ -114,11 +119,11 @@ class LoggingManager():
         # Get current timestamp
         timestamp = int(datetime.datetime.now().timestamp())
 
-        with self.conn:
-            self.c.execute(
-                f"""INSERT INTO logging VALUES (:discord_hash, :command_mention, :timestamp)""", 
-                {"discord_hash": discord_hash, "command_mention": command_mention, "timestamp": timestamp}
-            )
+        await self.conn.execute(
+            f"""INSERT INTO logging VALUES (:discord_hash, :command_mention, :timestamp)""", 
+            {"discord_hash": discord_hash, "command_mention": command_mention, "timestamp": timestamp}
+        )
+        await self.conn.commit()
             
     def hash_discord_id(self, discord_id: int) -> str:
         # Hash user's discord id
@@ -126,6 +131,9 @@ class LoggingManager():
         m.update(str.encode(str(discord_id)))
         return m.hexdigest()
     
+    async def close(self):
+        await self.conn.close()
+
 if __name__ == "__main__":
     db = sqlite3.connect("tests.db")
     cm = LoggingManager(db)

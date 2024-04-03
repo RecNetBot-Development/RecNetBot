@@ -6,6 +6,7 @@ from discord.commands import slash_command, Option
 from exceptions import ConnectionNotFound
 from utils.autocompleters import account_searcher
 from utils import profile_url
+from database import ConnectionManager
 
 class Menu(discord.ui.View):
     def __init__(self, image_name: str, username: str):
@@ -37,7 +38,8 @@ async def pfp(
     await ctx.interaction.response.defer()
     
     if not account:  # Check for a linked RR account
-        account = await self.bot.cm.get_linked_account(self.bot.RecNet, ctx.author.id)
+        cm: ConnectionManager = self.bot.cm
+        account = await cm.get_linked_account(self.bot.RecNet, ctx.author.id)
         if not account: raise ConnectionNotFound
         
     #resolutions = (480, 360, 180)

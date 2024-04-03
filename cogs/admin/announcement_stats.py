@@ -4,7 +4,7 @@ from embeds import announcement_embed
 from discord.commands import slash_command
 from discord.ext.commands import check, CheckFailure
 from utils import unix_timestamp, load_config
-from database import Announcement
+from database import Announcement, AnnouncementManager
 
 config = load_config(is_production=True)
 
@@ -19,11 +19,14 @@ async def announcement_stats(
     if not ctx.author.id in config.get("developers", []):
         return await ctx.respond("nuh uh!")
 
-    acm = self.bot.acm
+    acm: AnnouncementManager = self.bot.acm
     
-    announcement: Announcement = acm.get_latest_announcement()
+    announcement: Announcement = await acm.get_latest_announcement()
+    if not announcement:
+        return await ctx.respond("No announcements published!")
+
     em = announcement_embed(announcement)
-    amount_read = acm.get_how_many_read_latest()
+    amount_read = await acm.get_how_many_read_latest()
     
     info = [
         f"ID: {announcement.id}",

@@ -3,6 +3,7 @@ from discord import ApplicationContext
 from discord.commands import slash_command
 from discord.ext.commands import cooldown, BucketType
 from embeds import get_default_embed, fetch_profile_embed
+from database import ConnectionManager
 
 # For prompting the user whether or not to link the account
 class Confirm(discord.ui.View):
@@ -54,7 +55,8 @@ async def unlink(
     await ctx.interaction.response.defer(ephemeral=True)
     
     # Check if Discord user has already linked an account
-    check_discord = self.bot.cm.get_discord_connection(ctx.author.id)
+    cm: ConnectionManager = self.bot.cm
+    check_discord = await cm.get_discord_connection(ctx.author.id)
     if check_discord:
         user = await self.bot.RecNet.accounts.fetch(check_discord.rr_id)
         
@@ -75,7 +77,7 @@ async def unlink(
             return await ctx.interaction.edit_original_response(content="Cancelled unlinking!", embeds=[], view=None)
         
         # Delete connection
-        self.bot.cm.delete_connection(ctx.author.id)
+        await cm.delete_connection(ctx.author.id)
         
         await ctx.interaction.edit_original_response(
             content="Unlinking complete, your Discord account isn't linked to the Rec Room account anymore!",

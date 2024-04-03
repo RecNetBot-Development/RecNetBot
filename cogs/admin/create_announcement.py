@@ -3,7 +3,7 @@ from embeds import announcement_embed
 from discord.commands import slash_command
 from discord.ext.commands import check
 from utils import unix_timestamp, load_config
-from database import Announcement
+from database import Announcement, AnnouncementManager
 
 # Define a simple View that gives us a confirmation menu.
 class Confirm(discord.ui.View):
@@ -35,7 +35,7 @@ class Confirm(discord.ui.View):
 
 
 class AnnouncementModal(discord.ui.Modal):
-    def __init__(self, manager, *args, **kwargs) -> None:
+    def __init__(self, manager: AnnouncementManager, *args, **kwargs) -> None:
         super().__init__(
             discord.ui.InputText(
                 label="Title",
@@ -85,13 +85,13 @@ class AnnouncementModal(discord.ui.Modal):
 
         # We create the View and assign it to a variable so that we can wait for it later.
         view = Confirm()
-        await interaction.response.send_message("Publish this announcement? All previous announcements will be ignored." + expiration_confirmation, view=view, embed=em)
+        await interaction.response.send_message("Publish this announcement?" + expiration_confirmation, view=view, embed=em)
         # Wait for the View to stop listening for input...
         await view.wait()
 
         if view.value: 
             # Confirmed
-            self.manager.create_announcement(
+            await self.manager.create_announcement(
                 title=self.children[0].value,
                 description=self.children[1].value,
                 image_url=self.children[2].value,
@@ -101,9 +101,6 @@ class AnnouncementModal(discord.ui.Modal):
         else:
             # Denied
             await interaction.followup.send("Announcement discarded. ❌")
-
-
-
 
 config = load_config(is_production=True)
 
@@ -118,7 +115,7 @@ async def announcement(
     if not ctx.author.id in config.get("developers", []):
         return await ctx.respond("nuh uh!")
 
-    acm = self.bot.acm
+    acm: AnnouncementManager = self.bot.acm
     modal = AnnouncementModal(title="Send an announcement", manager=acm)
     await ctx.send_modal(modal)   
 

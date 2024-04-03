@@ -108,13 +108,13 @@ class RoomView(BaseView):
         for i in buttons:
             self.add_item(i)
 
-    def get_embed(self):
+    async def get_embed(self):
         """
         Gets the embed and refreshes cache
         """
         
-        cached_stats = self.bot.rcm.get_cached_stats(self.author_id, self.room.id)
-        self.bot.rcm.cache_stats(self.author_id, self.room.id, self.room)
+        cached_stats = await self.bot.rcm.get_cached_stats(self.author_id, self.room.id)
+        await self.bot.rcm.cache_stats(self.author_id, self.room.id, self.room)
 
         embed = room_embed(self.room, cached_stats, self.only_stats)
         return embed
@@ -132,11 +132,11 @@ class RoomView(BaseView):
     async def respond(self, ctx: discord.ApplicationContext):
         self.author_id = ctx.author.id
 
-        embed = self.get_embed()
+        embed = await self.get_embed()
         await ctx.respond(embed=embed, view=self)
         
     async def update(self, interaction: discord.Interaction):
-        embed = self.get_embed()
+        embed = await self.get_embed()
         await interaction.response.edit_message(embed=embed, view=self)
     
     async def error(self, interaction: discord.Interaction):

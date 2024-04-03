@@ -3,6 +3,7 @@ from recnetpy.dataclasses.room import Room
 from recnetpy.dataclasses.account import Account
 from recnetpy.rest.exceptions import BadRequest
 from typing import List
+from database import ConnectionManager
     
 async def room_searcher(ctx: discord.AutocompleteContext) -> List[str]:
     """
@@ -19,7 +20,8 @@ async def room_searcher(ctx: discord.AutocompleteContext) -> List[str]:
 
     # Check if the user is linked
     if not rooms and ctx.bot.RecNet:
-        check_discord = ctx.bot.cm.get_discord_connection(ctx.interaction.user.id)
+        cm: ConnectionManager = ctx.bot.cm
+        check_discord = await cm.get_discord_connection(ctx.interaction.user.id)
         if check_discord:
             # If they are, show their created rooms
             user: Account = await ctx.bot.RecNet.accounts.fetch(check_discord.rr_id)

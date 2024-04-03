@@ -6,7 +6,7 @@ from exceptions import ConnectionNotFound
 from owoify import owoify
 from owoify.owoify import Owoness
 from utils.autocompleters import account_searcher
-
+from database import ConnectionManager
 
 @slash_command(
     name="owoify",
@@ -21,7 +21,8 @@ async def _owoify(
     await ctx.interaction.response.defer()
     
     if not account:  # Check for a linked RR account
-        account = await self.bot.cm.get_linked_account(self.bot.RecNet, ctx.author.id)
+        cm: ConnectionManager = self.bot.cm
+        account = await cm.get_linked_account(self.bot.RecNet, ctx.author.id)
         if not account: raise ConnectionNotFound
     
     em = await fetch_profile_embed(account)

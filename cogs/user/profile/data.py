@@ -4,6 +4,7 @@ from utils.converters import FetchAccount
 from utils import format_json_block
 from exceptions import ConnectionNotFound, AccountNotFound
 from utils.autocompleters import account_searcher
+from database import ConnectionManager
 
 @slash_command(
     name="data",
@@ -24,7 +25,8 @@ async def data(
         return await ctx.respond(content=format_json_block(account.data))
 
     if not account:  # Check for a linked RR account
-        account = await self.bot.cm.get_linked_account(self.bot.RecNet, ctx.author.id)
+        cm: ConnectionManager = self.bot.cm
+        account = await cm.get_linked_account(self.bot.RecNet, ctx.author.id)
         if not account: raise ConnectionNotFound
 
     await ctx.respond(content=format_json_block(account.data))

@@ -2,6 +2,7 @@ import discord
 from recnetpy.dataclasses.account import Account
 from recnetpy.rest.exceptions import BadRequest
 from typing import List
+from database import ConnectionManager
     
 async def account_searcher(ctx: discord.AutocompleteContext) -> List[str]:
     """
@@ -23,7 +24,8 @@ async def account_searcher(ctx: discord.AutocompleteContext) -> List[str]:
 
     # If there's no results, push the linked account first
     if not accounts:
-        linked_account = await ctx.bot.cm.get_linked_account(ctx.bot.RecNet, ctx.interaction.user.id)
+        cm: ConnectionManager = ctx.bot.cm
+        linked_account = await cm.get_linked_account(ctx.bot.RecNet, ctx.interaction.user.id)
         return [linked_account.username] if linked_account else []
     
     # Otherwise return results

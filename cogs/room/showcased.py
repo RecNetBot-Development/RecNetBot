@@ -13,6 +13,7 @@ from typing import List
 from discord.commands import slash_command, Option
 from utils.converters import FetchAccount
 from utils.autocompleters import account_searcher
+from database import ConnectionManager, RoomCacheManager
 
         
 class Send(PaginatorButton):
@@ -118,8 +119,9 @@ class DropdownSelection(discord.ui.Select["ShowcaseView"]):
             
             room = await item.client.rooms.fetch(item.id, 78)
             
-            cached_stats = self.bot.rcm.get_cached_stats(interaction.user.id, room.id)
-            self.bot.rcm.cache_stats(interaction.user.id, room.id, room)
+            rcm: RoomCacheManager = self.bot.rcm
+            cached_stats = await rcm.get_cached_stats(interaction.user.id, room.id)
+            await rcm.cache_stats(interaction.user.id, room.id, room)
             
             embeds.append(room_embed(room, cached_stats))
         
@@ -176,7 +178,8 @@ async def showcased(
     account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False, autocomplete=account_searcher)
 ):
     if not account:  # Check for a linked RR account
-        account = await self.bot.cm.get_linked_account(self.bot.RecNet, ctx.author.id)
+        cm: ConnectionManager = self.bot.cm
+        account = await cm.get_linked_account(self.bot.RecNet, ctx.author.id)
         if not account: raise ConnectionNotFound
     
     showcased = await account.get_showcased_rooms()

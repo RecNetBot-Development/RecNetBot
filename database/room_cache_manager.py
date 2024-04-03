@@ -1,9 +1,10 @@
 from dataclasses import dataclass
-import sqlite3
 import asyncio
 import time
+import sqlite3
+import aiosqlite
+from aiosqlite import Connection
 from typing import Optional
-from sqlite3 import Connection
 from recnetpy.dataclasses.room import Room
 from recnetpy import Client
 
@@ -18,12 +19,15 @@ class RoomStats:
     
 
 class RoomCacheManager():
-    def __init__(self, database: Connection):
+    def __init__(self, database: Connection = None):
         self.conn = database
-        self.c = self.conn.cursor()
-        self.create_table()
         
-    def create_table(self):
+    async def init(self, database: Connection):
+        self.conn = database
+        await self.create_table()
+        return self
+
+    async def create_table(self):
         """
         Creates the room_cache table
             - discord_id integer: a Discord account's id
@@ -37,29 +41,31 @@ class RoomCacheManager():
             room_id, cheers, favorites, visitors, visits, cached_timestamp = list(map(int, str_stats.split(b";")))
             return RoomStats(room_id, cheers, favorites, visitors, visits, cached_timestamp)
         
-        sqlite3.register_adapter(RoomStats, adapt_room_stats)
-        sqlite3.register_converter('RoomStats', convert_room_stats)
-        self.c.execute(f"""CREATE TABLE IF NOT EXISTS room_cache (discord_id integer, room_id integer, room_stats RoomStats, PRIMARY KEY (discord_id, room_id))""")
-        
-    def get_cached_stats(self, discord_id: int, room_id: int) -> Optional[RoomStats]:
-        self.c.execute(f"""SELECT * FROM room_cache WHERE discord_id = :discord_id AND room_id = :room_id""", 
-                       {"discord_id": discord_id, "room_id": room_id})
-        data = self.c.fetchone()
+        aiosqlite.register_adapter(RoomStats, adapt_room_stats)
+        aiosqlite.register_converter('RoomStats', convert_room_stats)
+
+        await self.conn.execute(f"""CREATE TABLE IF NOT EXISTS room_cache (discord_id integer, room_id integer, room_stats RoomStats, PRIMARY KEY (discord_id, room_id))""")
+        await self.conn.commit()
+
+    async def get_cached_stats(self, discord_id: int, room_id: int) -> Optional[RoomStats]:
+        async with await self.conn.execute(f"""SELECT * FROM room_cache WHERE discord_id = :discord_id AND room_id = :room_id""", 
+                    {"discord_id": discord_id, "room_id": room_id}) as cursor:
+            data = await cursor.fetchone()
         if data: return data[2]
         return None
     
-    def cache_stats(self, discord_id: int, room_id: int, room: Room):
+    async def cache_stats(self, discord_id: int, room_id: int, room: Room):
         stats = self.create_stats_dataclass(room)
         
-        with self.conn:
-            self.c.execute(f"""REPLACE INTO room_cache VALUES (:discord_id, :room_id, :room_stats)
-                           """, 
-                           {"discord_id": discord_id, "room_id": room_id, "room_stats": stats})
-            
-    def delete_cached_stats(self, discord_id: int):
-        with self.conn:
-            self.c.execute(f"""DELETE FROM room_cache WHERE discord_id = :discord_id""", {"discord_id": discord_id})
-            
+        await self.conn.execute(f"""REPLACE INTO room_cache VALUES (:discord_id, :room_id, :room_stats)
+                        """, 
+                        {"discord_id": discord_id, "room_id": room_id, "room_stats": stats})
+        await self.conn.commit()
+
+    async def delete_cached_stats(self, discord_id: int):
+        await self.conn.execute(f"""DELETE FROM room_cache WHERE discord_id = :discord_id""", {"discord_id": discord_id})
+        await self.conn.commit()
+
     def create_stats_dataclass(self, room: Room) -> RoomStats:
         """
         Creates a room stat dataclass that gets saved to the database
@@ -73,22 +79,32 @@ class RoomCacheManager():
             room.visit_count,
             int(time.time())
         )
+    
+    async def close(self):
+        await self.conn.close()
        
        
 async def main():
-    db = sqlite3.connect(":memory:", detect_types=sqlite3.PARSE_DECLTYPES)
+    db = await aiosqlite.connect(":memory:", detect_types=sqlite3.PARSE_DECLTYPES)
     cm = RoomCacheManager(db)
-    
-    RecNet = Client()
+    await cm.init()
+
+    RecNet = Client(token)
     room = await RecNet.rooms.get("RecCenter")
     
     discord_id = 69
     room_id = 420
     
-    cm.cache_stats(discord_id, room_id, room)
-    print(cm.get_cached_stats(2, 4))
+    await cm.cache_stats(discord_id, room_id, room)
+    await cm.cache_stats(1, 2, room)
+    await cm.cache_stats(4, 5, room)
+    print(await cm.get_cached_stats(discord_id, room_id))
+    print(await cm.get_cached_stats(4, 5))
+    await cm.delete_cached_stats(69)
+    print(await cm.get_cached_stats(discord_id, room_id))
+
     
-    db.close()
+    await db.close()
     await RecNet.close()
 
   

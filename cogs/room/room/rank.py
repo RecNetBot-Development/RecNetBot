@@ -1,16 +1,11 @@
-from dataclasses import dataclass
 import discord
 from discord.ext import commands
 from embeds import get_default_embed
 from resources import get_emoji
 from typing import List, Optional
 from recnetpy.dataclasses.room import Room
-from recnetpy.dataclasses.role import Role
-from utils.converters import FetchRoom
-from utils import chunks, profile_url
 from discord.commands import slash_command, Option
 from utils.paginator import RNBPaginator, RNBPage
-from utils.rec_net_urls import img_url, room_url
 
 
 class RankView(discord.ui.View):

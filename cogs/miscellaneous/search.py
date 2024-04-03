@@ -11,6 +11,7 @@ from recnetpy.dataclasses.account import Account
 from recnetpy.dataclasses.event import Event
 from recnetpy.dataclasses.room import Room
 from recnetpy.dataclasses.invention import Invention
+from database import RoomCacheManager, InventionCacheManager
 
         
 class Send(PaginatorButton):
@@ -277,8 +278,9 @@ class DropdownSelection(discord.ui.Select["SearchView"]):
             elif isinstance(item, Room):
                 room = await item.client.rooms.fetch(item.id, 78)
                 
-                cached_stats = self.bot.rcm.get_cached_stats(interaction.user.id, room.id)
-                self.bot.rcm.cache_stats(interaction.user.id, room.id, room)
+                rcm: RoomCacheManager = self.bot.rcm
+                cached_stats = await rcm.get_cached_stats(interaction.user.id, room.id)
+                await rcm.cache_stats(interaction.user.id, room.id, room)
                 
                 embeds.append(room_embed(room, cached_stats))
                 
@@ -286,8 +288,9 @@ class DropdownSelection(discord.ui.Select["SearchView"]):
                 embeds.append(event_embed(item))
                 
             elif isinstance(item, Invention):
-                cached_stats = self.bot.icm.get_cached_stats(interaction.user.id, item.id)
-                self.bot.icm.cache_stats(interaction.user.id, item.id, item)
+                icm: InventionCacheManager = self.bot.icm
+                cached_stats = await icm.get_cached_stats(interaction.user.id, item.id)
+                await icm.cache_stats(interaction.user.id, item.id, item)
                 
                 embeds.append(invention_embed(item, cached_stats))
         

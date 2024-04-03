@@ -3,7 +3,9 @@ import platform
 import os
 import logging
 import time
+import aiosqlite
 import sqlite3
+from logging.handlers import RotatingFileHandler
 from cat_api import CatAPI
 from utils import load_config
 from discord.ext import commands
@@ -27,7 +29,7 @@ class RecNetBot(commands.AutoShardedBot):
         # Setup logger
         self.logger = logging.getLogger('discord')
         self.logger.setLevel(logging.DEBUG)
-        handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
+        handler = RotatingFileHandler(filename='discord.log', encoding='utf-8', mode='w', maxBytes=1000000)  # 1 mb
         handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
         self.logger.addHandler(handler)
 
@@ -56,14 +58,18 @@ class RecNetBot(commands.AutoShardedBot):
         self.bug_channel = None
 
         # Initialize database
-        self.db = sqlite3.connect(self.config.get("sqlite_database", "rnb.db"), detect_types=sqlite3.PARSE_DECLTYPES)
-        self.cm = ConnectionManager(self.db)
-        self.rcm = RoomCacheManager(self.db)
-        self.icm = InventionCacheManager(self.db)
-        self.bcm = BookmarkManager(self.db)
-        self.lcm = LoggingManager(self.db)
+        self.db: aiosqlite.Connection = None
+        self.cm = ConnectionManager()
+        self.rcm = RoomCacheManager()
+        #self.icm = InventionCacheManager(self.db)
+        #self.bcm = BookmarkManager(self.db)
+        self.lcm = LoggingManager()
         #self.fcm = FeedManager(self.db)
-        self.acm = AnnouncementManager(self.db)
+        self.acm = AnnouncementManager()
+
+        # Banned users' Discord IDs
+        # Updates everytime someone gets banned
+        self.banned_users = []
 
         # Initialize
         self.cog_manager.buildCogs()
@@ -73,6 +79,13 @@ class RecNetBot(commands.AutoShardedBot):
         """
         Do asynchronous setup here
         """
+
+        # Initialize databases
+        self.db = await aiosqlite.connect(self.config["sqlite_database"], detect_types=sqlite3.PARSE_DECLTYPES)
+        await self.cm.init(self.db)
+        await self.rcm.init(self.db)
+        await self.lcm.init(self.db)
+        await self.acm.init(self.db)
 
         # Get Rec Room API key
         api_key = self.config["rr_api_key"]
@@ -108,16 +121,24 @@ class RecNetBot(commands.AutoShardedBot):
     def run(self):
         super().run(self.config['discord_token'])
 
+    # Upcoming ban system
+    """
+        async def on_interaction(self, interaction: discord.Interaction):
+            if interaction.user.id == 293008770957836299: 
+                return await interaction.respond("You have been restricted from using this build of RecNetBot!")
+            return await super().on_interaction(interaction)
+    """
+
 
     async def on_application_command_completion(self, ctx: discord.ApplicationContext):
         if hasattr(ctx.command, "mention"):
-            self.lcm.log_command_usage(ctx.author.id, ctx.command.mention)
+            await self.lcm.log_command_usage(ctx.author.id, ctx.command.mention)
         else:
             # User commands don't have the mention attribute
-            self.lcm.log_command_usage(ctx.author.id, f"other:{ctx.command.name}")
+            await self.lcm.log_command_usage(ctx.author.id, f"other:{ctx.command.name}")
 
         # Check announcements
-        announcements: List[Announcement] = self.acm.get_unread_announcements(ctx.author.id)
+        announcements: List[Announcement] = await self.acm.get_unread_announcements(ctx.author.id)
         if not announcements: return
 
         non_expired_announcements = []

@@ -9,6 +9,7 @@ from recnetpy.dataclasses.account import Account
 from utils import img_url, profile_url, unix_timestamp
 from datetime import datetime, timezone, timedelta
 from utils.autocompleters import account_searcher
+from database import ConnectionManager
 
 @slash_command(
     name="xp",
@@ -22,7 +23,8 @@ async def xp(
     await ctx.interaction.response.defer()
     
     if not account:  # Check for a linked RR account
-        account: Account = await self.bot.cm.get_linked_account(self.bot.RecNet, ctx.author.id)
+        cm: ConnectionManager = self.bot.cm
+        account: Account = await cm.get_linked_account(self.bot.RecNet, ctx.author.id)
         if not account: raise ConnectionNotFound
 
     # Get account progression

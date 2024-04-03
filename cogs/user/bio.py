@@ -5,6 +5,7 @@ from utils.converters import FetchAccount
 from embeds import get_default_embed
 from discord.commands import slash_command, Option
 from utils.autocompleters import account_searcher
+from database import ConnectionManager
 
 class Menu(discord.ui.View):
     def __init__(self, username: str):
@@ -30,7 +31,8 @@ async def bio(
     await ctx.interaction.response.defer()
     
     if not account:
-        account = await self.bot.cm.get_linked_account(self.bot.RecNet, ctx.author.id)
+        cm: ConnectionManager = self.bot.cm
+        account = await cm.get_linked_account(self.bot.RecNet, ctx.author.id)
         if not account: raise ConnectionNotFound
     
     bio = await account.get_bio()
