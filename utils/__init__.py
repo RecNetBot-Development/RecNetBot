@@ -13,3 +13,5 @@ from .load_config import load_config
 from .format_json_block import format_json_block
 
 from .base_view import BaseView
+
+from .snapchat_caption import snapchat_caption
