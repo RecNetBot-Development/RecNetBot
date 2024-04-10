@@ -3,10 +3,10 @@
 
 def img_url(image_name: str, crop_square: bool=False, resolution: int=720, raw: bool=False) -> str:
     """
-    https://img.rec.net/{image_name}?width={resolution}&{'cropSquare=true&' if crop_square else ''}
+    https://img.rec.net/{image_name}?height={resolution}&{'cropSquare=true&' if crop_square else ''}
     """
     if raw: return f"https://img.rec.net/{image_name}"
-    return f"https://img.rec.net/{image_name}?width={resolution}&{'cropSquare=true&' if crop_square else ''}"
+    return f"https://img.rec.net/{image_name}?height={resolution}&{'cropSquare=true&' if crop_square else ''}"
 
 def post_url(post_id: int) -> str: 
     """
