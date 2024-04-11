@@ -5,7 +5,7 @@ import logging
 import time
 import aiosqlite
 import sqlite3
-import server
+# import server
 from logging.handlers import RotatingFileHandler
 from cat_api import CatAPI
 from utils import load_config
