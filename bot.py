@@ -5,7 +5,7 @@ import logging
 import time
 import aiosqlite
 import sqlite3
-from datetime import date, datetime
+import server
 from logging.handlers import RotatingFileHandler
 from cat_api import CatAPI
 from utils import load_config
@@ -13,15 +13,28 @@ from discord.ext import commands, tasks
 from recnetpy import Client
 from typing import List
 from modules import CogManager
-from database import ConnectionManager, RoomCacheManager, LoggingManager, FeedTypes, FeedData, AnnouncementManager, Announcement
+from database import *
 from googleapiclient import discovery
 from googleapiclient.errors import HttpError
 from google.auth.exceptions import DefaultCredentialsError
 from utils.paginator import RNBPage, RNBPaginator
+from tasks import backup_database
+#from utils.persistent_views import *
+#from tasks import backup_database, update_feeds
 
 class RecNetBot(commands.AutoShardedBot):
     def __init__(self, production: bool):
-        super().__init__(help_command=None)
+        self.production = production
+        if self.production:
+            super().__init__(help_command=None)
+        else:
+            # Developer only for now
+            intents = discord.Intents.default()
+            intents.members = True
+            super().__init__(help_command=None, intents=intents)
+
+            # Activate server for monitoring
+            server.start(self)
 
         # Load config
         self.config = load_config(is_production=production)
@@ -29,13 +42,12 @@ class RecNetBot(commands.AutoShardedBot):
     
         # Setup logger
         self.logger = logging.getLogger('discord')
-        self.logger.setLevel(logging.DEBUG)
         handler = RotatingFileHandler(filename='discord.log', encoding='utf-8', mode='w', maxBytes=1000000)  # 1 mb
         handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
         self.logger.addHandler(handler)
 
         # Add Modules
-        self.RecNet = None
+        self.RecNet: Client = None
         self.cog_manager = CogManager(self)
         self.CatAPI = CatAPI(api_key=self.config.get("the_cat_api_key"))
 
@@ -66,12 +78,16 @@ class RecNetBot(commands.AutoShardedBot):
         #self.icm = InventionCacheManager(self.db)
         #self.bcm = BookmarkManager(self.db)
         self.lcm = LoggingManager()
-        #self.fcm = FeedManager(self.db)
         self.acm = AnnouncementManager()
+        #self.gm = GuildManager()
+        #self.fcm = FeedManager()
 
         # Banned users' Discord IDs
         # Updates everytime someone gets banned
         self.banned_users = []
+
+        # Persistent views
+        self.persistent_views_added = False
 
         # Initialize
         self.cog_manager.buildCogs()
@@ -88,10 +104,12 @@ class RecNetBot(commands.AutoShardedBot):
         await self.rcm.init(self.db)
         await self.lcm.init(self.db)
         await self.acm.init(self.db)
+        #await self.gm.init(self.db)
+        #await self.fcm.init(self.db)
 
         # Backup
         self.backup = await aiosqlite.connect("backup.db", detect_types=sqlite3.PARSE_DECLTYPES)
-        self.backup_database.start()
+        backup_database.start(self)
 
         # Get Rec Room API key
         api_key = self.config["rr_api_key"]
@@ -104,11 +122,19 @@ class RecNetBot(commands.AutoShardedBot):
         self.verify_post = await self.RecNet.images.fetch(self.config["verify_post"])
         self.log_channel = await self.fetch_channel(self.config["log_channel"])
         
+        # Start updating feeds
+        #update_feeds.start(self)
+
         await self.change_presence(
             status=discord.Status.online,
             activity=discord.Game(name=self.config.get("status_message", "Rec Room"))
         )
         
+        # Register the persistent view for listening
+        #if not self.persistent_views_added:
+        #    self.add_view(VerificationView(self))
+        #    self.persistent_views_added = True
+
         print(
             f"RNB ONLINE",
             f"Logged in as {self.user.name}",
@@ -119,15 +145,51 @@ class RecNetBot(commands.AutoShardedBot):
         )
     
 
-    @tasks.loop(hours=48)
-    async def backup_database(self):
-        # Backup the database every 2 days
-        print("Backing up database...")
-        await self.db.backup(self.backup)
+    async def __on_member_join(self, member: discord.Member):
+        """Verify user on join if server is enrolled in member verification"""
+        guild = member.guild
 
-        # Mark date in which backed up
-        with open("backup_date.txt", "w") as f:
-            f.write(f"DATABASE BACKED UP ON {date.today()} AT {int(datetime.now().timestamp())} UNIX")
+        # Check if guild is enrolled
+        if not await self.gm.is_guild_setup(guild.id): return
+
+        # Check if the user is verified
+        cm: ConnectionManager = self.cm
+        rr_id = await cm.get_discord_connection(member.id)
+        if not rr_id: return
+            
+        # Get binding role
+        gm: GuildManager = self.gm
+        role_id = await gm.get_binding_role_id(guild.id)
+        role: discord.Role = guild.get_role(role_id)
+
+        # Get linked account
+        account = await self.RecNet.accounts.fetch(rr_id)
+
+        # Add verification role
+        await member.add_roles(role, reason=f"Verified user: @{account.username} - ID: {account.id}")
+
+        # Get naming convention
+        name_rule = await gm.get_naming_convention(guild.id)
+
+        # List any errors
+        errors = []
+
+        # Change member's name if naming convention set
+        try:
+            match name_rule:
+                case NameRule.USERNAME:
+                    await member.edit(nick=f"@{account.username}")
+                case NameRule.DISPLAYNAME:
+                    await member.edit(nick=f"{account.display_name}")
+                case _:
+                    ...
+        except discord.errors.Forbidden:
+            ...
+
+        try:
+            await member.add_roles(role, reason=f"Verified user: @{account.username} - ID: {account.id}")
+        except discord.errors.Forbidden:
+           ...
 
 
     #async def on_error(self, event, *args, **kwargs):
@@ -149,6 +211,7 @@ class RecNetBot(commands.AutoShardedBot):
 
 
     async def on_application_command_completion(self, ctx: discord.ApplicationContext):
+        """Log command usage and push announcements"""
         if hasattr(ctx.command, "mention"):
             await self.lcm.log_command_usage(ctx.author.id, ctx.command.mention)
         else:
@@ -171,46 +234,3 @@ class RecNetBot(commands.AutoShardedBot):
         await paginator.respond(ctx.interaction, ephemeral=True)
 
         #await ctx.followup.send(content="unread messages.....", view=paginator, ephemeral=True)
-
-    
-    #@tasks.loop(seconds=10)
-    async def feed_update(self):
-        # Get feeds
-        feeds = self.fcm.get_all_feeds()
-
-        # Sort feeds
-        image_feeds = {} 
-        room_feeds: List[FeedData] = []
-        event_feeds: List[FeedData] = []
-        for i in feeds:
-            match i.type:
-                case FeedTypes.IMAGE:
-                    if i.rr_id in image_feeds:
-                        image_feeds.append(i)
-                    else:
-                        image_feeds[i.rr_id] = [i]
-
-                case FeedTypes.ROOM:
-                    room_feeds.append(i)
-
-                case FeedTypes.EVENT:
-                    event_feeds.append(i)
-
-                case _: ...
-
-        # Update image feeds
-        if image_feeds:
-            # Sort image ids
-            image_ids = list(image_feeds.keys())
-
-            # Fetch images
-            images = await self.RecNet.images.fetch_many(image_ids)
-
-            # Send to feeds
-            for i in images:
-                feeds = image_feeds[i.id]
-                print(f"Image {i.id} sent to {feeds}")
-
-
-                        
-
