@@ -3,10 +3,19 @@ import re
 import io
 import discord
 import time
-import httpx
 from typing import Tuple
 
 def snapchat_caption(image_bytes: bytes, text: str, filename: str = None):
+    """Edits a Snapchat caption on top of an image
+
+    Args:
+        image_bytes (bytes): bytes of the edited image
+        text (str): snapchat caption
+        filename (str, optional): filename. Defaults to None.
+
+    Returns:
+        tuple[discord.File | PIL.Image]: Returns a discord.File and Pillow image object
+    """
     # open target image
     im = Image.open(image_bytes).convert("RGBA")
     if not text: return im
@@ -18,6 +27,7 @@ def snapchat_caption(image_bytes: bytes, text: str, filename: str = None):
     # make a blank image for the text box, initialized to transparent text box color
     box = Image.new("RGBA", im.size, (0, 0, 0, 0))
 
+    # scale the caption based on resolution
     size_chart = {
         480: (40, 200),
         720: (50, 350),
@@ -26,7 +36,6 @@ def snapchat_caption(image_bytes: bytes, text: str, filename: str = None):
     }
 
     # draw text box
-    #height = 350
     sizing = size_chart.get(im.height, (40, 350))
     height = sizing[1]
     min_size = sizing[0]
@@ -47,13 +56,4 @@ def snapchat_caption(image_bytes: bytes, text: str, filename: str = None):
     img_byte_arr = io.BytesIO()
     out.save(img_byte_arr, format='PNG')
     img_byte_arr.seek(0)
-    #return discord.File(fp=img_byte_arr, filename=f"f{filename if filename else 'output'}.png")
-    return (discord.File(fp=img_byte_arr, filename=f"{text}.png"), out)
-
-if __name__ == "__main__":
-    data = httpx.get("https://img.rec.net/6ft3acy3jac3b1hmiiv5dsua4.jpg").content
-    start = time.perf_counter()
-    bytes = io.BytesIO(data)
-    file, out = snapchat_caption(bytes, "hello wolrd")
-    print(f"{time.perf_counter() - start} seconds")
-    out.show()
+    return (discord.File(fp=img_byte_arr, filename=f"{filename}.png"), out)
