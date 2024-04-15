@@ -5,7 +5,7 @@ import logging
 from typing import TYPE_CHECKING, Optional
 from resources import CategoryIcons
 from discord.ext import commands
-from discord import ApplicationCommandError, Forbidden
+from discord import ApplicationCommandInvokeError, Forbidden
 from .ModuleCollector import ModuleCollector
 from discord.commands import ApplicationCommand, SlashCommand, SlashCommandGroup, UserCommand
 from exceptions import ConnectionNotFound
@@ -121,11 +121,11 @@ class Cog(commands.Cog):
             
             
         
-    async def cog_command_error(self, ctx: discord.ApplicationContext, exception: ApplicationCommandError):
+    async def cog_command_error(self, ctx: discord.ApplicationContext, exception: ApplicationCommandInvokeError):
         """
         Global error handling for all cogs
         """
-        
+
         # Handle cooldowns separately
         if isinstance(exception, commands.CommandOnCooldown):
             return await ctx.interaction.response.send_message("Please try again later.", ephemeral=True)
@@ -157,6 +157,21 @@ class Cog(commands.Cog):
 
             # Check for miscallenous errors
             if isinstance(original, Forbidden):  # Lacking permissions
+                permissions = [
+                    ("Attach Files", ctx.app_permissions.attach_files), 
+                    ("Embed Links", ctx.app_permissions.embed_links),
+                    ("Manage Messages", ctx.app_permissions.manage_messages), 
+                    ("View Channels", ctx.app_permissions.view_channel), 
+                    ("Send Messages", ctx.app_permissions.send_messages), 
+                    ("Use External Emojis", ctx.app_permissions.external_emojis),
+                    ("Manage Webhooks", ctx.app_permissions.manage_webhooks)
+                ]
+                
+                permissions.sort(key=lambda x: x[1], reverse=True)
+                embed_text = ""
+                for i in permissions:
+                    embed_text += f"{'✅' if i[1] else '❌'} {i[0]}\n"
+
                 # Create embed
                 em.title = "Missing Permissions!"
                 em.description = "This command does not work as expected because I do not have sufficient permissions.\n" \
@@ -165,10 +180,11 @@ class Cog(commands.Cog):
                                   "- Make sure the bot does not have interfering roles\n" \
                                   "- Make sure the channel permissions do not overlap with the bot's required permissions\n" \
                                   f"- If all hope is lost, get help from [the support server]({self.bot.config['server_link']})"
-            
+                em.add_field("RecNetBot Permission Requirements", value=embed_text)
+
                 await ctx.respond(embed=em)
                 return  # Don't report to log channel
-            
+
             elif isinstance(original, InternalServerError | HTTPError | BadRequest | NotFound):  # Error sending request to RecNet
                 # Fetch the API status command
                 api_cog = self.bot.get_cog("API")
