@@ -20,8 +20,12 @@ def snapchat_caption(image_bytes: bytes, text: str, filename: str = None):
     im = Image.open(image_bytes).convert("RGBA")
     if not text: return im
 
+    # max text length
+    max_text_length = 175
+    text = text[:max_text_length]
+
     # add line break every 80th char
-    text = re.sub("(.{80})", "\\1\n", text, 0, re.DOTALL)
+    text = re.sub("(.{35})", "\\1\n", text, 0, re.DOTALL)
     text = text.rstrip() # strip trailing newline
 
     # make a blank image for the text box, initialized to transparent text box color
@@ -29,10 +33,10 @@ def snapchat_caption(image_bytes: bytes, text: str, filename: str = None):
 
     # scale the caption based on resolution
     size_chart = {
-        480: (40, 200),
-        720: (50, 350),
-        1080: (60, 400),
-        1440: (65, 500)
+        480: (35, 200),
+        720: (45, 350),
+        1080: (55, 400),
+        1440: (60, 500)
     }
 
     # draw text box
@@ -57,3 +61,10 @@ def snapchat_caption(image_bytes: bytes, text: str, filename: str = None):
     out.save(img_byte_arr, format='PNG')
     img_byte_arr.seek(0)
     return (discord.File(fp=img_byte_arr, filename=f"{filename}.png"), out)
+
+
+import httpx
+if __name__ == "__main__":
+    img = httpx.get("https://img.rec.net/3yqt98qrd4rvi5ahj4vfuavh7.jpg?height=480").content
+    snapchat_caption(io.BytesIO(img), "a"*35*10)[1].show()
+    
