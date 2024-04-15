@@ -2,7 +2,7 @@
     "name": "Image",
     "icon": "category_image",
     "description": "Commands relating to shared posts on RecNet!",
-    "scripts": ["photos"],
+    "scripts": ["photos", "subscribe", "snapchat"],
     "groups": {
         "image": {
             "scripts": ["data", "origin"],
