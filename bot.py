@@ -18,9 +18,8 @@ from googleapiclient import discovery
 from googleapiclient.errors import HttpError
 from google.auth.exceptions import DefaultCredentialsError
 from utils.paginator import RNBPage, RNBPaginator
-from tasks import backup_database
 #from utils.persistent_views import *
-#from tasks import backup_database, update_feeds
+from tasks import backup_database, update_feeds
 
 class RecNetBot(commands.AutoShardedBot):
     def __init__(self, production: bool):
@@ -31,10 +30,11 @@ class RecNetBot(commands.AutoShardedBot):
             # Developer only for now
             intents = discord.Intents.default()
             intents.members = True
+            intents.message_content = True
             super().__init__(help_command=None, intents=intents)
 
             # Activate server for monitoring
-            server.start(self)
+            #server.start(self)
 
         # Load config
         self.config = load_config(is_production=production)
@@ -47,7 +47,8 @@ class RecNetBot(commands.AutoShardedBot):
         self.logger.addHandler(handler)
 
         # Add Modules
-        self.RecNet: Client = None
+        self.RecNet: Client = None  # For regular bot
+        self.RecNetWebhook: Client = None  # For webhook polling
         self.cog_manager = CogManager(self)
         self.CatAPI = CatAPI(api_key=self.config.get("the_cat_api_key"))
 
@@ -75,12 +76,10 @@ class RecNetBot(commands.AutoShardedBot):
         self.backup: aiosqlite.Connection = None
         self.cm = ConnectionManager()
         self.rcm = RoomCacheManager()
-        #self.icm = InventionCacheManager(self.db)
-        #self.bcm = BookmarkManager(self.db)
         self.lcm = LoggingManager()
         self.acm = AnnouncementManager()
         #self.gm = GuildManager()
-        #self.fcm = FeedManager()
+        self.fcm = FeedManager()
 
         # Banned users' Discord IDs
         # Updates everytime someone gets banned
@@ -105,15 +104,15 @@ class RecNetBot(commands.AutoShardedBot):
         await self.lcm.init(self.db)
         await self.acm.init(self.db)
         #await self.gm.init(self.db)
-        #await self.fcm.init(self.db)
+        await self.fcm.init(self.db)
 
         # Backup
         self.backup = await aiosqlite.connect("backup.db", detect_types=sqlite3.PARSE_DECLTYPES)
         backup_database.start(self)
 
         # Get Rec Room API key
-        api_key = self.config["rr_api_key"]
-        self.RecNet = Client(api_key=api_key)
+        self.RecNet = Client(api_key=self.config["rr_api_key"])
+        self.RecNetWebhook = Client(api_key=self.config["rr_webhook_key"])
 
         # Initialize cat API
         if self.CatAPI.api_key:
@@ -123,7 +122,7 @@ class RecNetBot(commands.AutoShardedBot):
         self.log_channel = await self.fetch_channel(self.config["log_channel"])
         
         # Start updating feeds
-        #update_feeds.start(self)
+        update_feeds.start(self)
 
         await self.change_presence(
             status=discord.Status.online,
@@ -192,22 +191,8 @@ class RecNetBot(commands.AutoShardedBot):
            ...
 
 
-    #async def on_error(self, event, *args, **kwargs):
-    #    logging.basicConfig(level=logging.WARNING, filename="error.log", filemode="a+",
-    #                        format="%(asctime)-15s %(levelname)-8s %(message)s")
-    #    logging.error(event + " -> " + str(args) + " " + str(kwargs))
-
-
     def run(self):
         super().run(self.config['discord_token'])
-
-    # Upcoming ban system
-    """
-        async def on_interaction(self, interaction: discord.Interaction):
-            if interaction.user.id == 293008770957836299: 
-                return await interaction.respond("You have been restricted from using this build of RecNetBot!")
-            return await super().on_interaction(interaction)
-    """
 
 
     async def on_application_command_completion(self, ctx: discord.ApplicationContext):
