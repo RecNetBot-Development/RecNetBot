@@ -3,6 +3,7 @@ from discord.commands import slash_command
 from discord.ext.bridge import BridgeOption as Option
 from embeds import get_default_embed
 from utils import room_url, img_url
+from resources import get_icon
 from utils.autocompleters import room_searcher
 from database import FeedManager, FeedTypes
 from utils.converters import FetchRoom
@@ -51,18 +52,42 @@ class ChannelView(discord.ui.View):
 
 @slash_command(
     name="subscribe",
-    description="Get room images"
+    description="Create a webhook that continuously sends the latest photos taken in a specified room."
 )
 async def subscribe(
     self, 
     ctx: discord.ApplicationContext, 
-    room: Option(FetchRoom, name="name", description="Enter RR room", required=True, autocomplete=room_searcher),
+    room: Option(FetchRoom, name="name", description="Room to track", required=True, autocomplete=room_searcher),
 ):
     await ctx.interaction.response.defer()
 
+    # How many feeds can a user create
+    max_feeds = 2
+
+    # Make sure user is admin in server
+    if not ctx.author.guild_permissions.administrator:
+        await ctx.respond("Only server administrators can create photo feeds! [|=(]")
+        return
+
     #Make sure the bot can create webhooks
     if not ctx.app_permissions.manage_webhooks:
-        await ctx.respond("Missing permissions! `Manage Webhooks`")
+        await ctx.respond(
+            f"Missing permission: `Manage Webhooks`. [|=(]\n\n" \
+            f"I need this permission to create a webhook that sends the latest photos taken in[^{room.name}](<{room_url(room.name)}>)."
+        )
+        return
+    
+    # Get feed database manager
+    fcm: FeedManager = self.bot.fcm
+
+    # Check if the user has made more than 2 feeds
+    feed_count = await fcm.get_feed_count_by_user(ctx.author.id)
+    if feed_count >= max_feeds:
+        await ctx.respond(
+            f"You have reached the limit of {max_feeds} photo feeds. Please delete previous feeds.\n\n" \
+            "You can delete a previous feed by deleting the webhook from the channel integrations.\n\n" \
+            f"This is an early access limitation. It is subject to change in the future. Reach out in [my test server](<{ctx.bot.config.get('server_link')}>) for any concerns."
+        )
         return
 
     # Create the view containing our dropdown
@@ -70,21 +95,38 @@ async def subscribe(
 
     # Sending a message containing our View
     em = get_default_embed(
-        title="Select Channel",
-        description=
-            f"Which channel should I send the latest images of [^{room.name}](<{room_url(room.name)}>) to?" \
-            "\n\nIf you can't find your desired channel, run this command in the channel and press the 'This Channel' button.",
+        title="Photo Feed",
+        thumbnail=discord.EmbedMedia(url=get_icon("photo")),
+        fields=[
+            discord.EmbedField(
+                name="Select Channel",
+                value=
+                    f"Which channel should I send the latest photos taken in [^{room.name}](<{room_url(room.name)}>) to?" \
+                    "\n\nIf you can't find your desired channel, run this command in the channel and press the 'This Channel' button."
+            )
+        ],
         footer=discord.EmbedFooter(text="Note: You can type the channel name into the dropdown menu."),
         image=discord.EmbedMedia(url=img_url(room.image_name, resolution=480))
     )
-    await ctx.respond("Select channel", embed=em, view=view)
 
+    await ctx.respond(embed=em, view=view)
+    await ctx.followup.send(
+        "This is an early access feature! By testing this feature, you're helping us polish it.\n\n" \
+        f"For now you can only create **{max_feeds}** photo feeds in total. You have `{max_feeds - feed_count}` feed slots left. You can always delete created feeds.\n\n"
+        f"If you have any suggestions, issues or encounter any bugs, please please *please* let us know in [my test server](<{ctx.bot.config.get('server_link')}>)! " \
+        "Your feedback is super-duper valuable to us. You'll also be kept up-to-date of any updates.\n\n" \
+        "Please note that old feeds **MAY** be deleted once the feature leaves early access.\n\n" \
+        "Thanks for trying this feature out! <3", 
+        ephemeral=True
+    )
+
+    # Wait for response
     await view.wait()
     if view.cancelled:
-        await view.interaction.delete_original_message()
+        await view.interaction.delete_original_response()
         return
     elif view.channel == None:
-        await view.interaction.delete_original_message()
+        await view.interaction.delete_original_response()
         return 
     
     # Interaction from dropdown menu
@@ -93,14 +135,19 @@ async def subscribe(
     # Chosen channel
     channel = view.channel
 
-    # Create webhook and feed
-    fcm: FeedManager = self.bot.fcm
+    # Returns existing feeds in channel and their RR ids
+    rr_ids = await fcm.get_feed_rr_ids_in_channel(channel.id)
+
+    # Don't let user create 2 same feeds in channel
+    if room.id in rr_ids:
+        await ctx.respond(f"You have already created a photo feed of ^{room.name} in {channel.mention}! [|=(]")
+        return
 
     # See if I can create a webhook in the specified channel
     if hasattr(channel, "create_webhook"):
         try:
             # Attempt to create a webhook
-            webhook = await channel.create_webhook(name=f"^{room.name} Webhook", reason="Tracks room pictures. Created by RecNetBot.")
+            webhook = await channel.create_webhook(name=f"^{room.name} Webhook", reason="Tracks room photos. Created by RecNetBot.")
         except discord.errors.Forbidden:
             # Lacking permissions in channel
             await interaction.edit_original_response(content=f"I don't have permission to create a webhook in {channel.mention}! Please update the channel permissions.", embed=None, view=None)
@@ -114,17 +161,31 @@ async def subscribe(
     await fcm.create_feed(ctx.author.id, ctx.guild_id, webhook.id, channel.id, FeedTypes.IMAGE, room.id)
 
     # Inform user
-    await interaction.edit_original_response(
-        content=f"Subscribed {channel.mention} to the latest photos from [^{room.name}](<{room_url(room.name)}>)\n\n" \
-                f"In order to unsubscribe, please delete the `{webhook.name}` webhook from the channel's integrations!", 
-        view=None, embed=None
+    em = get_default_embed(
+        title="Photo Feed",
+        thumbnail=discord.EmbedMedia(url=img_url(room.image_name, resolution=180, crop_square=True)),
+        fields=[
+            discord.EmbedField(
+                name="Success!",
+                value=f"Subscribed {channel.mention} to the latest photos from [^{room.name}](<{room_url(room.name)}>)!",
+                inline=False
+            ),
+            discord.EmbedField(
+                name="Unsubscribing",
+                value=f"In order to unsubscribe, please delete the `{webhook.name}` webhook from {channel.mention}'s integrations.",
+                inline=False
+            ),
+            discord.EmbedField(
+                name="Captions",
+                value="Photos with captions will be edited into the sent image. If you own the room, we recommend informing users about it in-game!",
+                inline=False
+            )
+        ],
+        image=discord.EmbedMedia(url="https://i.imgur.com/KypV0Do.png")
     )
 
+    await interaction.edit_original_response(embed=em, view=None)
+
     # Feeds are handled in tasks/update_feeds.py
-
-    
-    
-
-        
 
         
