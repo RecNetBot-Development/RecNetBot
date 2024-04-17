@@ -101,6 +101,30 @@ class FeedManager():
         ) as cursor:
             data = await cursor.fetchall()
         return data
+    
+    async def get_feed_count_by_user(self, creator_id: int) -> Optional[int]:
+        """
+        Returns amount of feeds made by a user
+        """
+        async with await self.conn.execute(
+            f"""SELECT COUNT(1) FROM feed WHERE creator_id = :creator_id""", 
+            {"creator_id": creator_id}
+        ) as cursor:
+            cursor.row_factory = lambda cursor, row: row[0]
+            data = await cursor.fetchone()
+        return data
+    
+    async def get_feed_rr_ids_in_channel(self, channel_id: int) -> Optional[int]:
+        """
+        Returns feed rr ids in channel
+        """
+        async with await self.conn.execute(
+            f"""SELECT rr_id FROM feed WHERE channel_id = :channel_id""", 
+            {"channel_id": channel_id}
+        ) as cursor:
+            cursor.row_factory = lambda cursor, row: row[0]
+            data = await cursor.fetchall()
+        return data
 
     def raw_to_dataclasses(self, data: list) -> List[FeedData]:
         # Turn database data into dataclasses
