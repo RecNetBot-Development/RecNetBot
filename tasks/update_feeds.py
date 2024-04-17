@@ -7,10 +7,19 @@ import aiohttp
 import math
 from embeds import get_default_embed
 from typing import List, TYPE_CHECKING, Optional
-from utils import unix_timestamp, img_url, snapchat_caption, profile_url, post_url, room_url
+from utils import img_url, snapchat_caption, profile_url, post_url, room_url
+from resources import get_icon
 from discord.ext import tasks
 from database import FeedTypes
 from datetime import datetime
+
+"""
+
+TODO
+
+- Handle privated / deleted rooms
+
+"""
 
 if TYPE_CHECKING:
     from bot import RecNetBot
@@ -81,6 +90,12 @@ async def update_feeds(bot: 'RecNetBot'):
         rooms_ = await bot.RecNetWebhook.rooms.fetch_many(list(new_rooms))
         for i in rooms_:
             rooms[i.id] = i
+            new_rooms.remove(i.id)
+
+        # these rooms are privated or deleted cuz they couldn't be fetched
+        for i in new_rooms:
+            for j in feeds[i]:
+                await delete_feed(bot, j)
 
     # Hard-code to image preview mode (DEBUG)
     mode = "compact"
@@ -118,7 +133,7 @@ async def update_feeds(bot: 'RecNetBot'):
             elif img.created_at > latest_timestamp:
                 new_images.append(img)
 
-        if not new_images: return
+        if not new_images: continue
 
         # Newer images first
         new_images.reverse()
@@ -285,7 +300,7 @@ def compact_mode(img: recnetpy.dataclasses.Image) -> str:
 
     # Add description in content if any
     if img.description:
-        content += f"\n\"{img.description}\""
+        content += f"\n\"{img.description.rstrip()}\""
 
     return (content, view)
 
@@ -304,11 +319,25 @@ async def delete_feed(bot: 'RecNetBot', webhook_id: int, channel: int | discord.
 
     # Delete the feed
     await bot.fcm.delete_feed(webhook_id)
-    if webhook_id in webhooks: webhooks.pop(webhook_id)
+    if webhook_id in webhooks: 
+        webhooks.pop(webhook_id)
+
+        try:  # Attempt to delete the webhook if not already deleted
+            webhook = await bot.fetch_webhook(webhook_id)
+            await webhook.delete()
+        except:
+            ...
     
     # Inform server 
     if channel and channel.can_send():
-        await channel.send(f"The webhook for photo feed has been deleted!")
+        em = get_default_embed(
+            title="Photo Feed Disabled!",
+            description="The webhook for the photo feed has been deleted. " \
+                        "This was either manual or the room was privated / deleted. " \
+                        f"Thanks for giving the feature a shot! [|=)] Feel free to let us know your experiences in [my test server](<{bot.config.get('server_link')}>).",
+            thumbnail=discord.EmbedMedia(url=get_icon("photo"))
+        )
+        await channel.send(embed=em)
     
 
 async def send(webhook: discord.Webhook, bot: 'RecNetBot', **kwargs) -> Optional[discord.Message]:
