@@ -2,8 +2,6 @@ from PIL import Image, ImageDraw, ImageFont
 import re
 import io
 import discord
-import time
-from typing import Tuple
 
 def snapchat_caption(image_bytes: bytes, text: str, filename: str = None):
     """Edits a Snapchat caption on top of an image
@@ -61,10 +59,4 @@ def snapchat_caption(image_bytes: bytes, text: str, filename: str = None):
     out.save(img_byte_arr, format='PNG')
     img_byte_arr.seek(0)
     return (discord.File(fp=img_byte_arr, filename=f"{filename}.png"), out)
-
-
-import httpx
-if __name__ == "__main__":
-    img = httpx.get("https://img.rec.net/3yqt98qrd4rvi5ahj4vfuavh7.jpg?height=480").content
-    snapchat_caption(io.BytesIO(img), "a"*35*10)[1].show()
     
