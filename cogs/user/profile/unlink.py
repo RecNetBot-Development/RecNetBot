@@ -47,7 +47,6 @@ class Check(discord.ui.View):
     name="unlink",
     description="Unlink your Rec Room account from your Discord."
 )
-@cooldown(rate=1, per=300, type=BucketType.user)
 async def unlink(
     self, 
     ctx: ApplicationContext

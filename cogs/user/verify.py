@@ -63,7 +63,6 @@ class Check(discord.ui.View):
     name="verify",
     description="Verify your Rec Room profile!"
 )
-@cooldown(rate=2, per=300, type=BucketType.user)
 async def verify(
     self, 
     ctx: ApplicationContext, 
