@@ -13,7 +13,7 @@
             "description": "Top-notch image filtering tools to pinpoint specific images."
         },
         "feed": {
-            "scripts": ["create"],
+            "scripts": ["create", "delete"],
             "description": "Handle live feeds of photos fetched from RecNet."
         }
     }
