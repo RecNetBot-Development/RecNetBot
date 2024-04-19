@@ -318,7 +318,7 @@ async def delete_feed(bot: 'RecNetBot', webhook_id: int, channel: int | discord.
         channel = bot.get_channel(channel)
 
     # Delete the feed
-    await bot.fcm.delete_feed(webhook_id)
+    await bot.fcm.delete_feed_with_webhook_id(webhook_id)
     if webhook_id in webhooks: 
         webhooks.pop(webhook_id)
 
