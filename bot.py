@@ -18,6 +18,10 @@ from googleapiclient import discovery
 from googleapiclient.errors import HttpError
 from google.auth.exceptions import DefaultCredentialsError
 from utils.paginator import RNBPage, RNBPaginator
+<<<<<<< HEAD
+=======
+#from tasks import backup_database
+>>>>>>> b07f4ea8987e826d44cf2fd2d7adae682ffd320e
 #from utils.persistent_views import *
 
 class RecNetBot(commands.AutoShardedBot):
@@ -104,6 +108,10 @@ class RecNetBot(commands.AutoShardedBot):
 
         # Backup
         self.backup = await aiosqlite.connect("backup.db", detect_types=sqlite3.PARSE_DECLTYPES)
+<<<<<<< HEAD
+=======
+        # backup_database.start(self)
+>>>>>>> b07f4ea8987e826d44cf2fd2d7adae682ffd320e
 
         # Get Rec Room API key
         api_key = self.config["rr_api_key"]
