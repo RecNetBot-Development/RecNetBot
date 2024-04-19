@@ -1,7 +1,7 @@
 recnetpy==0.2.71
-py-cord==2.5.0
+py-cord @ git+https://github.com/Pycord-Development/pycord@f5683c5
 google-api-python-client==2.62.0
 owoify-py==2.0.0
 CairoSVG==2.7.1
-aiohttp==3.9.2
+aiohttp==3.9.4
 aiosqlite==0.20.0
