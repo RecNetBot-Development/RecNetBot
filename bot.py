@@ -18,9 +18,7 @@ from googleapiclient import discovery
 from googleapiclient.errors import HttpError
 from google.auth.exceptions import DefaultCredentialsError
 from utils.paginator import RNBPage, RNBPaginator
-from tasks import backup_database
 #from utils.persistent_views import *
-#from tasks import backup_database, update_feeds
 
 class RecNetBot(commands.AutoShardedBot):
     def __init__(self, production: bool):
@@ -32,9 +30,6 @@ class RecNetBot(commands.AutoShardedBot):
             intents = discord.Intents.default()
             intents.members = True
             super().__init__(help_command=None, intents=intents)
-
-            # Activate server for monitoring
-            server.start(self)
 
         # Load config
         self.config = load_config(is_production=production)
@@ -109,7 +104,6 @@ class RecNetBot(commands.AutoShardedBot):
 
         # Backup
         self.backup = await aiosqlite.connect("backup.db", detect_types=sqlite3.PARSE_DECLTYPES)
-        backup_database.start(self)
 
         # Get Rec Room API key
         api_key = self.config["rr_api_key"]
@@ -121,9 +115,6 @@ class RecNetBot(commands.AutoShardedBot):
 
         self.verify_post = await self.RecNet.images.fetch(self.config["verify_post"])
         self.log_channel = await self.fetch_channel(self.config["log_channel"])
-        
-        # Start updating feeds
-        #update_feeds.start(self)
 
         await self.change_presence(
             status=discord.Status.online,
@@ -200,15 +191,6 @@ class RecNetBot(commands.AutoShardedBot):
 
     def run(self):
         super().run(self.config['discord_token'])
-
-    # Upcoming ban system
-    """
-        async def on_interaction(self, interaction: discord.Interaction):
-            if interaction.user.id == 293008770957836299: 
-                return await interaction.respond("You have been restricted from using this build of RecNetBot!")
-            return await super().on_interaction(interaction)
-    """
-
 
     async def on_application_command_completion(self, ctx: discord.ApplicationContext):
         """Log command usage and push announcements"""
