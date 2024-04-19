@@ -3,7 +3,6 @@ import re
 import io
 import discord
 import time
-import httpx
 from typing import Tuple
 
 def snapchat_caption(image_bytes: bytes, text: str, filename: str = None):
@@ -49,11 +48,3 @@ def snapchat_caption(image_bytes: bytes, text: str, filename: str = None):
     img_byte_arr.seek(0)
     #return discord.File(fp=img_byte_arr, filename=f"f{filename if filename else 'output'}.png")
     return (discord.File(fp=img_byte_arr, filename=f"{text}.png"), out)
-
-if __name__ == "__main__":
-    data = httpx.get("https://img.rec.net/6ft3acy3jac3b1hmiiv5dsua4.jpg").content
-    start = time.perf_counter()
-    bytes = io.BytesIO(data)
-    file, out = snapchat_caption(bytes, "hello wolrd")
-    print(f"{time.perf_counter() - start} seconds")
-    out.show()

@@ -5,7 +5,6 @@ import logging
 import time
 import aiosqlite
 import sqlite3
-# import server
 from logging.handlers import RotatingFileHandler
 from cat_api import CatAPI
 from utils import load_config
@@ -18,11 +17,6 @@ from googleapiclient import discovery
 from googleapiclient.errors import HttpError
 from google.auth.exceptions import DefaultCredentialsError
 from utils.paginator import RNBPage, RNBPaginator
-<<<<<<< HEAD
-=======
-#from tasks import backup_database
->>>>>>> b07f4ea8987e826d44cf2fd2d7adae682ffd320e
-#from utils.persistent_views import *
 
 class RecNetBot(commands.AutoShardedBot):
     def __init__(self, production: bool):
@@ -108,10 +102,6 @@ class RecNetBot(commands.AutoShardedBot):
 
         # Backup
         self.backup = await aiosqlite.connect("backup.db", detect_types=sqlite3.PARSE_DECLTYPES)
-<<<<<<< HEAD
-=======
-        # backup_database.start(self)
->>>>>>> b07f4ea8987e826d44cf2fd2d7adae682ffd320e
 
         # Get Rec Room API key
         api_key = self.config["rr_api_key"]
@@ -128,11 +118,6 @@ class RecNetBot(commands.AutoShardedBot):
             status=discord.Status.online,
             activity=discord.Game(name=self.config.get("status_message", "Rec Room"))
         )
-        
-        # Register the persistent view for listening
-        #if not self.persistent_views_added:
-        #    self.add_view(VerificationView(self))
-        #    self.persistent_views_added = True
 
         print(
             f"RNB ONLINE",
@@ -142,60 +127,6 @@ class RecNetBot(commands.AutoShardedBot):
             f"Running on: {platform.system()} {platform.release()} ({os.name})\n",
             sep="\n"
         )
-    
-
-    async def __on_member_join(self, member: discord.Member):
-        """Verify user on join if server is enrolled in member verification"""
-        guild = member.guild
-
-        # Check if guild is enrolled
-        if not await self.gm.is_guild_setup(guild.id): return
-
-        # Check if the user is verified
-        cm: ConnectionManager = self.cm
-        rr_id = await cm.get_discord_connection(member.id)
-        if not rr_id: return
-            
-        # Get binding role
-        gm: GuildManager = self.gm
-        role_id = await gm.get_binding_role_id(guild.id)
-        role: discord.Role = guild.get_role(role_id)
-
-        # Get linked account
-        account = await self.RecNet.accounts.fetch(rr_id)
-
-        # Add verification role
-        await member.add_roles(role, reason=f"Verified user: @{account.username} - ID: {account.id}")
-
-        # Get naming convention
-        name_rule = await gm.get_naming_convention(guild.id)
-
-        # List any errors
-        errors = []
-
-        # Change member's name if naming convention set
-        try:
-            match name_rule:
-                case NameRule.USERNAME:
-                    await member.edit(nick=f"@{account.username}")
-                case NameRule.DISPLAYNAME:
-                    await member.edit(nick=f"{account.display_name}")
-                case _:
-                    ...
-        except discord.errors.Forbidden:
-            ...
-
-        try:
-            await member.add_roles(role, reason=f"Verified user: @{account.username} - ID: {account.id}")
-        except discord.errors.Forbidden:
-           ...
-
-
-    #async def on_error(self, event, *args, **kwargs):
-    #    logging.basicConfig(level=logging.WARNING, filename="error.log", filemode="a+",
-    #                        format="%(asctime)-15s %(levelname)-8s %(message)s")
-    #    logging.error(event + " -> " + str(args) + " " + str(kwargs))
-
 
     def run(self):
         super().run(self.config['discord_token'])
