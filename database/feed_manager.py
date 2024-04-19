@@ -114,6 +114,18 @@ class FeedManager():
             data = await cursor.fetchone()
         return data
     
+    async def get_feeds_by_user(self, creator_id: int) -> Optional[Dict]:
+        """
+        Returns feeds made by a user
+        """
+        async with await self.conn.execute(
+            f"""SELECT server_id, webhook_id, channel_id, id, rr_id FROM feed WHERE creator_id = :creator_id""", 
+            {"creator_id": creator_id}
+        ) as cursor:
+            cursor.row_factory = lambda cursor, row: {"server_id": row[0], "webhook_id": row[1], "channel_id": row[2], "id": row[3], "rr_id": row[4]}
+            data = await cursor.fetchall()
+        return data
+    
     async def get_feed_rr_ids_in_channel(self, channel_id: int) -> Optional[int]:
         """
         Returns feed rr ids in channel
@@ -141,7 +153,11 @@ class FeedManager():
             {"creator_id": creator_id, "server_id": server_id, "webhook_id": webhook_id, "channel_id": channel_id, "type": type.value, "rr_id": rr_id})
         await self.conn.commit()
 
-    async def delete_feed(self, webhook_id: int):
+    async def delete_feed_with_id(self, feed_id: int):
+        await self.conn.execute(f"""DELETE FROM feed WHERE id = :id""", {"id": feed_id})
+        await self.conn.commit()
+
+    async def delete_feed_with_webhook_id(self, webhook_id: int):
         await self.conn.execute(f"""DELETE FROM feed WHERE webhook_id = :webhook_id""", {"webhook_id": webhook_id})
         await self.conn.commit()
 
