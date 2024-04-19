@@ -1,6 +1,6 @@
 import discord
 from embeds import get_default_embed
-from cat_api import Cat
+from utils.cat_api import Cat
 
 def cat_embed(cat: Cat) -> discord.Embed:
     """

@@ -10,7 +10,7 @@ from recnetpy.dataclasses.event import Event
 from recnetpy.dataclasses.invention import Invention
 from embeds import event_embed, fetch_profile_embed, fetch_invention_embed, room_embed, fetch_image_embed, fetch_event_embed, cat_embed, announcement_embed
 from database import Announcement
-from cat_api import Cat
+from utils.cat_api import Cat
 from recnetpy.dataclasses.image import Image
 from typing import List, Optional, Union
 from discord.ext.bridge import BridgeContext

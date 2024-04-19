@@ -6,7 +6,7 @@ import time
 import aiosqlite
 import sqlite3
 from logging.handlers import RotatingFileHandler
-from cat_api import CatAPI
+from utils.cat_api import CatAPI
 from utils import load_config
 from discord.ext import commands, tasks
 from recnetpy import Client
