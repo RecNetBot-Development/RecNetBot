@@ -112,7 +112,9 @@ class Emoji:
     verified = "☑"
     rectnet = "<:RectNe:873328661590310922>"
     revisit = "<:revisit:1225169564803924120>"
-    cheervisitor = "<:cheervisitor:1225170116518482080> "
+    cheervisitor = "<:cheervisitor:1225170116518482080>"
+    trashcan = "<:trashcan:1231330968510402571>"
+    x = "<:x_:1231330896968417380>"
 
 class CategoryIcons:
     category_api = 963878518960291903  # (Api by Larea from NounProject.com)
@@ -147,6 +149,8 @@ class Icons:
     notification = "https://i.imgur.com/YrmOjUc.png" # https://www.flaticon.com/free-icons/notification Notification icons created by Pixel perfect - Flaticon
     verify_command = "https://i.imgur.com/q2B9LsA.png"
     rnb = "https://i.imgur.com/3BycwLj.png"
+    photo_add = "https://i.imgur.com/TUkge1R.png"
+    photo_delete = "https://i.imgur.com/1ItpNqU.png"
 
 def get_icon(name: str) -> str:
     """

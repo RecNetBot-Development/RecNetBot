@@ -16,7 +16,7 @@ class FeedButton(discord.ui.Button["FeedView"]):
         self.feed = feed
         self.fcm = fcm
         self.bot = bot
-        super().__init__(style=discord.ButtonStyle.red, label=label, custom_id=str(feed['id']))
+        super().__init__(style=discord.ButtonStyle.red, label=label, custom_id=str(feed['id']), emoji=get_emoji('x'))
 
     async def callback(self, interaction: discord.Interaction):
         assert self.view is not None
@@ -67,7 +67,7 @@ class FeedView(BaseView):
             room = self.rooms.get(feed['rr_id'], None)
             feed['room_name'] = room.name if room else f"{get_emoji('warning')} Unknown Room"
             
-            self.add_item(FeedButton(self.bot, feed, self.fcm, label=f"Delete {i}."))
+            self.add_item(FeedButton(self.bot, feed, self.fcm, label=f"{i}."))
             
         # Create embed once the channels have been fetched
         self.embed = self.create_embed()
@@ -75,7 +75,7 @@ class FeedView(BaseView):
     def create_embed(self):
         em = get_default_embed(
             title = "Delete a Photo Feed",
-            thumbnail=discord.EmbedMedia(url=get_icon("photo")),
+            thumbnail=discord.EmbedMedia(url=get_icon("photo_delete")),
             footer=discord.EmbedFooter(text="The feed cannot be retrieved after deletion. You can always recreate feeds.")
         )
         

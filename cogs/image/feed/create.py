@@ -123,7 +123,7 @@ async def create(
     # Sending a message containing our View
     em = get_default_embed(
         title="Create Photo Feed",
-        thumbnail=discord.EmbedMedia(url=get_icon("photo")),
+        thumbnail=discord.EmbedMedia(url=get_icon("photo_add")),
         fields=[
             discord.EmbedField(
                 name="Select Channel",
@@ -213,7 +213,7 @@ async def create(
                 inline=False
             ),
             discord.EmbedField(
-                name="Deleting",
+                name="Disable",
                 value=f"Use {destroy_cmd.mention} to delete feeds.",
                 inline=False
             ),
