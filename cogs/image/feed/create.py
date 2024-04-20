@@ -2,13 +2,14 @@ import discord
 from discord.commands import slash_command
 from discord.ext.bridge import BridgeOption as Option
 from embeds import get_default_embed
-from utils import room_url, img_url
+from utils import room_url, img_url, BaseView
 from resources import get_icon
 from utils.autocompleters import room_searcher
 from database import FeedManager, FeedTypes
 from utils.converters import FetchRoom
+from tasks import add_room
 
-class ChannelView(discord.ui.View):
+class ChannelView(BaseView):
     def __init__(self):
         super().__init__()
         self.interaction: discord.Interaction = None
@@ -23,7 +24,13 @@ class ChannelView(discord.ui.View):
     async def channel_select_dropdown(
         self, select: discord.ui.Select, interaction: discord.Interaction
     ) -> None:
-        await interaction.response.defer()
+        await interaction.response.defer(ephemeral=True)
+        
+        # Make sure the correct user responds
+        if not self.authority_check(interaction):
+            await interaction.followup.send("You're not authorized!", ephemeral=True)
+            return
+        
         self.channel = select.values[0]
         self.interaction = interaction
         self.stop()
@@ -34,7 +41,13 @@ class ChannelView(discord.ui.View):
     async def current_channel_button(
         self, button: discord.ui.Button, interaction: discord.Interaction
     ):
-        await interaction.response.defer()
+        await interaction.response.defer(ephemeral=True)
+        
+        # Make sure the correct user responds
+        if not self.authority_check(interaction):
+            await interaction.followup.send("You're not authorized!", ephemeral=True)
+            return
+        
         self.channel = interaction.channel
         self.interaction = interaction
         self.stop()
@@ -45,7 +58,13 @@ class ChannelView(discord.ui.View):
     async def cancel_button(
         self, button: discord.ui.Button, interaction: discord.Interaction
     ):
-        await interaction.response.defer()
+        await interaction.response.defer(ephemeral=True)
+        
+        # Make sure the correct user responds
+        if not self.authority_check(interaction):
+            await interaction.followup.send("You're not authorized!", ephemeral=True)
+            return
+        
         self.cancelled = True
         self.interaction = interaction
         self.stop()
@@ -57,7 +76,7 @@ class ChannelView(discord.ui.View):
 async def create(
     self, 
     ctx: discord.ApplicationContext, 
-    room: Option(FetchRoom, name="name", description="Room to track", required=True, autocomplete=room_searcher),
+    room: Option(FetchRoom, name="room", description="Room to track", required=True, autocomplete=room_searcher),
 ):
     await ctx.interaction.response.defer()
 
@@ -110,15 +129,17 @@ async def create(
     )
 
     await ctx.respond(embed=em, view=view)
-    await ctx.followup.send(
-        "This is an early access feature! By testing this feature, you're helping us polish it.\n\n" \
-        f"For now you can only create **{max_feeds}** photo feeds in total. You have `{max_feeds - feed_count}` feed slots left. You can always delete created feeds.\n\n"
-        f"If you have any suggestions, issues or encounter any bugs, please please *please* let us know in [my test server](<{ctx.bot.config.get('server_link')}>)! " \
-        "Your feedback is super-duper valuable to us. You'll also be kept up-to-date of any updates.\n\n" \
-        "Please note that old feeds **MAY** be deleted once the feature leaves early access.\n\n" \
-        "Thanks for trying this feature out! <3", 
-        ephemeral=True
-    )
+    
+    if feed_count == 0:
+        await ctx.followup.send(
+            "This is an early access feature! By testing this feature, you're helping us polish it.\n\n" \
+            f"For now you can only create **{max_feeds}** photo feeds in total. You have `{max_feeds - feed_count}` feed slots left. You can always delete created feeds.\n\n"
+            f"If you have any suggestions, issues or encounter any bugs, please please *please* let us know in [my test server](<{ctx.bot.config.get('server_link')}>)! " \
+            "Your feedback is super-duper valuable to us. You'll also be kept up-to-date of any updates.\n\n" \
+            "Please note that old feeds **MAY** be deleted once the feature leaves early access.\n\n" \
+            "Thanks for trying this feature out! <3", 
+            ephemeral=True
+        )
 
     # Wait for response
     await view.wait()
@@ -159,6 +180,13 @@ async def create(
     
     # Save feed into database
     await fcm.create_feed(ctx.author.id, ctx.guild_id, webhook.id, channel.id, FeedTypes.IMAGE, room.id)
+    
+    # Tell update_feed() task to add new room
+    add_room(room)
+
+    # /feed delete
+    group = discord.utils.get(self.__cog_commands__, name='feed')
+    detroy_cmd = discord.utils.get(group.walk_commands(), name='delete')
 
     # Inform user
     em = get_default_embed(
@@ -171,8 +199,8 @@ async def create(
                 inline=False
             ),
             discord.EmbedField(
-                name="Unsubscribing",
-                value=f"In order to unsubscribe, please delete the `{webhook.name}` webhook from {channel.mention}'s integrations.",
+                name="Deleting",
+                value=f"Use {detroy_cmd.mention} to delete feeds.",
                 inline=False
             ),
             discord.EmbedField(
