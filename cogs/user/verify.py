@@ -1,4 +1,5 @@
 import discord
+from bot import RecNetBot
 from discord import ApplicationContext
 from discord.commands import slash_command, Option
 from discord.ext.commands import cooldown, BucketType
@@ -91,16 +92,18 @@ async def verify(
     if not user: raise AccountNotFound
     
     # Check if RR account is already linked
-    check_rr = await cm.get_rec_room_connection(user.id)
-    if check_rr: raise ConnectionAlreadyDone
+    connected_discord_id = await cm.get_rec_room_connection(user.id)
     
     # Prompt the user
     profile_em = await fetch_profile_embed(user)
     prompt_em = get_default_embed()
-    prompt_em.description = '\n'.join([
-        f"Are you sure you want to link [@{user.username}]({profile_url(user.username)}) to your Discord?",
+    prompt_em.description = \
+        f"Are you sure you want to link [@{user.username}]({profile_url(user.username)}) to your Discord?\n" \
         "You can only link a Rec Room account that you own. Verification is required. It only takes less than a minute."
-    ])
+        
+    if connected_discord_id:
+        prompt_em.description += f"\n\n{get_emoji('warning')} It appears this account is already linked to another Discord user. If you own this account, you can claim it."
+    
     prompt_em.add_field(name="Benefits", 
         value="Once linked, RecNetBot will:\n" + BENEFITS
     )
@@ -163,11 +166,21 @@ async def verify(
         await cm.delete_connection(ctx.author.id)
         return await ctx.interaction.edit_original_response(content="Could not verify the account's ownership. Try again later.", embeds=[], view=None)
         
-    # One more security check
-    if await cm.get_rec_room_connection(user.id):
-        # If someone linked the account already
-        await cm.delete_connection(ctx.author.id)
-        return await ctx.interaction.edit_original_response(content="Someone else already linked this account!", embeds=[], view=None)
+    # Overwrite old Discord account if any
+    if connected_discord_id:
+        # Delete old connection
+        await cm.delete_connection(connected_discord_id)
+        
+        # Notify old Discord user
+        bot: RecNetBot = self.bot
+        old_discord_user: discord.User = bot.get_user(connected_discord_id)
+        if old_discord_user:
+            try:
+                await old_discord_user.send(
+                    f"Your linked Rec Room account @{user.username} was transferred to Discord user {ctx.author}.\n\n" \
+                    f"If this is not your action, please get in contact in [my test server](<{bot.config.get('server_link')}>)."
+                )
+            except: ... #Just attempt to send it and don't bother if failed
     
     # Verification done
     await cm.create_connection(ctx.author.id, user.id)
