@@ -88,14 +88,18 @@ async def delete(
     # Get users' feeds
     feeds = await fcm.get_feeds_by_user(ctx.author.id)
 
-    # Fetch rooms
-    room_ids = []
-    for i in feeds:
-        room_ids.append(i['rr_id'])
-    rooms: List[recnetpy.dataclasses.Room] = await self.bot.RecNet.rooms.fetch_many(room_ids)
-    rooms_ = {}
-    for room in rooms:
-        rooms_[room.id] = room
+    if feeds:
+        # Fetch rooms
+        room_ids = []
+        for i in feeds:
+            room_ids.append(i['rr_id'])
+        
+        rooms: List[recnetpy.dataclasses.Room] = await self.bot.RecNet.rooms.fetch_many(room_ids)
+        rooms_ = {}
+        for room in rooms:
+            rooms_[room.id] = room
+    else:
+        rooms_ = {}
 
     # Create the view containing our feeds
     view = FeedView(feeds, self.bot, rooms_)
