@@ -2,19 +2,14 @@ from PIL import Image, ImageDraw, ImageFont
 import re
 import io
 import discord
+import re
 
 def snapchat_caption(image_bytes: bytes, text: str, filename: str = None):
-    """Edits a Snapchat caption on top of an image
-
-    Args:
-        image_bytes (bytes): bytes of the edited image
-        text (str): snapchat caption
-        filename (str, optional): filename. Defaults to None.
+    """Edits a Snapchat caption on top of an image.
 
     Returns:
         tuple[discord.File | PIL.Image]: Returns a discord.File and Pillow image object
     """
-    # open target image
     im = Image.open(image_bytes).convert("RGBA")
     if not text: return im
 
@@ -56,7 +51,6 @@ def snapchat_caption(image_bytes: bytes, text: str, filename: str = None):
 
     # Get bytes
     img_byte_arr = io.BytesIO()
-    out.save(img_byte_arr, format='PNG')
+    out.save(img_byte_arr, format='PNG', compress_type=3)
     img_byte_arr.seek(0)
     return (discord.File(fp=img_byte_arr, filename=f"{filename}.png"), out)
-    
