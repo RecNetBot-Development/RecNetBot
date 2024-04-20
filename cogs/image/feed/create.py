@@ -2,12 +2,16 @@ import discord
 from discord.commands import slash_command
 from discord.ext.bridge import BridgeOption as Option
 from embeds import get_default_embed
-from utils import room_url, img_url, BaseView
+from utils import room_url, img_url, BaseView, load_config
 from resources import get_icon
 from utils.autocompleters import room_searcher
 from database import FeedManager, FeedTypes
 from utils.converters import FetchRoom
 from tasks import add_room
+
+config = load_config(is_production=True)
+def is_developer(discord_user_id) -> bool:
+    return discord_user_id in config.get("developers")
 
 class ChannelView(BaseView):
     def __init__(self):
@@ -101,7 +105,7 @@ async def create(
 
     # Check if the user has made more than 2 feeds
     feed_count = await fcm.get_feed_count_by_user(ctx.author.id)
-    if feed_count >= max_feeds:
+    if feed_count >= max_feeds and not is_developer(ctx.author.id):
         await ctx.respond(
             f"You have reached the limit of {max_feeds} photo feeds. Please delete previous feeds.\n\n" \
             "You can delete a previous feed by deleting the webhook from the channel integrations.\n\n" \
@@ -160,7 +164,7 @@ async def create(
     rr_ids = await fcm.get_feed_rr_ids_in_channel(channel.id)
 
     # Don't let user create 2 same feeds in channel
-    if room.id in rr_ids:
+    if room.id in rr_ids and not is_developer(ctx.author.id):
         await ctx.respond(f"You have already created a photo feed of ^{room.name} in {channel.mention}! [|=(]")
         return
 
