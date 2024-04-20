@@ -5,8 +5,9 @@ import recnetpy.dataclasses
 import io
 import aiohttp
 import math
+import random
 from embeds import get_default_embed
-from typing import List, TYPE_CHECKING, Optional
+from typing import List, TYPE_CHECKING, Optional, Dict
 from utils import img_url, snapchat_caption, profile_url, post_url, room_url
 from resources import get_icon
 from discord.ext import tasks
@@ -97,9 +98,6 @@ async def update_feeds(bot: 'RecNetBot'):
             for j in feeds[i]:
                 await delete_feed(bot, j)
 
-    # Hard-code to image preview mode (DEBUG)
-    mode = "compact"
-
     # Calculate feed count (DEBUG)
     feed_count = 0
     for i in feeds.values():
@@ -178,15 +176,10 @@ async def update_feeds(bot: 'RecNetBot'):
                 url_for_img = img_url(img.image_name, resolution=480)
                 async with aiohttp.ClientSession() as session:
                     async with session.get(url_for_img) as resp:
-                        files = [snapchat_caption(io.BytesIO(await resp.read()), img.description, img.id)[0]]
+                        file = snapchat_caption(io.BytesIO(await resp.read()), img.description, img.id)[0]
             else:
                 # Send photo as an URL if no editing needs to be done
-                files = []
-
-            # Placeholders
-            content = None
-            embed = None
-            view = discord.MISSING
+                file = discord.MISSING
 
             # Patch image dataclass
             img.player = accounts[img.player_id]
@@ -197,24 +190,8 @@ async def update_feeds(bot: 'RecNetBot'):
             if img.created_at > timestamp:
                 img.created_at = timestamp
 
-            # Image preview mode
-            match mode:
-                case "embed":
-                    """
-                    Embed mode.
-
-                    Use embeds. Have info in embed. No buttons.
-                    """
-                    embed = embed_mode(img, files)
-
-                case "compact":
-                    """
-                    Compact mode.
-
-                    Don't use embeds. Have info in content. Buttons.
-                    """
-                    if files: img.image_name = None  # Don't embed image as URL
-                    content, view = compact_mode(img)
+            if file: img.image_name = None  # Don't embed image as URL
+            msg_kwargs = image_message(img, file.filename if file else None)
                     
              # Add display emoji to username if any
             if img.player.display_emoji: 
@@ -226,83 +203,59 @@ async def update_feeds(bot: 'RecNetBot'):
             for webhook_id in feeds[room_id]:
                 webhook = webhooks.get(webhook_id)
                 if webhook: 
-                    msg = await send(
+                    await send(
                         webhook, 
-                        bot, 
-                        content=content, 
-                        embed=embed, 
-                        files=files, 
+                        bot,
+                        file=file, 
                         username=user_name, 
                         avatar_url=img_url(img.player.profile_image, resolution=180, crop_square=True), 
-                        view=view
+                        **msg_kwargs
                     )
 
                     # Use cached attachment next if file sent
-                    if msg:
-                        files = []
-                        img.image_name = cached_attachments[msg.attachments[0].filename]
-
-                        if mode == "compact":
-                            content, view = compact_mode(img)
-                        else:
-                            embed = embed_mode(img, files)
+                    if file is not discord.MISSING:
+                        img.image_name = cached_attachments[file.filename]
+                        file = discord.MISSING
+                        msg_kwargs = image_message(img)
 
                 else: feeds[room_id].remove(webhook_id)
 
         print("Elapsed", time.perf_counter()-start) # DEBUG
 
-
-def embed_mode(img: recnetpy.dataclasses.Image, files: List[discord.File] = None) -> str:
-    embed = get_default_embed(
-        title=f"🔗 {img.description}" if img.description else "🔗 View on RecNet",
-        author=discord.EmbedAuthor(
-            name=f"🔗 @{img.player.username}",
-            url=profile_url(img.player.username)
-        ),
-        timestamp=datetime.fromtimestamp(img.created_at),
-        url=post_url(img.id),
-        footer=discord.EmbedFooter(f"^{img.room.name}", img_url(img.room.image_name, resolution=180, crop_square=True))
-    )
-
-    # Set attachment as the image file if we have one
-    if files:
-        print(f"attachment://{files[0].filename}") # DEBUG
-        embed.set_image(url=f"attachment://{files[0].filename}" if files else url_for_img)
-    else:
-        if "discord" in img.image_name:
-            # It can be a cached discord link
-            embed.set_image(url=img.image_name) 
-        else:
-            # RecNet iamge lin
-            url_for_img = img_url(img.image_name, resolution=480)
-            embed.set_image(url=url_for_img)
-    return embed
-
-
-def compact_mode(img: recnetpy.dataclasses.Image) -> str:
+def image_message(img: recnetpy.dataclasses.Image, filename: str = None) -> Dict[str, str]:
+    """
+    Returns the kwargs for the image message
+    """
     # Create button view
     view = ImageLinks(img, username=img.player.username, room_name=img.room.name)   
 
+    # Create embed skeleton
+    embed = get_default_embed(
+        footer=discord.EmbedFooter("Powered by RecNetBot", get_icon("rnb"))
+    )
+    
+    # Attach image to embed
+    if filename is not None:
+        # Use attachment
+        url_for_img =f"attachment://{filename}"
     if img.image_name:
         if "discord" in img.image_name:
             # Embed cached Discord image as URL
-            content = f"New [photo]({img.image_name})"
+            url_for_img = img.image_name
         else:
             # Embed RecNet image as URL
             url_for_img = img_url(img.image_name, resolution=480)
-            content = f"New [photo]({url_for_img})"
-    else:
-        # We don't need to embed image as url cuz it's an attachment
-        content = "New photo"
+        
+    embed.set_image(url=url_for_img)
 
-    # Stitch to content
-    content += f" taken in ^{img.room.name} by @{img.player.username} — <t:{img.created_at}:R>"
+    # Create content
+    content = f"New photo taken in ^{img.room.name} by @{img.player.username} — <t:{img.created_at}:R>"
 
     # Add description in content if any
     if img.description:
         content += f"\n\"{img.description.rstrip()}\""
 
-    return (content, view)
+    return {"content": content, "view": view, "embed": embed}
 
 
 async def delete_feed(bot: 'RecNetBot', webhook_id: int, channel: int | discord.TextChannel = None):
@@ -346,15 +299,15 @@ async def send(webhook: discord.Webhook, bot: 'RecNetBot', **kwargs) -> Optional
     msg = None
     try:
         # Check for attachments and if they're cached
-        files = kwargs.get("files")
-        if files and files[0].filename not in cached_attachments:
+        file: discord.File = kwargs.get("file")
+        if file is not discord.MISSING and file.filename not in cached_attachments:
             kwargs["wait"] = True
 
-        msg = await webhook.send(**kwargs)
+        msg: discord.WebhookMessage | None = await webhook.send(**kwargs)
 
         # Cache the attachment
-        if kwargs.get("wait"):
-            cached_attachments[msg.attachments[0].filename] = msg.attachments[0].url
+        if file is not discord.MISSING:
+            cached_attachments[file.filename] = msg.embeds[0].image.url
 
     except discord.errors.NotFound:  # Webhook has been deleted
         # Delete the feed
