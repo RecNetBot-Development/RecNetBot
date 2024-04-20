@@ -74,7 +74,21 @@ class ImageLinks(discord.ui.View):
             self.add_item(i)
             
     
-async def fetch_rooms(bot: 'RecNetBot', feeds: Dict, fetch_new_rooms: bool = False):
+def add_room(room: recnetpy.dataclasses.Room):
+    """Adds a room into the task cycle
+    """
+    global rooms
+    rooms[room.id] = room
+    
+    
+def delete_room(room_id: int):
+    """Removes a room from the task cycle
+    """
+    global rooms
+    if room_id in rooms: rooms.pop(room_id)
+
+    
+async def fetch_rooms(bot: 'RecNetBot', feeds: Dict):
     """Fetches the feeds' rooms and saves them in rooms variable
     """
     global rooms
@@ -85,25 +99,19 @@ async def fetch_rooms(bot: 'RecNetBot', feeds: Dict, fetch_new_rooms: bool = Fal
         room_ids = feeds.keys()
         if not room_ids: return
         
-        # If we only want to check for new rooms
-        if fetch_new_rooms:
-            room_ids = list(filter(lambda room_id: room_id not in rooms, room_ids))
-            print("New room ids", room_ids)
-            
-            # Check if there's any room_ids after filtering
-            if not room_ids: return
-        else:
-            # Overwrite old rooms
-            print("Overwriting rooms", room_ids)
-            room_ids = list(room_ids)
-            rooms = {}
+        # Overwrite old rooms
+        print("Overwriting rooms", room_ids)
+        room_ids = list(room_ids)
             
         # Fetch rooms
         rooms_ = await bot.RecNetWebhook.rooms.fetch_many(room_ids)
 
         # Save to room cache
+        new_rooms = {}
         for i in rooms_:
-            rooms[i.id] = i
+            new_rooms[i.id] = i
+            
+        rooms = new_rooms
     
     
 @tasks.loop(minutes=1)
@@ -121,22 +129,23 @@ async def validate_feeds(bot: 'RecNetBot'):
 @tasks.loop(seconds=interval)
 async def update_feeds(bot: 'RecNetBot'):
     global latest_image_timestamps, accounts, webhooks, interval, rate_limit, multiplier, max_photos, rooms, cached_attachments
+    
+    print("Ping!")
+    
     # Get all feeds from database
     feeds = await bot.fcm.get_feeds_based_on_type(FeedTypes.IMAGE)
-    if not feeds: return
-    
-    print("Feeds found...")
-    
-    # Update new rooms
-    await fetch_rooms(bot, feeds, fetch_new_rooms=True)
+    if not feeds or not rooms: return
 
     # Calculate feed count (DEBUG)
     feed_count = 0
     for i in feeds.values():
         feed_count += len(i)
         
+    # Copy rooms
+    rooms_copy = rooms.copy()
+        
     # Get room IDs
-    room_ids = list(rooms.keys())
+    room_ids = list(rooms_copy.keys())
     
     # Calculate room count
     room_count = len(room_ids)
@@ -160,7 +169,7 @@ async def update_feeds(bot: 'RecNetBot'):
         # Deleted?
         if room_id not in feeds:
             print(f"{room_id} not found from feeds. Deleted?") # DEBUG
-            if room_id in rooms: rooms.pop(room_id)
+            delete_room(room_id)
             continue
         
         # Get images from room
@@ -226,7 +235,7 @@ async def update_feeds(bot: 'RecNetBot'):
 
             # Patch image dataclass
             img.player = accounts[img.player_id]
-            img.room = rooms[img.room_id]
+            img.room = rooms_copy[img.room_id]
 
             # Some images are taken "from the future". This prevents it.
             timestamp = int(time.time())
