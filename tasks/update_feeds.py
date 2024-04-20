@@ -12,15 +12,6 @@ from utils import img_url, snapchat_caption, profile_url, post_url, room_url
 from resources import get_icon
 from discord.ext import tasks
 from database import FeedTypes
-from datetime import datetime
-
-"""
-
-TODO
-
-- Handle privated / deleted rooms
-
-"""
 
 if TYPE_CHECKING:
     from bot import RecNetBot
@@ -32,8 +23,8 @@ webhooks = {}
 cached_attachments = {}
 
 interval = 10 # task loop interval in seconds
-rate_limit = 10_000 # rec room rate limit (requests per hour)
-multiplier = 1.5 # what to multiply interval with if close to hitting ratelimit
+rate_limit = 9_500 # rec room rate limit (requests per hour)
+multiplier = 1.5 # what to multiply interval with if close to hitting ratelimit10
 max_photos = 5 # how many photos to fetch at a time
 
 # lock for fetching rooms
@@ -125,6 +116,11 @@ async def validate_feeds(bot: 'RecNetBot'):
     # Update all rooms
     await fetch_rooms(bot, feeds)
     
+    # Restart the task if it has crashed
+    if not update_feeds.is_running():
+        print("Restarting update_feeds() task...")
+        update_feeds.start(bot)
+    
     
 @tasks.loop(seconds=interval)
 async def update_feeds(bot: 'RecNetBot'):
@@ -154,12 +150,12 @@ async def update_feeds(bot: 'RecNetBot'):
     max_rooms = calculate_max_rooms(interval)
 
     # Print info (DEBUG)
-    print(f"\nLoop! Feeds: {feed_count}\nTask interval: {update_feeds.seconds} ({interval})\nRoom count: {room_count}/{max_rooms}\nRR API calls per hour: {rr_api_calls_per_hour(interval, room_count):,}/10,000\nMax photos: {max_photos}\n")
+    print(f"\nLoop! Feeds: {feed_count}\nTask interval: {update_feeds.seconds} ({interval})\nRoom count: {room_count}/{max_rooms}\nRR API calls per hour: {rr_api_calls_per_hour(interval, room_count):,}/{rate_limit:,}\nMax photos: {max_photos}\n")
 
     # If we have a risk of hitting the rate limit, increase task interval
     if rr_api_calls_per_hour(interval, room_count) >= rate_limit:
         interval *= multiplier
-        max_photos = math.ceil(max_photos * multiplier)
+        max_photos = math.floor(max_photos * multiplier)
         print(f"Hitting the rate limit. Increased interval from {interval/multiplier} to {interval}. Increased max rooms from {calculate_max_rooms(interval/multiplier)} to {calculate_max_rooms(interval)}. Increased max photos to {max_photos}")
         update_feeds.change_interval(seconds=interval)
         update_feeds.restart(bot)
@@ -229,6 +225,7 @@ async def update_feeds(bot: 'RecNetBot'):
                 async with aiohttp.ClientSession() as session:
                     async with session.get(url_for_img) as resp:
                         file = snapchat_caption(io.BytesIO(await resp.read()), img.description, img.id)[0]
+
             else:
                 # Send photo as an URL if no editing needs to be done
                 file = discord.MISSING
