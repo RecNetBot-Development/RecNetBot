@@ -91,14 +91,15 @@ class FeedManager():
             data = await cursor.fetchone()
         return data
 
-    async def get_feeds_in_server(self, server_id: int) -> Optional[int]:
+    async def get_feeds_in_server(self, server_id: int) -> Optional[List]:
         """
         Returns feeds in a server
         """
         async with await self.conn.execute(
-            f"""SELECT webhook_id, channel_id FROM feed WHERE server_id = :server_id""", 
+            f"""SELECT server_id, webhook_id, channel_id, id, rr_id FROM feed WHERE server_id = :server_id""", 
             {"server_id": server_id}
         ) as cursor:
+            cursor.row_factory = lambda cursor, row: {"server_id": row[0], "webhook_id": row[1], "channel_id": row[2], "id": row[3], "rr_id": row[4]}
             data = await cursor.fetchall()
         return data
     
@@ -114,7 +115,7 @@ class FeedManager():
             data = await cursor.fetchone()
         return data
     
-    async def get_feeds_by_user(self, creator_id: int) -> Optional[Dict]:
+    async def get_feeds_by_user(self, creator_id: int) -> Optional[List]:
         """
         Returns feeds made by a user
         """

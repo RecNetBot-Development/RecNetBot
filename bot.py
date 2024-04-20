@@ -19,7 +19,7 @@ from googleapiclient.errors import HttpError
 from google.auth.exceptions import DefaultCredentialsError
 from utils.paginator import RNBPage, RNBPaginator
 #from utils.persistent_views import *
-from tasks import backup_database, update_feeds
+from tasks import backup_database, start_feed_tracking
 
 class RecNetBot(commands.AutoShardedBot):
     def __init__(self, production: bool):
@@ -122,7 +122,7 @@ class RecNetBot(commands.AutoShardedBot):
         self.log_channel = await self.fetch_channel(self.config["log_channel"])
         
         # Start updating feeds
-        update_feeds.start(self)
+        await start_feed_tracking(self)
 
         await self.change_presence(
             status=discord.Status.online,

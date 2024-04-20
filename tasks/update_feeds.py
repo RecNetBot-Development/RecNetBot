@@ -5,7 +5,7 @@ import recnetpy.dataclasses
 import io
 import aiohttp
 import math
-import random
+import asyncio
 from embeds import get_default_embed
 from typing import List, TYPE_CHECKING, Optional, Dict
 from utils import img_url, snapchat_caption, profile_url, post_url, room_url
@@ -35,6 +35,9 @@ interval = 10 # task loop interval in seconds
 rate_limit = 10_000 # rec room rate limit (requests per hour)
 multiplier = 1.5 # what to multiply interval with if close to hitting ratelimit
 max_photos = 5 # how many photos to fetch at a time
+
+# lock for fetching rooms
+lock = asyncio.Lock()
 
 # Calculate the max amount of rooms we can fetch before hitting Rec Room API's rate limit
 def calculate_max_rooms(interval_seconds):
@@ -69,39 +72,74 @@ class ImageLinks(discord.ui.View):
         
         for i in buttons:
             self.add_item(i)
+            
+    
+async def fetch_rooms(bot: 'RecNetBot', feeds: Dict, fetch_new_rooms: bool = False):
+    """Fetches the feeds' rooms and saves them in rooms variable
+    """
+    global rooms
 
-@tasks.loop(seconds=interval)
-async def update_feeds(bot: 'RecNetBot'):
+    # Only one task can access this at once
+    async with lock:
+        # Get all rooms' ids
+        room_ids = feeds.keys()
+        if not room_ids: return
+        
+        # If we only want to check for new rooms
+        if fetch_new_rooms:
+            room_ids = list(filter(lambda room_id: room_id not in rooms, room_ids))
+            print("New room ids", room_ids)
+            
+            # Check if there's any room_ids after filtering
+            if not room_ids: return
+        else:
+            # Overwrite old rooms
+            print("Overwriting rooms", room_ids)
+            room_ids = list(room_ids)
+            rooms = {}
+            
+        # Fetch rooms
+        rooms_ = await bot.RecNetWebhook.rooms.fetch_many(room_ids)
+
+        # Save to room cache
+        for i in rooms_:
+            rooms[i.id] = i
+    
+    
+@tasks.loop(minutes=1)
+async def validate_feeds(bot: 'RecNetBot'):
     global latest_image_timestamps, accounts, webhooks, interval, rate_limit, multiplier, max_photos, rooms, cached_attachments
-
+    
     # Get all feeds from database
     feeds = await bot.fcm.get_feeds_based_on_type(FeedTypes.IMAGE)
     if not feeds: return
-
-    # Get all rooms' ids
-    room_ids = feeds.keys()
-    room_count = len(room_ids)
-
-    # Find any new rooms we haven't fetched yet
-    new_rooms = list(filter(lambda room_id: room_id not in rooms, room_ids))
-
-    # Fetch & cache new rooms
-    if new_rooms:
-        print(f"New rooms: {new_rooms}")  # DEBUG
-        rooms_ = await bot.RecNetWebhook.rooms.fetch_many(list(new_rooms))
-        for i in rooms_:
-            rooms[i.id] = i
-            new_rooms.remove(i.id)
-
-        # these rooms are privated or deleted cuz they couldn't be fetched
-        for i in new_rooms:
-            for j in feeds[i]:
-                await delete_feed(bot, j)
+    
+    # Update all rooms
+    await fetch_rooms(bot, feeds)
+    
+    
+@tasks.loop(seconds=interval)
+async def update_feeds(bot: 'RecNetBot'):
+    global latest_image_timestamps, accounts, webhooks, interval, rate_limit, multiplier, max_photos, rooms, cached_attachments
+    # Get all feeds from database
+    feeds = await bot.fcm.get_feeds_based_on_type(FeedTypes.IMAGE)
+    if not feeds: return
+    
+    print("Feeds found...")
+    
+    # Update new rooms
+    await fetch_rooms(bot, feeds, fetch_new_rooms=True)
 
     # Calculate feed count (DEBUG)
     feed_count = 0
     for i in feeds.values():
         feed_count += len(i)
+        
+    # Get room IDs
+    room_ids = list(rooms.keys())
+    
+    # Calculate room count
+    room_count = len(room_ids)
 
     # Calculate max rooms (DEBUG)
     max_rooms = calculate_max_rooms(interval)
@@ -119,6 +157,12 @@ async def update_feeds(bot: 'RecNetBot'):
 
     # Begin sending new images to channels
     for room_id in room_ids:
+        # Deleted?
+        if room_id not in feeds:
+            print(f"{room_id} not found from feeds. Deleted?") # DEBUG
+            if room_id in rooms: rooms.pop(room_id)
+            continue
+        
         # Get images from room
         images = await bot.RecNetWebhook.images.in_room(room_id, take=max_photos)
 
@@ -162,10 +206,9 @@ async def update_feeds(bot: 'RecNetBot'):
         # get all channels and map them based on id
         for webhook_id in feeds[room_id]:
             if webhook_id in webhooks: continue
-            #channels[channel_id] = bot.get_channel(channel_id)
             try:
                 webhooks[webhook_id] = await bot.fetch_webhook(webhook_id)
-            except discord.errors.NotFound:
+            except (discord.errors.NotFound, discord.errors.Forbidden):
                 await delete_feed(bot, webhook_id)
                 feeds[room_id].remove(webhook_id)
 
@@ -314,3 +357,11 @@ async def send(webhook: discord.Webhook, bot: 'RecNetBot', **kwargs) -> Optional
         await delete_feed(bot, webhook.id, webhook.channel)
 
     return msg
+
+async def start_feed_tracking(bot: 'RecNetBot'):
+    # Starts tracking rooms for new pics.
+    update_feeds.start(bot)
+    
+    # Validates feeds.
+    # Fetches rooms and gets rid of privated / deleted rooms from feed cycle
+    validate_feeds.start(bot)
