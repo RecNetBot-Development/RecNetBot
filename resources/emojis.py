@@ -146,6 +146,7 @@ class Icons:
     rotating_logo = "https://i.imgur.com/9mU3aze.gif"
     notification = "https://i.imgur.com/YrmOjUc.png" # https://www.flaticon.com/free-icons/notification Notification icons created by Pixel perfect - Flaticon
     verify_command = "https://i.imgur.com/q2B9LsA.png"
+    rnb = "https://i.imgur.com/3BycwLj.png"
 
 def get_icon(name: str) -> str:
     """
