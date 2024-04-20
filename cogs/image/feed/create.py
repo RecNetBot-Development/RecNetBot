@@ -80,7 +80,7 @@ class ChannelView(BaseView):
 async def create(
     self, 
     ctx: discord.ApplicationContext, 
-    room: Option(FetchRoom, name="room", description="Room to track", required=True, autocomplete=room_searcher),
+    room: Option(FetchRoom, name="room", description="Enter room name", required=True, autocomplete=room_searcher),
 ):
     await ctx.interaction.response.defer()
 
@@ -103,12 +103,16 @@ async def create(
     # Get feed database manager
     fcm: FeedManager = self.bot.fcm
 
+    # /feed delete
+    group = discord.utils.get(self.__cog_commands__, name='feed')
+    destroy_cmd = discord.utils.get(group.walk_commands(), name='delete')
+
     # Check if the user has made more than 2 feeds
     feed_count = await fcm.get_feed_count_by_user(ctx.author.id)
     if feed_count >= max_feeds and not is_developer(ctx.author.id):
         await ctx.respond(
             f"You have reached the limit of {max_feeds} photo feeds. Please delete previous feeds.\n\n" \
-            "You can delete a previous feed by deleting the webhook from the channel integrations.\n\n" \
+            f"You can delete feeds using {destroy_cmd.mention}.\n\n" \
             f"This is an early access limitation. It is subject to change in the future. Reach out in [my test server](<{ctx.bot.config.get('server_link')}>) for any concerns."
         )
         return
@@ -118,14 +122,24 @@ async def create(
 
     # Sending a message containing our View
     em = get_default_embed(
-        title="Photo Feed",
+        title="Create Photo Feed",
         thumbnail=discord.EmbedMedia(url=get_icon("photo")),
         fields=[
             discord.EmbedField(
                 name="Select Channel",
-                value=
-                    f"Which channel should I send the latest photos taken in [^{room.name}](<{room_url(room.name)}>) to?" \
-                    "\n\nIf you can't find your desired channel, run this command in the channel and press the 'This Channel' button."
+                value=f"Which channel should I create the photo feed webhook of [^{room.name}](<{room_url(room.name)}>) in?",
+                inline=False
+            ),
+            discord.EmbedField(
+                name="What Does This Do?",
+                value="RecNetBot will treat the channel as a live feed of the room. Any new shared photos in the room will be sent in the channel. " \
+                      "You can always disable the feature.",
+                inline=False
+            ),
+            discord.EmbedField(
+                name="Tip",
+                value="If you can't find your desired channel, run this command in the channel and press the 'This Channel' button.",
+                inline=False
             )
         ],
         footer=discord.EmbedFooter(text="Note: You can type the channel name into the dropdown menu."),
@@ -188,10 +202,6 @@ async def create(
     # Tell update_feed() task to add new room
     add_room(room)
 
-    # /feed delete
-    group = discord.utils.get(self.__cog_commands__, name='feed')
-    detroy_cmd = discord.utils.get(group.walk_commands(), name='delete')
-
     # Inform user
     em = get_default_embed(
         title="Photo Feed",
@@ -204,7 +214,7 @@ async def create(
             ),
             discord.EmbedField(
                 name="Deleting",
-                value=f"Use {detroy_cmd.mention} to delete feeds.",
+                value=f"Use {destroy_cmd.mention} to delete feeds.",
                 inline=False
             ),
             discord.EmbedField(
