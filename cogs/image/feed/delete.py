@@ -4,7 +4,7 @@ from typing import Dict, TYPE_CHECKING, List
 from discord.commands import slash_command
 import recnetpy.dataclasses
 from embeds import get_default_embed
-from utils import room_url, img_url
+from utils import room_url, img_url, BaseView
 from resources import get_icon, get_emoji
 from database import FeedManager
 
@@ -40,8 +40,8 @@ class FeedButton(discord.ui.Button["FeedView"]):
         await interaction.followup.send(f"Successfully deleted ^{self.feed['room_name']} feed from {self.feed['server_name']}!", ephemeral=True)
 
 
-class FeedView(discord.ui.View):
-    def __init__(self, feeds: List[Dict], bot: 'RecNetBot', rooms: Dict[int, recnetpy.dataclasses.Room]):
+class FeedView(BaseView):
+    def __init__(self, feeds: List[Dict], bot: 'RecNetBot', rooms: Dict[int, recnetpy.dataclasses.Room], create_cmd):
         super().__init__()
 
         # Feeds
@@ -51,6 +51,7 @@ class FeedView(discord.ui.View):
         self.bot = bot
         self.fcm = bot.fcm
         self.rooms = rooms
+        self.create_cmd = create_cmd
 
         # Index every feed for deletion
         self.feed_index = {}
@@ -74,7 +75,8 @@ class FeedView(discord.ui.View):
     def create_embed(self):
         em = get_default_embed(
             title = "Delete a Photo Feed",
-            thumbnail=discord.EmbedMedia(url=get_icon("photo"))
+            thumbnail=discord.EmbedMedia(url=get_icon("photo")),
+            footer=discord.EmbedFooter(text="The feed cannot be retrieved after deletion. You can always recreate feeds.")
         )
         
         feed_fields = {}
@@ -92,7 +94,7 @@ class FeedView(discord.ui.View):
             for i, j in feed_fields.items():
                 em.add_field(name=i, value="\n".join(j), inline=False)
         else:
-            em.add_field(name="No feeds to delete!", value="You can create feeds in your servers with /feed create.")
+            em.add_field(name="No feeds to delete!", value=f"You can create feeds in your servers with {self.create_cmd.mention}.")
 
         return em
         
@@ -133,8 +135,12 @@ async def delete(
     else:
         rooms_ = {}
 
+    # /feed create
+    group = discord.utils.get(self.__cog_commands__, name='feed')
+    cmd = discord.utils.get(group.walk_commands(), name='create')
+
     # Create the view containing our feeds
-    view = FeedView(feeds, self.bot, rooms_)
+    view = FeedView(feeds, self.bot, rooms_, cmd)
 
     await ctx.respond(embed=view.embed, view=view, ephemeral=True)
 
