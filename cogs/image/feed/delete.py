@@ -5,18 +5,18 @@ from discord.commands import slash_command
 import recnetpy.dataclasses
 from embeds import get_default_embed
 from utils import room_url, img_url
-from resources import get_icon
+from resources import get_icon, get_emoji
 from database import FeedManager
 
 if TYPE_CHECKING:
     from bot import RecNetBot
 
 class FeedButton(discord.ui.Button["FeedView"]):
-    def __init__(self, bot: 'RecNetBot', feed: Dict, fcm: FeedManager):
+    def __init__(self, bot: 'RecNetBot', feed: Dict, fcm: FeedManager, label: str):
         self.feed = feed
         self.fcm = fcm
         self.bot = bot
-        super().__init__(style=discord.ButtonStyle.red, label=f"Delete {feed['room'].name}", custom_id=str(feed['id']))
+        super().__init__(style=discord.ButtonStyle.red, label=label, custom_id=str(feed['id']))
 
     async def callback(self, interaction: discord.Interaction):
         assert self.view is not None
@@ -37,22 +37,36 @@ class FeedButton(discord.ui.Button["FeedView"]):
         self.disabled = True
 
         await interaction.response.edit_message(embed=view.create_embed(), view=view)
-        await interaction.followup.send("Successfully deleted feed!", ephemeral=True)
+        await interaction.followup.send(f"Successfully deleted ^{self.feed['room_name']} feed from {self.feed['server_name']}!", ephemeral=True)
 
 
 class FeedView(discord.ui.View):
     def __init__(self, feeds: List[Dict], bot: 'RecNetBot', rooms: Dict[int, recnetpy.dataclasses.Room]):
         super().__init__()
 
+        # Feeds
         self.feeds = feeds
+        
+        # Misc
         self.bot = bot
         self.fcm = bot.fcm
         self.rooms = rooms
 
-        for i in feeds:
-            i["channel"] = self.bot.get_channel(self.feed['channel_id'])
-            i['room'] = self.rooms[i['room_id']]
-            self.add_item(FeedButton(self.bot, i, self.fcm))
+        # Index every feed for deletion
+        self.feed_index = {}
+
+        for i, feed in enumerate(self.feeds, start=1):
+            self.feed_index[feed['id']] = i
+            
+            # Fetch channel
+            channel = self.bot.get_channel(feed['channel_id'])
+            feed["channel_name"] = channel.mention if channel else f"{get_emoji('warning')} Unknown Channel"
+            
+            # Fetch room
+            room = self.rooms.get(feed['rr_id'], None)
+            feed['room_name'] = room.name if room else f"{get_emoji('warning')} Unknown Room"
+            
+            self.add_item(FeedButton(self.bot, feed, self.fcm, label=f"Delete {i}."))
             
         # Create embed once the channels have been fetched
         self.embed = self.create_embed()
@@ -63,13 +77,23 @@ class FeedView(discord.ui.View):
             thumbnail=discord.EmbedMedia(url=get_icon("photo"))
         )
         
+        feed_fields = {}
         if self.feeds:
-            # Fetch rooms
             for i in self.feeds:
-                em.add_field(name=i['id'], value=f"^{i['room'].name} in {i['channel'].mention}")
+                text = f"{self.feed_index[i['id']]}. ^{i['room_name']} in {i['channel_name']}"
+                
+                # Categorize based on if the server is in current server
+                server_name = i.get("server_name")
+                if server_name in feed_fields:
+                    feed_fields[server_name].append(text)
+                else:
+                    feed_fields[server_name] = [text]
+                    
+            for i, j in feed_fields.items():
+                em.add_field(name=i, value="\n".join(j), inline=False)
         else:
-            em.add_field(name="No feeds to delete!", value="You can create feeds with /feed create.")
-            
+            em.add_field(name="No feeds to delete!", value="You can create feeds in your servers with /feed create.")
+
         return em
         
 @slash_command(
@@ -80,18 +104,26 @@ async def delete(
     self, 
     ctx: discord.ApplicationContext
 ):
-    await ctx.interaction.response.defer()
+    await ctx.interaction.response.defer(ephemeral=True)
     
     # Get feed database manager
     fcm: FeedManager = self.bot.fcm
 
     # Get users' feeds
-    feeds = await fcm.get_feeds_by_user(ctx.author.id)
+    feeds = await fcm.get_feeds_by_user(ctx.author.id) or []
 
+    # Get feeds in server if admin
+    if ctx.author.guild_permissions.administrator:
+        server_feeds = await fcm.get_feeds_in_server(ctx.guild_id) or []
+        for i in server_feeds:
+            if i not in feeds: feeds.append(i)
+                
     if feeds:
         # Fetch rooms
         room_ids = []
         for i in feeds:
+            server = self.bot.get_guild(i['server_id'])
+            i["server_name"] = server.name if server else f"{get_emoji('warning')} Unknown Server"
             room_ids.append(i['rr_id'])
         
         rooms: List[recnetpy.dataclasses.Room] = await self.bot.RecNet.rooms.fetch_many(room_ids)
@@ -104,6 +136,6 @@ async def delete(
     # Create the view containing our feeds
     view = FeedView(feeds, self.bot, rooms_)
 
-    await ctx.respond(embed=view.embed, view=view)
+    await ctx.respond(embed=view.embed, view=view, ephemeral=True)
 
         
