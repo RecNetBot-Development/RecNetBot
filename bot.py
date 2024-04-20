@@ -112,7 +112,15 @@ class RecNetBot(commands.AutoShardedBot):
 
         # Get Rec Room API key
         self.RecNet = Client(api_key=self.config["rr_api_key"])
-        self.RecNetWebhook = Client(api_key=self.config["rr_webhook_key"])
+        
+        # Get RR API key for webhooks
+        rr_webhook_key = self.config.get("rr_webhook_key")
+        if rr_webhook_key is not None:
+            self.RecNetWebhook = Client(api_key=rr_webhook_key)
+            # Start updating feeds
+            await start_feed_tracking(self)
+        else:
+            print("No webhook key! Disabled feed.")
 
         # Initialize cat API
         if self.CatAPI.api_key:
@@ -120,9 +128,6 @@ class RecNetBot(commands.AutoShardedBot):
 
         self.verify_post = await self.RecNet.images.fetch(self.config["verify_post"])
         self.log_channel = await self.fetch_channel(self.config["log_channel"])
-        
-        # Start updating feeds
-        await start_feed_tracking(self)
 
         await self.change_presence(
             status=discord.Status.online,
