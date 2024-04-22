@@ -1,12 +1,16 @@
 {
     "rr_api_key": "",
+    "rr_webhook_key": "",
     "debug_guilds": [],
+    "developers": [],
     "discord_token": "",
-    "sqlite_database": "test.db",
-    "verify_post": 352672690,
+    "sqlite_database": "",
+    "verify_post": 0,
     "log_channel": 0,
     "perspective_api_key": "",
     "invite_link": "",
-    "server_link": "https://discord.gg/S9meE83Xu2",
-    "github_link": "https://github.com/RecNetBot-Development/RecNetBot"
+    "server_link": "",
+    "github_link": "",
+    "update_channel": 0,
+    "the_cat_api_key": ""
 }
