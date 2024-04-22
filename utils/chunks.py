@@ -1,4 +1,6 @@
-def chunks(list: list, n: int) -> list:
+from typing import Generator, List
+
+def chunks(list: list, n: int) -> Generator[List]:
     """
     Splits a list into n chunks
     """
