@@ -2,7 +2,8 @@ import discord
 from utils import img_url, profile_url
 from embeds import get_default_embed
 from utils.converters import FetchAccount
-from discord.commands import slash_command, Option
+from discord.commands import slash_command
+from discord.ext.bridge import BridgeOption as Option
 from exceptions import ConnectionNotFound
 from utils.autocompleters import account_searcher
 from database import ConnectionManager

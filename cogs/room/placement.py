@@ -2,7 +2,8 @@ import discord
 import recnetpy
 import recnetpy.dataclasses
 from utils.converters import FetchRoom
-from discord.commands import slash_command, Option
+from discord.commands import slash_command
+from discord.ext.bridge import BridgeOption as Option
 from resources import get_icon, get_emoji
 from embeds import get_default_embed
 from utils.rec_net_urls import img_url, profile_url

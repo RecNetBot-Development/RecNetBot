@@ -1,6 +1,7 @@
 import discord
 import math # nerdy
-from discord.commands import slash_command, Option
+from discord.commands import slash_command
+from discord.ext.bridge import BridgeOption as Option
 from utils.converters import FetchAccount
 from embeds import get_default_embed
 from resources import get_emoji

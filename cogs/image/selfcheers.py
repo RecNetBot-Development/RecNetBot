@@ -1,7 +1,8 @@
 import discord
 import time
 import asyncio
-from discord.commands import slash_command, Option
+from discord.commands import slash_command
+from discord.ext.bridge import BridgeOption as Option
 from embeds import get_default_embed
 from utils import img_url, profile_posts_url
 from utils.converters import FetchAccount

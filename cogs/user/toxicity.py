@@ -1,6 +1,7 @@
 import discord
 from discord import ApplicationContext
-from discord.commands import slash_command, Option
+from discord.commands import slash_command
+from discord.ext.bridge import BridgeOption as Option
 from utils.converters import FetchAccount
 from embeds import get_default_embed
 from utils import sanitize_bio, img_url, profile_url

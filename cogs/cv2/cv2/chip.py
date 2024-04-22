@@ -1,5 +1,6 @@
 import discord
-from discord.commands import slash_command, Option
+from discord.commands import slash_command
+from discord.ext.bridge import BridgeOption as Option
 from utils.cv2 import get_chip, get_formatted_port, generate_svg, Chip
 from utils.autocompleters import cv2_searcher
 from embeds import get_default_embed

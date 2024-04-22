@@ -1,5 +1,6 @@
 import discord
-from discord.commands import slash_command, Option
+from discord.commands import slash_command
+from discord.ext.bridge import BridgeOption as Option
 from exceptions import Disabled
 
 @slash_command(

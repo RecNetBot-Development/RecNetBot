@@ -3,7 +3,8 @@ import recnetpy
 import random
 from typing import List
 from recnetpy.dataclasses.account import Account
-from discord.commands import slash_command, Option
+from discord.commands import slash_command
+from discord.ext.bridge import BridgeOption as Option
 from embeds import fetch_profile_embed, get_default_embed
 
 # These are the last ids of the accounts from their respective join year

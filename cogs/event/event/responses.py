@@ -6,7 +6,8 @@ from recnetpy.dataclasses.event import Event
 from recnetpy.dataclasses.event_response import EventInteraction
 from utils.converters import FetchEvent
 from utils import chunks, profile_url, event_url, img_url
-from discord.commands import slash_command, Option
+from discord.commands import slash_command
+from discord.ext.bridge import BridgeOption as Option
 from utils.paginator import RNBPaginator, RNBPage
 
 

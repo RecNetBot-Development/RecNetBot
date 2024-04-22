@@ -1,5 +1,6 @@
 import discord
-from discord.commands import slash_command, Option
+from discord.commands import slash_command
+from discord.ext.bridge import BridgeOption as Option
 from utils.converters import FetchAccount
 from embeds import fetch_profile_embed
 from exceptions import ConnectionNotFound

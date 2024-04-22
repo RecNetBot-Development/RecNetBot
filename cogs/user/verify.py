@@ -1,7 +1,8 @@
 import discord
 from bot import RecNetBot
 from discord import ApplicationContext
-from discord.commands import slash_command, Option
+from discord.commands import slash_command
+from discord.ext.bridge import BridgeOption as Option
 from embeds import get_default_embed, fetch_profile_embed
 from utils import post_url, profile_url, unix_timestamp
 from resources import get_emoji, get_icon

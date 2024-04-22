@@ -7,7 +7,8 @@ from recnetpy.dataclasses.room import Room
 from recnetpy.dataclasses.role import Role
 from utils.converters import FetchRoom
 from utils import chunks, profile_url
-from discord.commands import slash_command, Option
+from discord.commands import slash_command
+from discord.ext.bridge import BridgeOption as Option
 from utils.paginator import RNBPaginator, RNBPage
 from utils.rec_net_urls import img_url, room_url
 from utils.autocompleters import room_searcher

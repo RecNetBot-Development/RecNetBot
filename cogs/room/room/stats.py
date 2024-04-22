@@ -1,6 +1,7 @@
 import discord
 from utils.converters import FetchRoom
-from discord.commands import slash_command, Option
+from discord.commands import slash_command
+from discord.ext.bridge import BridgeOption as Option
 from utils.autocompleters import room_searcher
 
 """

@@ -4,7 +4,8 @@ from embeds import get_default_embed
 from resources import get_emoji
 from typing import List, Optional
 from recnetpy.dataclasses.invention import Invention
-from discord.commands import slash_command, Option
+from discord.commands import slash_command
+from discord.ext.bridge import BridgeOption as Option
 from utils.paginator import RNBPaginator, RNBPage
 from exceptions import Disabled
 

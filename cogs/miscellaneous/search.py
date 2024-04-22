@@ -1,7 +1,8 @@
 import discord
 from discord.ext import commands
 from embeds import get_default_embed, fetch_profile_embed, room_embed, event_embed
-from discord.commands import slash_command, Option
+from discord.commands import slash_command
+from discord.ext.bridge import BridgeOption as Option
 from discord.ext.pages import PaginatorButton
 from embeds.invention_embed import invention_embed
 from resources import get_emoji

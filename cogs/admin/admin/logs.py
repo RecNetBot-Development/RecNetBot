@@ -1,6 +1,7 @@
 import discord
 from datetime import datetime
-from discord.commands import slash_command, Option
+from discord.commands import slash_command
+from discord.ext.bridge import BridgeOption as Option
 from utils import unix_timestamp, load_config
 from database import LoggingManager
 

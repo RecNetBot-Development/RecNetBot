@@ -1,7 +1,8 @@
 import discord
 import aiohttp
 import io
-from discord.commands import slash_command, Option
+from discord.commands import slash_command
+from discord.ext.bridge import BridgeOption as Option
 from utils.converters import FetchImage
 from utils import snapchat_caption, img_url
 
