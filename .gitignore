@@ -6,6 +6,7 @@ config/
 .env
 *.exe
 backup_date.txt
+.vscode/
 
 # ignoring these because requirements.txt is the main method of dependency control
 Pipfile
