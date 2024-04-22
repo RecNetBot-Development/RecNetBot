@@ -116,6 +116,7 @@ class Emoji:
     trashcan = "<:trashcan:1231330968510402571>"
     x = "<:x_:1231330896968417380>"
     warning = "⚠️"
+    tip = light
 
 class CategoryIcons:
     category_api = 963878518960291903  # (Api by Larea from NounProject.com)
