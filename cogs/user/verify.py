@@ -40,7 +40,7 @@ class Confirm(discord.ui.View):
 # For checking if the user has cheered the post
 class Check(discord.ui.View):
     def __init__(self, post_id: int = 1):
-        super().__init__(timeout=600)
+        super().__init__(timeout=60 * 15)  # 15 minutes
         self.value = None
         
         # Add link to the verification post
@@ -93,6 +93,7 @@ async def verify(
     
     # Check if RR account is already linked
     connected_discord_id = await cm.get_rec_room_connection(user.id)
+    print(connected_discord_id)
     
     # Prompt the user
     profile_em = await fetch_profile_embed(user)
@@ -173,14 +174,14 @@ async def verify(
         
         # Notify old Discord user
         bot: RecNetBot = self.bot
-        old_discord_user: discord.User = bot.get_user(connected_discord_id)
-        if old_discord_user:
-            try:
-                await old_discord_user.send(
-                    f"Your linked Rec Room account @{user.username} was transferred to Discord user {ctx.author}.\n\n" \
-                    f"If this is not your action, please get in contact in [my test server](<{bot.config.get('server_link')}>)."
-                )
-            except: ... #Just attempt to send it and don't bother if failed
+        try:
+            old_discord_user: discord.User = await bot.fetch_user(connected_discord_id)
+            await old_discord_user.send(
+                f"Your linked Rec Room account @{user.username} was transferred to Discord user {ctx.author}.\n\n" \
+                f"If this is not your action, please get in contact in [my server](<{bot.config.get('server_link')}>)."
+            )
+        except Exception as exc: #Just attempt to send it and don't bother if failed
+            print(exc)
     
     # Verification done
     await cm.create_connection(ctx.author.id, user.id)
