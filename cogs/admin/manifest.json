@@ -2,5 +2,11 @@
     "name": "Admin",
     "icon": "category_admin",
     "description": "Admin commands!",
-    "scripts": ["create_announcement", "announcement_stats", "logs"]
+    "scripts": [],
+    "groups": {
+        "admin": {
+            "scripts": ["create_announcement", "announcement_stats", "logs", "finfo"],
+            "description": "Admin commands."
+        }
+    }
 }

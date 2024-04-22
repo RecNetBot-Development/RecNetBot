@@ -5,3 +5,4 @@ owoify-py==2.0.0
 CairoSVG==2.7.1
 aiohttp==3.9.4
 aiosqlite==0.20.0
+pillow==10.3.0

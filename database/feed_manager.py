@@ -1,8 +1,10 @@
 from dataclasses import dataclass
 import sqlite3
 import asyncio
-from typing import Optional, List
-from sqlite3 import Connection
+import aiosqlite
+import time
+from typing import Optional, List, Dict
+from aiosqlite import Connection
 from enum import Enum
 
 @dataclass
@@ -14,47 +16,129 @@ class FeedTypes(Enum):
 @dataclass
 class FeedData:
     discord_id: int
-    channel_id: int
+    webhook_id: int
     type: FeedTypes
     rr_id: int
 
 class FeedManager():
-    def __init__(self, database: Connection):
+    def __init__(self, database: Connection = None):
         self.conn = database
-        self.c = self.conn.cursor()
-        self.create_table()
+
+    async def init(self, database: Connection):
+        self.conn = database
+        await self.create_table()
+        return self
         
-    def create_table(self):
+    async def create_table(self):
         """
         Creates the feed table
             - id int
-            - discord_id int
+            - creator_id int
+            - server_id int
+            - webhook_id int
             - channel_id int
             - type TypeEnum(image, room, event)
             - rr_id int
                         """
 
-        self.c.execute(f"""CREATE TABLE IF NOT EXISTS feed (id integer, discord_id integer, channel_id integer, type integer, rr_id integer, PRIMARY KEY (id, channel_id, type))""")
+        await self.conn.execute(f"""CREATE TABLE IF NOT EXISTS feed (id integer primary key not null, creator_id integer, server_id integer, webhook_id integer, channel_id integer, type integer, rr_id integer)""")
+        await self.conn.commit()
 
+    async def get_feeds_based_on_type(self, type: FeedTypes) -> Dict[int, List[int]]:
         """
-        Creates the feed history table
-            - feed_id int
-            - creation_unix int
-                        """
+        Returns feeds based on type. Dict[rr_id, List[webhook_id]]
+        """
+        async with await self.conn.execute(f"""SELECT webhook_id, rr_id FROM feed WHERE type = :type""", 
+                       {"type": type.value}) as cursor:
+            data = await cursor.fetchall()
 
-        self.c.execute(f"""CREATE TABLE IF NOT EXISTS feed_history (feed_id integer, creation_unix integer, PRIMARY KEY (feed_id))""")
-        
-    def get_feeds_in_channel(self, channel_id: int) -> List[FeedData]:
-        self.c.execute(f"""SELECT * FROM feed WHERE channel_id = :channel_id""", 
-                       {"channel_id": channel_id})
-        data = self.c.fetchall()
-        return self.raw_to_dataclasses(data)
+        feeds = {}
+        for row in data:
+            webhook_id = row[0]
+            rr_id = row[1]
+
+            # Append to feed
+            if rr_id in feeds:
+                feeds[rr_id].append(webhook_id)
+                continue
+            
+            # Create a new one
+            feeds[rr_id] = [webhook_id]
+
+        return feeds
     
-    def get_all_feeds(self) -> List[FeedData]:
-        self.c.execute(f"""SELECT * FROM feed""")
-        data = self.c.fetchall()
-        return self.raw_to_dataclasses(data)
+    async def get_all_rr_ids_based_on_type(self, type: FeedTypes) -> List[int]:
+        """
+        Returns RR ids of feeds with a specific type
+        """
+        async with await self.conn.execute(
+            f"""SELECT rr_id FROM feed WHERE type = :type""", 
+            {"type": type.value}
+        ) as cursor:
+            cursor.row_factory = lambda cursor, row: row[0]
+            data = await cursor.fetchall()
+        return list(set(data))
     
+    async def get_channel_id_of_feed(self, webhook_id: int) -> Optional[int]:
+        """
+        Returns channel id of feed if found
+        """
+        async with await self.conn.execute(
+            f"""SELECT channel_id FROM feed WHERE webhook_id = :webhook_id""", 
+            {"webhook_id": webhook_id}
+        ) as cursor:
+            cursor.row_factory = lambda cursor, row: row[0]
+            data = await cursor.fetchone()
+        return data
+
+    async def get_feeds_in_server(self, server_id: int) -> Optional[List]:
+        """
+        Returns feeds in a server
+        """
+        async with await self.conn.execute(
+            f"""SELECT server_id, webhook_id, channel_id, id, rr_id FROM feed WHERE server_id = :server_id""", 
+            {"server_id": server_id}
+        ) as cursor:
+            cursor.row_factory = lambda cursor, row: {"server_id": row[0], "webhook_id": row[1], "channel_id": row[2], "id": row[3], "rr_id": row[4]}
+            data = await cursor.fetchall()
+        return data
+    
+    async def get_feed_count_by_user(self, creator_id: int) -> Optional[int]:
+        """
+        Returns amount of feeds made by a user
+        """
+        async with await self.conn.execute(
+            f"""SELECT COUNT(1) FROM feed WHERE creator_id = :creator_id""", 
+            {"creator_id": creator_id}
+        ) as cursor:
+            cursor.row_factory = lambda cursor, row: row[0]
+            data = await cursor.fetchone()
+        return data
+    
+    async def get_feeds_by_user(self, creator_id: int) -> Optional[List]:
+        """
+        Returns feeds made by a user
+        """
+        async with await self.conn.execute(
+            f"""SELECT server_id, webhook_id, channel_id, id, rr_id FROM feed WHERE creator_id = :creator_id""", 
+            {"creator_id": creator_id}
+        ) as cursor:
+            cursor.row_factory = lambda cursor, row: {"server_id": row[0], "webhook_id": row[1], "channel_id": row[2], "id": row[3], "rr_id": row[4]}
+            data = await cursor.fetchall()
+        return data
+    
+    async def get_feed_rr_ids_in_channel(self, channel_id: int) -> Optional[int]:
+        """
+        Returns feed rr ids in channel
+        """
+        async with await self.conn.execute(
+            f"""SELECT rr_id FROM feed WHERE channel_id = :channel_id""", 
+            {"channel_id": channel_id}
+        ) as cursor:
+            cursor.row_factory = lambda cursor, row: row[0]
+            data = await cursor.fetchall()
+        return data
+
     def raw_to_dataclasses(self, data: list) -> List[FeedData]:
         # Turn database data into dataclasses
         dataclasses = [] 
@@ -63,43 +147,33 @@ class FeedManager():
             feed.type = FeedTypes(feed.type)
             dataclasses.append(feed)
         return dataclasses
-    
-    def update_history(self, feed_id: int, unix_timestamp: int):
-        with self.conn:
-            self.c.execute(f"""REPLACE INTO feed_history VALUES (:creation_unix) WHERE feed_id = :feed_id
-                           """, 
-                           {"feed_id": feed_id, "creation_unix": unix_timestamp})
 
-    def create_feed(self, discord_id: int, channel_id: int, type: FeedTypes, rr_id: int):
-        with self.conn:
-            self.c.execute(f"""REPLACE INTO feed VALUES (:discord_id, :channel_id, :type, :rr_id)
-                           """, 
-                           {"discord_id": discord_id, "channel_id": channel_id, "type": type.value, "rr_id": rr_id})
-            
-    def delete_feed(self, channel_id: int, type: int):
-        with self.conn:
-            self.c.execute(f"""DELETE FROM feed WHERE channel_id = :channel_id AND type = :type""", {"channel_id": channel_id, "type": type.value})
+    async def create_feed(self, creator_id: int, server_id: int, webhook_id: int, channel_id: int, type: FeedTypes, rr_id: int):
+        await self.conn.execute(
+            f"""INSERT INTO feed VALUES (NULL, :creator_id, :server_id, :webhook_id, :channel_id, :type, :rr_id)""", 
+            {"creator_id": creator_id, "server_id": server_id, "webhook_id": webhook_id, "channel_id": channel_id, "type": type.value, "rr_id": rr_id})
+        await self.conn.commit()
 
+    async def delete_feed_with_id(self, feed_id: int):
+        await self.conn.execute(f"""DELETE FROM feed WHERE id = :id""", {"id": feed_id})
+        await self.conn.commit()
+
+    async def delete_feed_with_webhook_id(self, webhook_id: int):
+        await self.conn.execute(f"""DELETE FROM feed WHERE webhook_id = :webhook_id""", {"webhook_id": webhook_id})
+        await self.conn.commit()
+
+    async def close(self):
+        await self.conn.close()
        
 async def main():
-    db = sqlite3.connect(":memory:", detect_types=sqlite3.PARSE_DECLTYPES)
-    cm = FeedManager(db)
+    db = await aiosqlite.connect(":memory:", detect_types=sqlite3.PARSE_DECLTYPES)
+    cm = FeedManager()
+    await cm.init(db)
     
-    discord_id = 69
-    channel_id = 420
-    type = FeedTypes.ROOM
-    rr_id = 2141244
-
-    cm.create_feed(discord_id, channel_id, type, rr_id)
-    cm.create_feed(discord_id, channel_id+2, type, rr_id)
-
-    print(cm.get_all_feeds())
-
-    cm.delete_feed(channel_id, type)
-
-    print(cm.get_all_feeds())
+    await cm.create_feed(1, 1, 1, FeedTypes.IMAGE, 1)
+    print(await cm.get_channel_id_of_feed(1))
     
-    db.close()
+    await db.close()
 
   
 

@@ -17,6 +17,8 @@ from googleapiclient import discovery
 from googleapiclient.errors import HttpError
 from google.auth.exceptions import DefaultCredentialsError
 from utils.paginator import RNBPage, RNBPaginator
+#from utils.persistent_views import *
+from tasks import backup_database, start_feed_tracking
 
 class RecNetBot(commands.AutoShardedBot):
     def __init__(self, production: bool):
@@ -27,6 +29,7 @@ class RecNetBot(commands.AutoShardedBot):
             # Developer only for now
             intents = discord.Intents.default()
             intents.members = True
+            intents.message_content = True
             super().__init__(help_command=None, intents=intents)
 
         # Load config
@@ -40,7 +43,8 @@ class RecNetBot(commands.AutoShardedBot):
         self.logger.addHandler(handler)
 
         # Add Modules
-        self.RecNet: Client = None
+        self.RecNet: Client = None  # For regular bot
+        self.RecNetWebhook: Client = None  # For webhook polling
         self.cog_manager = CogManager(self)
         self.CatAPI = CatAPI(api_key=self.config.get("the_cat_api_key"))
 
@@ -68,12 +72,10 @@ class RecNetBot(commands.AutoShardedBot):
         self.backup: aiosqlite.Connection = None
         self.cm = ConnectionManager()
         self.rcm = RoomCacheManager()
-        #self.icm = InventionCacheManager(self.db)
-        #self.bcm = BookmarkManager(self.db)
         self.lcm = LoggingManager()
         self.acm = AnnouncementManager()
         #self.gm = GuildManager()
-        #self.fcm = FeedManager()
+        self.fcm = FeedManager()
 
         # Banned users' Discord IDs
         # Updates everytime someone gets banned
@@ -98,14 +100,22 @@ class RecNetBot(commands.AutoShardedBot):
         await self.lcm.init(self.db)
         await self.acm.init(self.db)
         #await self.gm.init(self.db)
-        #await self.fcm.init(self.db)
+        await self.fcm.init(self.db)
 
         # Backup
         self.backup = await aiosqlite.connect("backup.db", detect_types=sqlite3.PARSE_DECLTYPES)
 
         # Get Rec Room API key
-        api_key = self.config["rr_api_key"]
-        self.RecNet = Client(api_key=api_key)
+        self.RecNet = Client(api_key=self.config["rr_api_key"])
+        
+        # Get RR API key for webhooks
+        rr_webhook_key = self.config.get("rr_webhook_key")
+        if rr_webhook_key is not None:
+            self.RecNetWebhook = Client(api_key=rr_webhook_key)
+            # Start updating feeds
+            await start_feed_tracking(self)
+        else:
+            print("No webhook key! Disabled feed.")
 
         # Initialize cat API
         if self.CatAPI.api_key:

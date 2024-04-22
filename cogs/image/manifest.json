@@ -2,7 +2,7 @@
     "name": "Image",
     "icon": "category_image",
     "description": "Commands relating to shared posts on RecNet!",
-    "scripts": ["photos"],
+    "scripts": ["photos", "snapchat"],
     "groups": {
         "image": {
             "scripts": ["data", "origin"],
@@ -11,6 +11,10 @@
         "filter": {
             "scripts": ["custom", "sort", "in", "minmax", "during"],
             "description": "Top-notch image filtering tools to pinpoint specific images."
+        },
+        "feed": {
+            "scripts": ["create", "delete"],
+            "description": "Handle live feeds of photos fetched from RecNet."
         }
     }
 }

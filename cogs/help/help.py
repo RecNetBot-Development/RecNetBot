@@ -87,7 +87,8 @@ async def help(self, ctx: discord.ApplicationContext):
             "info": {"mention": None, "beginner": True, "description": "View room info that cannot be seen otherwise"} 
         },
         "Image": {
-            "photos": {"mention": None, "beginner": True, "description": "Browse someone's RecNet photos"}
+            "photos": {"mention": None, "beginner": True, "description": "Browse someone's RecNet photos"},
+            "create": {"mention": None, "updated": True}
         },
         "Circuits V2": {
             "chip": {"mention": None, "description": "Lookup a CV2 chip and view its ports and properties", "beginner": True}

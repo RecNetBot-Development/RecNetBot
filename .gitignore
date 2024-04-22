@@ -4,6 +4,8 @@ venv/
 config/
 *.db
 .env
+*.exe
+backup_date.txt
 
 # ignoring these because requirements.txt is the main method of dependency control
 Pipfile
