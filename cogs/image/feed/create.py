@@ -127,7 +127,7 @@ async def create(
         fields=[
             discord.EmbedField(
                 name="Select Channel",
-                value=f"Which channel should I create the photo feed webhook of [^{room.name}](<{room_url(room.name)}>) in?",
+                value=f"Which channel should I create the photo feed webhook for [^{room.name}](<{room_url(room.name)}>) in?",
                 inline=False
             ),
             discord.EmbedField(
