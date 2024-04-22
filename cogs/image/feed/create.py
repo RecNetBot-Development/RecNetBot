@@ -84,19 +84,28 @@ async def create(
 ):
     await ctx.interaction.response.defer()
 
+    # Support server link
+    server_link = ctx.bot.config.get('server_link')
+
     # How many feeds can a user create
     max_feeds = 2
 
     # Make sure user is admin in server
     if not ctx.author.guild_permissions.administrator:
-        await ctx.respond("Only server administrators can create photo feeds! [|=(]")
+        await ctx.respond(
+            "Only server administrators can create photo feeds! [|=(]\n\n" \
+            f"If this is a mistake, reach out to us [here](<{server_link}>)."
+        )
         return
 
     #Make sure the bot can create webhooks
     if not ctx.app_permissions.manage_webhooks:
         await ctx.respond(
-            f"Missing permission: `Manage Webhooks`. [|=(]\n\n" \
-            f"I need this permission to create a webhook that sends the latest photos taken in[^{room.name}](<{room_url(room.name)}>)."
+            f"Missing permission: `Manage Webhooks`. [|=(]\n" \
+            f"Make sure there's no permission conflicts with roles and this channel allows webhooks.\n\n"
+            f"I need this permission to create a webhook that sends the latest photos taken in [^{room.name}](<{room_url(room.name)}>).\n\n" \
+            f"If you have trouble setting this up, reach out to us [here](<{server_link}>).\n\n" \
+            f"[Permission](https://i.imgur.com/JesFZxb.png)"
         )
         return
     
@@ -113,7 +122,7 @@ async def create(
         await ctx.respond(
             f"You have reached the limit of {max_feeds} photo feeds. Please delete previous feeds.\n\n" \
             f"You can delete feeds using {destroy_cmd.mention}.\n\n" \
-            f"This is an early access limitation. It is subject to change in the future. Reach out in [my test server](<{ctx.bot.config.get('server_link')}>) for any concerns."
+            f"This is an early access limitation. It is subject to change in the future. Reach out in [my test server](<{server_link}>) for any concerns."
         )
         return
 
@@ -152,7 +161,7 @@ async def create(
         await ctx.followup.send(
             "This is an early access feature! By testing this feature, you're helping us polish it.\n\n" \
             f"For now you can only create **{max_feeds}** photo feeds in total. You have `{max_feeds - feed_count}` feed slots left. You can always delete created feeds.\n\n"
-            f"If you have any suggestions, issues or encounter any bugs, please please *please* let us know in [my test server](<{ctx.bot.config.get('server_link')}>)! " \
+            f"If you have any suggestions, issues or encounter any bugs, please please *please* let us know in [my test server](<{server_link}>)! " \
             "Your feedback is super-duper valuable to us. You'll also be kept up-to-date of any updates.\n\n" \
             "Please note that old feeds **MAY** be deleted once the feature leaves early access.\n\n" \
             "Thanks for trying this feature out! <3", 
