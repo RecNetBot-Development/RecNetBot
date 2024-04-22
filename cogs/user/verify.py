@@ -9,6 +9,7 @@ from resources import get_emoji, get_icon
 from datetime import datetime, timedelta
 from utils.autocompleters import account_searcher
 from database import ConnectionManager
+from exceptions import AccountNotFound
 
 BENEFITS = "- autofill the `username` slot in commands\n" \
            "- list your owned rooms in `room` slots so you don't have to type them out."

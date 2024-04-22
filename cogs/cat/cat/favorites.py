@@ -1,4 +1,5 @@
 import discord
+from typing import List
 from discord.commands import slash_command
 from utils.cat_api import Cat, CatAPI
 from discord.ext.pages import PaginatorButton
