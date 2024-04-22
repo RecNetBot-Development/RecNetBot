@@ -4,7 +4,6 @@ import random
 import bisect
 from embeds import get_default_embed
 from utils import img_url, unix_timestamp, post_url
-from typing import List
 from recnetpy.dataclasses.image import Image
 from discord.commands import slash_command
 from datetime import datetime
