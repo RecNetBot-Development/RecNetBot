@@ -1,8 +1,6 @@
-from dataclasses import dataclass
 import discord
 from discord.ext import commands
 from embeds import get_default_embed
-from resources import get_emoji
 from typing import List, Optional
 from recnetpy.dataclasses.event import Event
 from recnetpy.dataclasses.event_response import EventInteraction

@@ -1,5 +1,4 @@
 import discord
-import random
 from discord.commands import slash_command
 from embeds import get_default_embed
 from resources import get_emoji, get_icon

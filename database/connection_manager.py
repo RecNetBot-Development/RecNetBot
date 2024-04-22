@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 import aiosqlite
-import sqlite3
 from typing import Optional
 from aiosqlite import Connection
 from recnetpy.dataclasses.account import Account

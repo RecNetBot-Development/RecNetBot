@@ -1,12 +1,10 @@
 import discord
-from discord.interactions import Interaction
 from utils.converters import FetchRoom
 from utils import room_url, profile_url, shorten
 from discord.commands import slash_command, Option
 from embeds import room_embed
 from bot import RecNetBot
 from recnetpy.dataclasses.room import Room
-from exceptions import RoomNotFound
 from utils.autocompleters import room_searcher
 from utils import BaseView
 

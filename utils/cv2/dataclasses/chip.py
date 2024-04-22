@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from typing import List
-from enum import Enum
 from .filter_path import FilterPath
 from .node_port import NodePort
 

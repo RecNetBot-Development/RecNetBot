@@ -1,7 +1,6 @@
 import discord
 from discord import ApplicationContext
 from discord.commands import slash_command
-from discord.ext.commands import cooldown, BucketType
 from embeds import get_default_embed, fetch_profile_embed
 from database import ConnectionManager
 

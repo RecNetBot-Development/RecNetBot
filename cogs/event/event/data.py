@@ -1,5 +1,4 @@
 import discord
-import json
 from discord.commands import slash_command, Option
 from utils.converters import FetchEvent
 from utils import format_json_block

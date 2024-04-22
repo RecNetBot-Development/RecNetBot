@@ -2,7 +2,6 @@ import discord
 import time
 from embeds import announcement_embed
 from discord.commands import slash_command
-from discord.ext.commands import check, CheckFailure
 from utils import unix_timestamp, load_config
 from database import Announcement, AnnouncementManager
 

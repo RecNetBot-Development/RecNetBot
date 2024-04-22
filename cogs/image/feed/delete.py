@@ -4,7 +4,7 @@ from typing import Dict, TYPE_CHECKING, List
 from discord.commands import slash_command
 import recnetpy.dataclasses
 from embeds import get_default_embed
-from utils import room_url, img_url, BaseView
+from utils import BaseView
 from resources import get_icon, get_emoji
 from database import FeedManager
 

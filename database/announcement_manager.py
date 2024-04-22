@@ -4,7 +4,6 @@ import aiosqlite
 from dataclasses import dataclass
 from typing import Optional
 from aiosqlite import Connection
-from enum import Enum
 
 @dataclass
 class Announcement:

@@ -8,7 +8,7 @@ import sqlite3
 from logging.handlers import RotatingFileHandler
 from utils.cat_api import CatAPI
 from utils import load_config
-from discord.ext import commands, tasks
+from discord.ext import commands
 from recnetpy import Client
 from typing import List
 from modules import CogManager
@@ -17,8 +17,7 @@ from googleapiclient import discovery
 from googleapiclient.errors import HttpError
 from google.auth.exceptions import DefaultCredentialsError
 from utils.paginator import RNBPage, RNBPaginator
-#from utils.persistent_views import *
-from tasks import backup_database, start_feed_tracking
+from tasks import start_feed_tracking
 
 class RecNetBot(commands.AutoShardedBot):
     def __init__(self, production: bool):

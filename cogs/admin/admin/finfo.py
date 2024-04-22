@@ -3,7 +3,6 @@ from bot import RecNetBot
 from discord.commands import slash_command
 from utils import load_config
 from database import FeedTypes
-from tasks.update_feeds import rr_api_calls_per_hour
 
 config = load_config(is_production=True)
 

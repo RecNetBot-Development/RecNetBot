@@ -5,7 +5,7 @@ from utils import img_url, unix_timestamp
 from utils.paginator import RNBPaginator, RNBPage
 from typing import List
 from recnetpy.dataclasses.image import Image
-from discord.commands import slash_command, Option
+from discord.commands import slash_command
 
 #MAX_IMAGE_ID = 570000000
 MAX_OLD_IMAGE_ID = 4_000_000

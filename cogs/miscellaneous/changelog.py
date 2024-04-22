@@ -1,7 +1,4 @@
 import discord
-import random
-import re
-from embeds import get_default_embed
 from discord.commands import slash_command
 from utils import get_changelog
 

@@ -4,13 +4,11 @@ import random
 import bisect
 from embeds import get_default_embed
 from utils import img_url, unix_timestamp, post_url
-from utils.paginator import RNBPaginator, RNBPage
 from typing import List
 from recnetpy.dataclasses.image import Image
-from discord.commands import slash_command, Option
+from discord.commands import slash_command
 from datetime import datetime
 from resources import get_emoji, get_icon
-from enum import Enum
 from utils import load_config
 
 config = load_config(is_production=True)

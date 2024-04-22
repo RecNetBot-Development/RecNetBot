@@ -1,10 +1,6 @@
 import discord
-import random
 from discord.commands import slash_command
-from embeds import get_default_embed, cat_embed
 from utils.cat_api import Cat, CatAPI
-from resources import get_icon
-from typing import List, Optional
 from discord.ext.pages import PaginatorButton
 from utils.paginator import RNBPage, RNBPaginator
 from utils import load_config

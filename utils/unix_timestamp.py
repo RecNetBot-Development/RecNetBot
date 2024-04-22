@@ -1,4 +1,3 @@
-from typing import Union
 from .date_to_unix import date_to_unix
 
 def unix_timestamp(timestamp: int, format=str) -> str:

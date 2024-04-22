@@ -4,7 +4,6 @@ from discord.ext import commands
 from discord.commands import slash_command
 from embeds import get_default_embed
 from resources import get_emoji
-from typing import List
 from utils import chunks
 from utils.paginator import RNBPaginator, RNBPage
 

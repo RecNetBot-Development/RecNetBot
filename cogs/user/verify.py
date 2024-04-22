@@ -2,8 +2,6 @@ import discord
 from bot import RecNetBot
 from discord import ApplicationContext
 from discord.commands import slash_command, Option
-from discord.ext.commands import cooldown, BucketType
-from exceptions import AccountNotFound, ConnectionAlreadyDone
 from embeds import get_default_embed, fetch_profile_embed
 from utils import post_url, profile_url, unix_timestamp
 from resources import get_emoji, get_icon

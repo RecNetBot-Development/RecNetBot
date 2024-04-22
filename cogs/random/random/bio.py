@@ -1,11 +1,10 @@
 import discord
 import recnetpy
 import random
-from utils import img_url
 from utils.paginator import RNBPaginator, RNBPage
 from typing import List
 from recnetpy.dataclasses.image import Image
-from discord.commands import slash_command, Option
+from discord.commands import slash_command
 
 MAX_PLAYER_ID = 83_276_444
 

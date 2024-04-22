@@ -6,7 +6,6 @@ import aiosqlite
 from aiosqlite import Connection
 from typing import Optional
 from recnetpy.dataclasses.room import Room
-from recnetpy import Client
 
 @dataclass
 class RoomStats:

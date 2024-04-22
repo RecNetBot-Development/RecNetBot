@@ -2,7 +2,6 @@ import aiohttp
 from os.path import exists
 import datetime
 import json
-import asyncio
 from typing import Dict, Optional
 from .dataclasses.chip import Chip, create_chip
 from .generate_svg_image import setup_svg_generator

@@ -1,7 +1,5 @@
 import discord
-from discord.commands import slash_command, Option
-from utils.converters import FetchInvention
-from utils import format_json_block
+from discord.commands import slash_command
 from embeds import get_default_embed
 
 @slash_command(

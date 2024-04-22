@@ -1,7 +1,6 @@
 import discord
 from datetime import datetime
 from discord.commands import slash_command, Option
-from discord.ext.commands import check
 from utils import unix_timestamp, load_config
 from database import LoggingManager
 

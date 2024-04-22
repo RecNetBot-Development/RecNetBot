@@ -2,7 +2,6 @@ from dataclasses import dataclass
 import sqlite3
 import asyncio
 import aiosqlite
-import time
 from typing import Optional, List, Dict
 from aiosqlite import Connection
 from enum import Enum
