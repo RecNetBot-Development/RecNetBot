@@ -18,6 +18,7 @@ RecNetBot is a [Discord](https://discord.gg/S9meE83Xu2) bot that utilizes [RecNe
 # Core Features
 - Looking up Rec Room users with detailed information regarding their account.
 - Room statistics that cannot be seen otherwise.
+- Photo feeds that send the latest photos taken in a room in real time.
 - Image filtering and sorting features to pinpoint that *one* niche post that you have been searching for forever.
 - Rank and placement features to evaluate the success of your room in contests or the hot page.
 - Browsing categorized event attendees painlessly.
