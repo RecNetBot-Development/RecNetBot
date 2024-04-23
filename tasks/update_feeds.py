@@ -223,7 +223,7 @@ async def update_feeds(bot: 'RecNetBot'):
         # Process each image and send them to webhooks
         for img in new_images:
             if img.description: 
-                img.description = re.sub("\[[^\]]+\]\([^)]+\)", "", img.description)  # No hidden links
+                img.description = re.sub(r"\[[^\]]+\]\([^)]+\)", "", img.description)  # No hidden links
                 
                 # Make sure it's not empty after the filtering
                 if img.description: 
