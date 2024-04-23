@@ -21,6 +21,7 @@ accounts = {}
 rooms = {}
 webhooks = {}
 cached_attachments = {}
+dev_mode = False
 
 interval = 10 # task loop interval in seconds
 rate_limit = 9_500 # rec room rate limit (requests per hour)
@@ -91,7 +92,7 @@ async def fetch_rooms(bot: 'RecNetBot', feeds: Dict):
         if not room_ids: return
         
         # Overwrite old rooms
-        print("Overwriting rooms", room_ids)
+        log("Overwriting rooms", room_ids)
         room_ids = list(room_ids)
             
         # Fetch rooms
@@ -118,7 +119,7 @@ async def validate_feeds(bot: 'RecNetBot'):
     
     # Restart the task if it has crashed
     if not update_feeds.is_running():
-        print("Restarting update_feeds() task...")
+        log("Restarting update_feeds() task...")
         update_feeds.start(bot)
     
     
@@ -126,7 +127,7 @@ async def validate_feeds(bot: 'RecNetBot'):
 async def update_feeds(bot: 'RecNetBot'):
     global latest_image_timestamps, accounts, webhooks, interval, rate_limit, multiplier, max_photos, rooms, cached_attachments
     
-    print("Ping!")
+    log("Ping!")
     
     # Get all feeds from database
     feeds = await bot.fcm.get_feeds_based_on_type(FeedTypes.IMAGE)
@@ -149,14 +150,14 @@ async def update_feeds(bot: 'RecNetBot'):
     # Calculate max rooms (DEBUG)
     max_rooms = calculate_max_rooms(interval)
 
-    # Print info (DEBUG)
-    print(f"\nLoop! Feeds: {feed_count}\nTask interval: {update_feeds.seconds} ({interval})\nRoom count: {room_count}/{max_rooms}\nRR API calls per hour: {rr_api_calls_per_hour(interval, room_count):,}/{rate_limit:,}\nMax photos: {max_photos}\n")
+    # log info (DEBUG)
+    log(f"\nLoop! Feeds: {feed_count}\nTask interval: {update_feeds.seconds} ({interval})\nRoom count: {room_count}/{max_rooms}\nRR API calls per hour: {rr_api_calls_per_hour(interval, room_count):,}/{rate_limit:,}\nMax photos: {max_photos}\n")
 
     # If we have a risk of hitting the rate limit, increase task interval
     if rr_api_calls_per_hour(interval, room_count) >= rate_limit:
         interval *= multiplier
         max_photos = math.floor(max_photos * multiplier)
-        print(f"Hitting the rate limit. Increased interval from {interval/multiplier} to {interval}. Increased max rooms from {calculate_max_rooms(interval/multiplier)} to {calculate_max_rooms(interval)}. Increased max photos to {max_photos}")
+        log(f"Hitting the rate limit. Increased interval from {interval/multiplier} to {interval}. Increased max rooms from {calculate_max_rooms(interval/multiplier)} to {calculate_max_rooms(interval)}. Increased max photos to {max_photos}")
         update_feeds.change_interval(seconds=interval)
         update_feeds.restart(bot)
 
@@ -164,7 +165,7 @@ async def update_feeds(bot: 'RecNetBot'):
     for room_id in room_ids:
         # Deleted?
         if room_id not in feeds:
-            print(f"{room_id} not found from feeds. Deleted?") # DEBUG
+            log(f"{room_id} not found from feeds. Deleted?") # DEBUG
             delete_room(room_id)
             continue
         
@@ -191,7 +192,7 @@ async def update_feeds(bot: 'RecNetBot'):
         # Benchmarking (DEBUG)
         start = time.perf_counter() 
 
-        print(f"{len(list(new_images))} new images in {room_id}") # DEBUG
+        log(f"{len(list(new_images))} new images in {room_id}") # DEBUG
         latest_image_timestamps[room_id] = new_images[-1].created_at
 
         # Fetch all accounts
@@ -269,7 +270,7 @@ async def update_feeds(bot: 'RecNetBot'):
 
                 else: feeds[room_id].remove(webhook_id)
 
-        print("Elapsed", time.perf_counter()-start) # DEBUG
+        log("Elapsed", time.perf_counter()-start) # DEBUG
 
 def image_message(img: recnetpy.dataclasses.Image, filename: str = None) -> Dict[str, str]:
     """
@@ -306,6 +307,11 @@ def image_message(img: recnetpy.dataclasses.Image, filename: str = None) -> Dict
 
     return {"content": content, "view": view, "embed": embed}
 
+
+def log(*args, **kwargs):
+    global dev_mode
+    if dev_mode:
+        print(*args, **kwargs)
 
 async def delete_feed(bot: 'RecNetBot', webhook_id: int, channel: int | discord.TextChannel = None):
     """Deletes the feed from memory and database
@@ -365,6 +371,10 @@ async def send(webhook: discord.Webhook, bot: 'RecNetBot', **kwargs) -> Optional
     return msg
 
 async def start_feed_tracking(bot: 'RecNetBot'):
+    # Check if dev mode for logs
+    global dev_mode
+    dev_mode = not bot.production
+    
     # Starts tracking rooms for new pics.
     update_feeds.start(bot)
     
