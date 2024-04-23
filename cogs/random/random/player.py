@@ -20,21 +20,22 @@ LAST_ACCOUNT_IDS = {
 }
 
 class RandomAccount(discord.ui.View):
-    def __init__(self, rec_net: recnetpy.Client, year: int = None, bio_only: bool = False, amount: int = 1):
+    def __init__(self, rec_net: recnetpy.Client, year: int = None, bio_only: bool = False):
         super().__init__()
         self.RecNet = rec_net
         self.year = year
         self.bio_only = bio_only
-        self.amount = amount
         # Interaction timeout
         self.timeout = 600
         self.disable_on_timeout = True
         # Timeout for fetching accounts
         self.time_out = 10
+        self.users = []
+        self.amount = 3
         
-    async def fetch_account(self, amount: int = 1) -> List[Account]:
-        attempts, users = 0, []
-        while not users:
+    async def fetch_account(self) -> List[Account]:
+        attempts = 0
+        while len(self.users) < self.amount:
             # If no user was able to be found
             if attempts >= self.time_out:
                 break
@@ -47,15 +48,19 @@ class RandomAccount(discord.ui.View):
                 if year == 2015: year = 2016
                 
             # Fetch the random user
-            random_ids = random.sample(range(LAST_ACCOUNT_IDS.get(year-1), LAST_ACCOUNT_IDS.get(year)), amount)
-            users = await self.RecNet.accounts.fetch_many(random_ids)
+            random_ids = random.sample(range(LAST_ACCOUNT_IDS.get(year-1), LAST_ACCOUNT_IDS.get(year)), self.amount * 5)
+            self.users += await self.RecNet.accounts.fetch_many(random_ids)
             
             attempts += 1
 
-        return users
+        # Return first 3 and remove from cache
+        return_users = self.users[:self.amount]
+        self.users = self.users[self.amount:]
+
+        return return_users
             
     async def fetch_with_embed(self) -> List[discord.Embed]:
-        users = await self.fetch_account(self.amount)
+        users = await self.fetch_account()
         
         # If it times out
         if not users:
@@ -64,16 +69,16 @@ class RandomAccount(discord.ui.View):
             return [embed]
         
         embeds = []
-        if self.bio_only:
-            embed = get_default_embed()
-            for user in users:
-                bio = await user.get_bio()
-                embed.add_field(name=f"@{user.username}", value=bio, inline=False)
-            embeds.append(embed)
-        else:
-            for user in users:
-                em = await fetch_profile_embed(user)
-                embeds.append(em)
+        #if self.bio_only:
+        #    embed = get_default_embed()
+        #    for user in users:
+        #        bio = await user.get_bio()
+        #        embed.add_field(name=f"@{user.username}", value=bio, inline=False)
+        #    embeds.append(embed)
+        #else:
+        for user in users:
+            em = await fetch_profile_embed(user, include=[])
+            embeds.append(em)
             
         return embeds
             
@@ -103,17 +108,9 @@ class RandomAccount(discord.ui.View):
 async def player(
     self, 
     ctx: discord.ApplicationContext,
-    join_date: Option(int, "Choose join date if any", choices=[2016, 2017, 2018, 2019, 2020, 2021, 2022], required=False),
-    amount: Option(int, "How many you'd like", min_value=1, max_value=5, default=1)
+    join_date: Option(int, "Choose join date if any", choices=[2016, 2017, 2018, 2019, 2020, 2021, 2022], required=False)
 ):
     await ctx.interaction.response.defer()
 
-    view = RandomAccount(self.bot.RecNet, year=join_date, amount=amount)
+    view = RandomAccount(self.bot.RecNet, year=join_date)
     await view.respond(ctx.interaction)
-
-    
-    
-
-        
-
-        

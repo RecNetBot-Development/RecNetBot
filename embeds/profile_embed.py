@@ -1,4 +1,5 @@
 import discord
+from typing import List
 from resources import get_emoji
 from utils import unix_timestamp, img_url, sanitize_bio, sanitize_name
 from utils.formatters import format_platforms, format_identities, format_pronouns
@@ -20,12 +21,11 @@ def profile_embed(account: Account) -> discord.Embed:
     em = get_default_embed()
     info = [
         f"{get_emoji('username')} @{sanitize_name(account.username)}",
-        f"{get_emoji('level')} Level `{account.level.level}`",
-        f"{get_emoji('subscribers')} Subscribers: `{account.subscriber_count:,}`",
+        f"{get_emoji('level')} Level `{account.level.level}`" if account.level is not None else None,
+        f"{get_emoji('subscribers')} Subscribers: `{account.subscriber_count:,}`" if account.subscriber_count is not None else None, # Optional
         f"{get_emoji('pronouns')} {format_pronouns(account.personal_pronouns)}" if account.personal_pronouns else None,
         f"{get_emoji('identities')} {' '.join(format_identities(account.identity_flags))}" if account.identity_flags else None,
-        f"```{sanitize_bio(account.bio)}```" if account.bio else None,
-        #f"{get_emoji('junior') if account.is_junior else get_emoji('mature')} {'Junior account!' if account.is_junior else 'Mature account!'}",
+        f"```{sanitize_bio(account.bio)}```" if account.bio else None,  # Optional
         f' '.join(format_platforms(account.platforms)) if account.platforms else None,
         f"{get_emoji('date')} Joined {unix_timestamp(account.created_at)}",
         f"{get_emoji('information')} ID: `{account.id}`"
@@ -49,14 +49,20 @@ def profile_embed(account: Account) -> discord.Embed:
     return em
 
 
-async def fetch_profile_embed(account: Account) -> discord.Embed:
+async def fetch_profile_embed(account: Account, include: List = ["subscriber", "level", "bio", "influencer"]) -> discord.Embed:
     """
     Fetches the necessary data and returns the embed
+    
+    optional include: ["subscriber", "level", "bio", "influencer"]
     """
     
-    await account.get_subscriber_count()
-    await account.get_level()
-    await account.get_bio()
-    await account.get_is_influencer()
+    if "subscriber" in include:
+        await account.get_subscriber_count()
+    if "level" in include:
+        await account.get_level()
+    if "bio" in include:
+        await account.get_bio()
+    if "influencer" in include:
+        await account.get_is_influencer()
     
     return profile_embed(account)
