@@ -17,7 +17,7 @@ from googleapiclient import discovery
 from googleapiclient.errors import HttpError
 from google.auth.exceptions import DefaultCredentialsError
 from utils.paginator import RNBPage, RNBPaginator
-from tasks import start_feed_tracking, backup_database
+from tasks import start_feed_tracking, backup_database, update_feeds
 
 class RecNetBot(commands.AutoShardedBot):
     def __init__(self, production: bool):
@@ -112,7 +112,11 @@ class RecNetBot(commands.AutoShardedBot):
         if rr_webhook_key is not None:
             self.RecNetWebhook = Client(api_key=rr_webhook_key)
             # Start updating feeds
-            await start_feed_tracking(self)
+            if not update_feeds.update_feeds.is_running():
+                print("Starting feed task.")
+                await start_feed_tracking(self)
+            else:
+                print("Feed task already running!")
         else:
             print("No webhook key! Disabled feed.")
 
