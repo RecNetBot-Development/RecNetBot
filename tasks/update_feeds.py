@@ -7,6 +7,7 @@ import aiohttp
 import math
 import asyncio
 from embeds import get_default_embed
+from discord.utils import escape_markdown, escape_mentions
 from typing import List, TYPE_CHECKING, Optional, Dict
 from utils import img_url, snapchat_caption, profile_url, post_url, room_url
 from resources import get_icon
@@ -299,11 +300,14 @@ def image_message(img: recnetpy.dataclasses.Image, filename: str = None) -> Dict
     embed.set_image(url=url_for_img)
 
     # Create content
-    content = f"New photo taken in ^{img.room.name} by @{img.player.username} — <t:{img.created_at}:R>"
+    username = escape_mentions(escape_markdown(img.player.username))
+    content = f"New photo taken in ^{img.room.name} by @{username} — <t:{img.created_at}:R>"
 
     # Add description in content if any
     if img.description:
-        content += f"\n\"{img.description.rstrip()}\""
+        # Make sure no markdown or pings get sent!
+        clean = escape_mentions(escape_markdown(img.description)).rstrip()
+        content += f"\n\"{clean}\""
 
     return {"content": content, "view": view, "embed": embed}
 
