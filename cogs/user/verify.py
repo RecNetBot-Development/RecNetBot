@@ -143,7 +143,7 @@ async def verify(
     verify_em.title = "Verification Steps"
     verify_em.description = "\n".join(
         [
-            f"1. {specify} [this RecNet post]({post_url(post.id)}) to verify that you own the account.",
+            f"1. {specify} [this RecNet post]({post_url(post.id)}) to verify that you own the account. Make sure to login!",
             "2. Press the Verify button.",
             f"\nThis expires {unix_timestamp(int(timeout_datetime.timestamp()), 'R')}."
         ]
