@@ -112,6 +112,8 @@ async def fetch_rooms(bot: 'RecNetBot', feeds: Dict):
 async def validate_feeds(bot: 'RecNetBot'):
     global latest_image_timestamps, accounts, webhooks, interval, rate_limit, multiplier, max_photos, rooms, cached_attachments
     
+    log("Validating feeds..")
+    
     # Get all feeds from database
     feeds = await bot.fcm.get_feeds_based_on_type(FeedTypes.IMAGE)
     if not feeds: return
@@ -389,8 +391,10 @@ async def start_feed_tracking(bot: 'RecNetBot'):
     dev_mode = not bot.production
     
     # Starts tracking rooms for new pics.
-    update_feeds.start(bot)
+    if not update_feeds.is_running():
+        update_feeds.start(bot)
     
     # Validates feeds.
     # Fetches rooms and gets rid of privated / deleted rooms from feed cycle
-    validate_feeds.start(bot)
+    if not validate_feeds.is_running():
+        validate_feeds.start(bot)

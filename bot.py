@@ -112,11 +112,8 @@ class RecNetBot(commands.AutoShardedBot):
         if rr_webhook_key is not None:
             self.RecNetWebhook = Client(api_key=rr_webhook_key)
             # Start updating feeds
-            if not update_feeds.update_feeds.is_running():
-                print("Starting feed task.")
-                await start_feed_tracking(self)
-            else:
-                print("Feed task already running!")
+            print("Starting feed task.")
+            await start_feed_tracking(self)
         else:
             print("No webhook key! Disabled feed.")
 
