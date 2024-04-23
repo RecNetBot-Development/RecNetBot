@@ -139,6 +139,11 @@ class RecNetBot(commands.AutoShardedBot):
             f"Running on: {platform.system()} {platform.release()} ({os.name})\n",
             sep="\n"
         )
+        
+        # Warn about dev mode
+        if not self.production:
+            for i in range(3):
+                print("DEVELOPER MODE! DO NOT USE IN PRODUCTION!")
 
     def run(self):
         super().run(self.config['discord_token'])
