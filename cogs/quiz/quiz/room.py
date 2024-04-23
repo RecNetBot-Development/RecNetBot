@@ -102,7 +102,7 @@ class RoomQuiz(BaseView):
     def __init__(self, rec_net: recnetpy.Client):
         super().__init__()
         self.RecNet = rec_net
-        self.timeout = 180
+        self.timeout = 60 * 30  # 30 minutes
         self.current_room: Room = None
         self.amount = 5
 

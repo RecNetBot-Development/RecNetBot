@@ -130,7 +130,7 @@ class ImageQuiz(BaseView):
     def __init__(self, rec_net: recnetpy.Client):
         super().__init__()
         self.RecNet = rec_net
-        self.timeout = 180
+        self.timeout = 60 * 30 # 30 minutes
         self.current_image: Image = None
         self.amount = 1
 
