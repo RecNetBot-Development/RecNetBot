@@ -7,6 +7,7 @@ from embeds import get_default_embed
 from utils import BaseView
 from resources import get_icon, get_emoji
 from database import FeedManager
+from discord.utils import get_or_fetch
 
 if TYPE_CHECKING:
     from bot import RecNetBot
@@ -124,7 +125,7 @@ async def delete(
         # Fetch rooms
         room_ids = []
         for i in feeds:
-            server = self.bot.get_guild(i['server_id'])
+            server = await get_or_fetch(self.bot, "guild", i['server_id'], default=None)
             i["server_name"] = server.name if server else f"{get_emoji('warning')} Unknown Server"
             room_ids.append(i['rr_id'])
         
