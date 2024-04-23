@@ -6,6 +6,7 @@ import io
 import aiohttp
 import math
 import asyncio
+import re
 from embeds import get_default_embed
 from discord.utils import escape_markdown, escape_mentions, get_or_fetch
 from typing import List, TYPE_CHECKING, Optional, Dict
@@ -222,11 +223,20 @@ async def update_feeds(bot: 'RecNetBot'):
         # Process each image and send them to webhooks
         for img in new_images:
             if img.description: 
-                # Download new photo and edit Snapchat caption
-                url_for_img = img_url(img.image_name, resolution=480)
-                async with aiohttp.ClientSession() as session:
-                    async with session.get(url_for_img) as resp:
-                        file = snapchat_caption(io.BytesIO(await resp.read()), img.description, img.id)[0]
+                img.description = re.sub("\[[^\]]+\]\([^)]+\)", "", img.description)  # No hidden links
+                
+                # Make sure it's not empty after the filtering
+                if img.description: 
+                    # Download new photo and edit Snapchat caption
+                    url_for_img = img_url(img.image_name, resolution=480)
+                    async with aiohttp.ClientSession() as session:
+                        async with session.get(url_for_img) as resp:
+                            file = snapchat_caption(io.BytesIO(await resp.read()), img.description, img.id)[0]
+                            
+                    img.description = escape_mentions(escape_markdown(img.description))  # No mentions or markdown
+                    img.description = img.description.strip()  # No leading or trailing characters
+                else:
+                    file = discord.MISSING
 
             else:
                 # Send photo as an URL if no editing needs to be done
@@ -305,9 +315,7 @@ def image_message(img: recnetpy.dataclasses.Image, filename: str = None) -> Dict
 
     # Add description in content if any
     if img.description:
-        # Make sure no markdown or pings get sent!
-        clean = escape_mentions(escape_markdown(img.description)).rstrip()
-        content += f"\n\"{clean}\""
+        content += f"\n\"{img.description}\""
 
     return {"content": content, "view": view, "embed": embed}
 
@@ -316,6 +324,7 @@ def log(*args, **kwargs):
     global dev_mode
     if dev_mode:
         print(*args, **kwargs)
+
 
 async def delete_feed(bot: 'RecNetBot', webhook_id: int, channel: int | discord.TextChannel = None):
     """Deletes the feed from memory and database
