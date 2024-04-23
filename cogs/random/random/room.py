@@ -17,7 +17,7 @@ class RandomRoom(discord.ui.View):
         
     async def fetch_room(self, amount: int = 1) -> List[Image]:
         if not self.room_pool:
-            self.room_pool = await self.RecNet.rooms.hot(take=100)
+            self.room_pool = await self.RecNet.rooms.hot(take=1000)
         
         rooms = random.choices(self.room_pool)
 
