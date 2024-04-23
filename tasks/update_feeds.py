@@ -7,7 +7,7 @@ import aiohttp
 import math
 import asyncio
 from embeds import get_default_embed
-from discord.utils import escape_markdown, escape_mentions
+from discord.utils import escape_markdown, escape_mentions, get_or_fetch
 from typing import List, TYPE_CHECKING, Optional, Dict
 from utils import img_url, snapchat_caption, profile_url, post_url, room_url
 from resources import get_icon
@@ -325,9 +325,9 @@ async def delete_feed(bot: 'RecNetBot', webhook_id: int, channel: int | discord.
     # Get channel id if not passed
     if not channel:
         channel_id = await bot.fcm.get_channel_id_of_feed(webhook_id)
-        channel = bot.get_channel(channel_id)
+        channel = await get_or_fetch(bot, 'channel', channel_id, default=None)
     elif isinstance(channel, int):
-        channel = bot.get_channel(channel)
+        channel = await get_or_fetch(bot, 'channel', channel, default=None)
 
     # Delete the feed
     await bot.fcm.delete_feed_with_webhook_id(webhook_id)
