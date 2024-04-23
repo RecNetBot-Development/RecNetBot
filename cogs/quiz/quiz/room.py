@@ -3,7 +3,7 @@ import recnetpy
 import random
 import bisect
 from embeds import get_default_embed
-from utils import img_url, room_url
+from utils import img_url, room_url, BaseView
 from recnetpy.dataclasses.room import Room
 from discord.commands import slash_command
 from resources import get_icon
@@ -13,17 +13,40 @@ config = load_config(is_production=True)
 
 class RoomButton(discord.ui.Button):
     def __init__(self, name: str, answer_showcase: bool = None):
+        self.original_label = name
         if answer_showcase is not None:
-            super().__init__(style=discord.ButtonStyle.green if answer_showcase is True else discord.ButtonStyle.red, label=name, disabled=True)
+            super().__init__(style=discord.ButtonStyle.green if answer_showcase is True else discord.ButtonStyle.red, label=self.original_label, disabled=True)
         else:
-            super().__init__(style=discord.ButtonStyle.grey, label=name)
+            super().__init__(style=discord.ButtonStyle.grey, label=self.original_label)
         self.name = name
+        
+        self.suggestions = 0
 
     async def callback(self, interaction: discord.Interaction):
         await interaction.response.defer(invisible=True)
 
         assert self.view is not None
         view: RoomQuiz = self.view
+        
+        # Suggest an answer if you're not the author
+        if not view.authority_check(interaction):
+            # Check if the user has already suggested an answer
+            if interaction.user.id in view.suggestions:
+                await interaction.followup.send(content="You have already suggested an answer!", ephemeral=True)
+                return
+                
+            # Add +1 to suggestions
+            self.suggestions += 1
+            
+            # Credit user as suggestion maker and prevent from suggesting
+            # more than once to a question
+            view.suggestions[interaction.user.id] = self.name
+            
+            # Add to button
+            self.label = f"{self.original_label} +{self.suggestions}"
+            self.style = discord.ButtonStyle.primary
+            await interaction.edit_original_response(view=view)
+            return
         
         await view.answer(interaction, self.name)
 
@@ -39,6 +62,11 @@ class NextButton(discord.ui.Button):
 
         assert self.view is not None
         view: RoomQuiz = self.view
+        
+        # Don't let non-authors press any other button
+        if not view.authority_check(interaction):
+            await interaction.followup.send(content="Not so fast! You can only suggest answers.", ephemeral=True)
+            return
         
         await view.respond(interaction)
 
@@ -63,9 +91,14 @@ class ResultButton(discord.ui.Button):
         assert self.view is not None
         view: RoomQuiz = self.view
         
+        # Don't let non-authors press any other button
+        if not view.authority_check(interaction):
+            await interaction.followup.send(content="Not so fast! You can only suggest answers.", ephemeral=True)
+            return
+        
         await view.results(interaction)
 
-class RoomQuiz(discord.ui.View):
+class RoomQuiz(BaseView):
     def __init__(self, rec_net: recnetpy.Client):
         super().__init__()
         self.RecNet = rec_net
@@ -86,6 +119,9 @@ class RoomQuiz(discord.ui.View):
         self.best_streak = 0
         self.streak_type = ""
         self.correct_answer = 0
+
+        # Suggesters. Resets every question
+        self.suggestions = {}
 
         # Different caches
         self.room_pool = []
@@ -119,6 +155,18 @@ class RoomQuiz(discord.ui.View):
         else:
             self.streak = 1
             self.streak_type = correct_key
+
+        # Credit suggestions
+        if self.suggestions:
+            field = discord.EmbedField(name="Helpers", value="")
+            for user_id, room_name_ in self.suggestions.items():
+                emoji = "✅" if room_name_ == self.correct_answer else "❌"
+                field.value += f"{emoji} <@{user_id}> — ^{room_name_}\n"
+            field.value = field.value.rstrip() # Strip lingering newline
+            self.current_embed.append_field(field)
+
+        # Clear suggestions
+        self.suggestions = {}
 
         # Update components
         self.clear_items()

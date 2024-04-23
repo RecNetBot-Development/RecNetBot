@@ -8,7 +8,7 @@ from recnetpy.dataclasses.image import Image
 from discord.commands import slash_command
 from datetime import datetime
 from resources import get_emoji, get_icon
-from utils import load_config
+from utils import load_config, BaseView
 
 config = load_config(is_production=True)
 
@@ -19,17 +19,40 @@ MAX_NEW_IMAGE_ID = 300_000_000
 
 class YearButton(discord.ui.Button):
     def __init__(self, year: int, answer_showcase: bool = None):
+        self.original_label = str(year)
         if answer_showcase is not None:
-            super().__init__(style=discord.ButtonStyle.green if answer_showcase is True else discord.ButtonStyle.red, label=str(year), disabled=True)
+            super().__init__(style=discord.ButtonStyle.green if answer_showcase is True else discord.ButtonStyle.red, label=self.original_label, disabled=True)
         else:
-            super().__init__(style=discord.ButtonStyle.grey, label=str(year))
+            super().__init__(style=discord.ButtonStyle.grey, label=self.original_label)
         self.year = year
+
+        self.suggestions = 0
 
     async def callback(self, interaction: discord.Interaction):
         await interaction.response.defer(invisible=True)
 
         assert self.view is not None
         view: ImageQuiz = self.view
+        
+        # Suggest an answer if you're not the author
+        if not view.authority_check(interaction):
+            # Check if the user has already suggested an answer
+            if interaction.user.id in view.suggestions:
+                await interaction.followup.send(content="You have already suggested an answer!", ephemeral=True)
+                return
+                
+            # Add +1 to suggestions
+            self.suggestions += 1
+            
+            # Credit user as suggestion maker and prevent from suggesting
+            # more than once to a question
+            view.suggestions[interaction.user.id] = self.year
+            
+            # Add to button
+            self.label = f"{self.original_label} +{self.suggestions}"
+            self.style = discord.ButtonStyle.primary
+            await interaction.edit_original_response(view=view)
+            return
         
         await view.answer(interaction, self.year)
 
@@ -42,6 +65,11 @@ class HintButton(discord.ui.Button):
 
         assert self.view is not None
         view: ImageQuiz = self.view
+
+        # Don't let non-authors press any other button
+        if not view.authority_check(interaction):
+            await interaction.followup.send(content="Not so fast! You can only suggest answers.", ephemeral=True)
+            return
 
         # Disable self
         self.disabled = True
@@ -61,11 +89,16 @@ class NextButton(discord.ui.Button):
         assert self.view is not None
         view: ImageQuiz = self.view
         
+        # Don't let non-authors press any other button
+        if not view.authority_check(interaction):
+            await interaction.followup.send(content="Not so fast! You can only suggest answers.", ephemeral=True)
+            return
+        
         await view.respond(interaction)
 
 
 class ResultButton(discord.ui.Button):
-    def __init__(self, correct: bool = True):
+    def __init__(self):
         super().__init__(
             style=discord.ButtonStyle.green, 
             label="Results"
@@ -76,6 +109,11 @@ class ResultButton(discord.ui.Button):
 
         assert self.view is not None
         view: ImageQuiz = self.view
+        
+        # Don't let non-authors press any other button
+        if not view.authority_check(interaction):
+            await interaction.followup.send(content="Not so fast! You can only suggest answers.", ephemeral=True)
+            return
         
         await view.results(interaction)
 
@@ -88,7 +126,7 @@ class LinkButton(discord.ui.Button):
             url=link
         )
 
-class ImageQuiz(discord.ui.View):
+class ImageQuiz(BaseView):
     def __init__(self, rec_net: recnetpy.Client):
         super().__init__()
         self.RecNet = rec_net
@@ -110,6 +148,9 @@ class ImageQuiz(discord.ui.View):
         self.streak_type = ""
         self.correct_answer = 0
         self.hint_counter = 0
+
+        # Suggesters. Resets every question
+        self.suggestions = {}
 
         # If set to true, id range is 1 -> MAX_OLD_IMAGE_ID
         # If set to false, id range is MAX_OLD_IMAGE_ID -> MAX_NEW_IMAGE_ID
@@ -156,6 +197,18 @@ class ImageQuiz(discord.ui.View):
             self.streak = 1
             self.streak_type = correct_key
 
+        # Credit suggestions
+        if self.suggestions:
+            field = discord.EmbedField(name="Helpers", value="")
+            for user_id, year_ in self.suggestions.items():
+                emoji = "✅" if year_ == self.correct_answer else "❌"
+                field.value += f"{emoji} <@{user_id}> — {year_}\n"
+            field.value = field.value.rstrip() # Strip lingering newline
+            self.current_embed.append_field(field)
+
+        # Clear suggestions
+        self.suggestions = {}
+
         # Update components
         self.clear_items()
         self.add_item(NextButton(correct))
@@ -200,7 +253,7 @@ class ImageQuiz(discord.ui.View):
             return
 
         # Share the hint
-        self.current_embed.add_field(name=f"{get_emoji('light')} Hint", value=random.choice(hints))
+        self.current_embed.add_field(name=f"{get_emoji('tip')} Hint", value=random.choice(hints))
         await interaction.edit_original_response(embed=self.current_embed, view=self)
     
 
