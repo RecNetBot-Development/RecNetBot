@@ -5,6 +5,7 @@ from utils import unix_timestamp, load_config
 from embeds import get_default_embed
 from resources import get_icon, get_emoji
 from database import LoggingManager
+from discord.ext.bridge import BridgeOption as Option
 
 config = load_config(is_production=True)
 
@@ -15,16 +16,21 @@ config = load_config(is_production=True)
 )
 async def usage(
     self, 
-    ctx: discord.ApplicationContext
+    ctx: discord.ApplicationContext,
+    user: Option(discord.User, description="Check a Discord user [OPTIONAL]", required=False)
 ):
     await ctx.interaction.response.defer(invisible=True)
 
+    # Use author's id if parameter empty
+    discord_user = user if user else ctx.author
+
     lcm: LoggingManager = self.bot.lcm
     first_entry_timestamp = await lcm.get_first_entry_timestamp()
-    logs = await lcm.get_ran_commands_by_user_after_timestamp(first_entry_timestamp, ctx.author.id)
+    logs = await lcm.get_ran_commands_by_user_after_timestamp(first_entry_timestamp, discord_user.id)
     all_logs = await lcm.get_ran_commands_after_timestamp(first_entry_timestamp)
 
     em = get_default_embed()
+    em.set_footer(text=discord_user, icon_url=discord_user.avatar)
 
     # Never used RNB before
     if not logs:
@@ -64,17 +70,18 @@ async def usage(
     else:
         top_percent = round(top_percent, 2)
 
+    # Get the datetime of the first database entry
+    first_entry_datetime = datetime.fromtimestamp(first_entry_timestamp)
+
     # Create embed
     em.title = "Your RecNetBot Statistics"
     em.description = "\n".join((
         f"You first started using RecNetBot on {unix_timestamp(first_timestamp, 'D')}.",
         f"You have ran commands `{user_total_ran:,}` times.",
-        f"You are a top `{top_percent}%` RecNetBot user!"
+        f"You are a top `{top_percent}%` RecNetBot user!",
+        f"*Data since {first_entry_datetime.strftime('%B, %d %Y')}*"
     ))
     em.set_thumbnail(url=get_icon("rotating_logo"))
-
-    first_entry_datetime = datetime.fromtimestamp(first_entry_timestamp)
-    em.set_footer(text=f"Data since {first_entry_datetime.strftime('%B, %d %Y')}")
 
     fav_commands = ""
     for cmd, usage in top_5_used_commands:
