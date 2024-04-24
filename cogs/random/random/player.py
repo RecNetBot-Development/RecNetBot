@@ -86,7 +86,7 @@ async def player(
     self, 
     ctx: discord.ApplicationContext,
     join_date: Option(int, "Choose join date if any", choices=[2016, 2017, 2018, 2019, 2020, 2021, 2022], required=False),
-    amount: Option(int, "How many you'd like", min_value=1, max_value=5, required=False) 
+    amount: Option(int, "How many you'd like", min_value=1, max_value=5, required=False, default=1) 
 ):
     await ctx.interaction.response.defer()
     
