@@ -117,6 +117,11 @@ class Emoji:
     x = "<:x_:1231330896968417380>"
     warning = "⚠️"
     tip = light
+    patreon = "<:patreon:1232645282668347403>"
+    token_white = "<:token2:1120446788072120432>"
+    discord_white = "<:discord2:1120446959799500961>"
+    kofi = "<:kofi:1120441142463434752>"
+
 
 class CategoryIcons:
     category_api = 963878518960291903  # (Api by Larea from NounProject.com)

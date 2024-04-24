@@ -52,7 +52,7 @@ class DetailsView(BaseView):
         await interaction.response.defer()
         await self.help_cmd(self.ctx)
     
-    @discord.ui.button(label="Tip Jar", style=discord.ButtonStyle.green)
+    @discord.ui.button(label="Donate", style=discord.ButtonStyle.green, emoji=get_emoji("token_white"))
     async def btn_tip_jar(
         self, button: discord.ui.Button, interaction: discord.Interaction
     ):

@@ -4,15 +4,19 @@ from embeds import get_default_embed
 from resources import get_emoji, get_icon
 
 class Menu(discord.ui.View):
-    def __init__(self, server_link: str, emoji1, emoji2):
+    def __init__(self, server_link: str):
         super().__init__()
 
-        tip_page = "https://ko-fi.com/jegarde"
+        kofi_page = "https://ko-fi.com/jegarde"
+        patreon_page = "https://patreon.com/jegarde"
 
-        btn = discord.ui.Button(label="Proceed", style=discord.ButtonStyle.url, url=tip_page, emoji=emoji1)
-        btn2 = discord.ui.Button(label="Home Server", style=discord.ButtonStyle.url, url=server_link, emoji=emoji2)
-        self.add_item(btn)
-        self.add_item(btn2)
+        buttons = [
+            discord.ui.Button(label="Patreon", style=discord.ButtonStyle.url, url=patreon_page, emoji=get_emoji("patreon")),
+            discord.ui.Button(label="Ko-fi", style=discord.ButtonStyle.url, url=kofi_page, emoji=get_emoji("kofi")),
+            discord.ui.Button(label="Home Server", style=discord.ButtonStyle.url, url=server_link, emoji=get_emoji("discord_white"))
+        ]
+        for i in buttons:
+            self.add_item(i)
         
 @slash_command(
     name="tip",
@@ -31,16 +35,14 @@ async def tip(
         f"{get_emoji('cheer_host')} Cheers! Feel free to tip if you're feeling extra cheerful and would like to say thank you for RecNetBot.\n\n" \
         f"{get_emoji('helpful')} By tipping, you support the free nature of RecNetBot and its development.\n\n" \
         f"{get_emoji('discord')} You will also automatically receive an exclusive role in [my home server]({server_link})!"
-        
-    em.set_footer(text="Tips are processed in Ko-fi", icon_url=get_icon("kofi"))
     
     # Token emoji
-    token = self.bot.get_emoji(1120446788072120432)
+    #token = self.bot.get_emoji(1120446788072120432)
 
     # Discord emoji
-    discord = self.bot.get_emoji(1120446959799500961)
+    #discord = self.bot.get_emoji(1120446959799500961)
 
-    await ctx.respond(embed=em, view=Menu(server_link, token, discord))
+    await ctx.respond(embed=em, view=Menu(server_link))
 
     
     
