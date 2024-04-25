@@ -3,6 +3,7 @@ from typing import List, Union
 import discord
 from discord import OptionChoice
 from difflib import SequenceMatcher
+from utils import shorten
 
 def similar(a, b):
     return SequenceMatcher(None, a, b).ratio()
@@ -19,21 +20,22 @@ async def cv2_searcher(ctx: discord.AutocompleteContext) -> List[OptionChoice]:
     direct_hit: Union[OptionChoice, None] = None
     query = ctx.value.lower()
     for i in chips.values():
+        option_name = shorten(i.name)
         chip_name = i.name.lower()
 
         # Prioritize exact matches
         if chip_name == query:
-            direct_hit = OptionChoice(i.name, i.uuid)
+            direct_hit = OptionChoice(option_name, i.uuid)
             continue
 
         # Secondly matches that start with the query
         if chip_name.startswith(query):
-            starts_with_query.append(OptionChoice(i.name, i.uuid))
+            starts_with_query.append(OptionChoice(option_name, i.uuid))
             continue
 
         # Lastly similar names
         if similar(query, chip_name) > 0.5:
-            similar_names.append(OptionChoice(i.name, i.uuid))
+            similar_names.append(OptionChoice(option_name, i.uuid))
 
     # Append to full list
     if starts_with_query:

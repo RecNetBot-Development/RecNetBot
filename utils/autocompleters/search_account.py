@@ -3,6 +3,7 @@ from recnetpy.dataclasses.account import Account
 from recnetpy.rest.exceptions import BadRequest
 from typing import List
 from database import ConnectionManager
+from utils import shorten
     
 async def account_searcher(ctx: discord.AutocompleteContext) -> List[str]:
     """
@@ -30,5 +31,5 @@ async def account_searcher(ctx: discord.AutocompleteContext) -> List[str]:
     
     # Otherwise return results
     return [
-        account.username for account in accounts
+        shorten(account.username, 80) for account in accounts
     ]
