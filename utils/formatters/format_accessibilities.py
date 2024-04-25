@@ -27,7 +27,6 @@ def format_accessibilities(room: Room) -> Tuple[List[str], List[str]]:
     supported.insert(0 if room.supports_screens else len(supported), format_ele(ACCESSIBILITY[0], room.supports_screens))
     supported.insert(0 if room.supports_walk_vr else len(supported), format_ele(ACCESSIBILITY[1], room.supports_walk_vr))
     supported.insert(0 if room.supports_teleport_vr else len(supported), format_ele(ACCESSIBILITY[2], room.supports_teleport_vr))
-    supported.insert(0 if room.supports_vr_low else len(supported), format_ele(ACCESSIBILITY[3], room.supports_vr_low))
     supported.insert(0 if room.supports_quest_two else len(supported), format_ele(ACCESSIBILITY[4], room.supports_quest_two))
     supported.insert(0 if room.supports_mobile else len(supported), format_ele(ACCESSIBILITY[5], room.supports_mobile))
     supported.insert(0 if room.supports_juniors else len(supported), format_ele(ACCESSIBILITY[6], room.supports_juniors))
