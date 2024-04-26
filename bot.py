@@ -83,14 +83,20 @@ class RecNetBot(commands.AutoShardedBot):
         # Persistent views
         self.persistent_views_added = False
 
-        # Initialize
+        # Initialize cogs
         self.cog_manager.buildCogs()
+        
+        # Is bot initialized?
+        self.initialized = False
 
 
     async def on_ready(self):
         """
         Do asynchronous setup here
         """
+        
+        # Don't initialize if already initialized
+        if self.initialized: return
 
         # Initialize databases
         self.db = await aiosqlite.connect(self.config["sqlite_database"], detect_types=sqlite3.PARSE_DECLTYPES)
@@ -146,6 +152,9 @@ class RecNetBot(commands.AutoShardedBot):
         if not self.production:
             for i in range(3):
                 print("DEVELOPER MODE! DO NOT USE IN PRODUCTION!")
+                
+        # Mark bot as initialized to prevent this function from running again
+        self.initialized = True
 
     def run(self):
         super().run(self.config['discord_token'])
