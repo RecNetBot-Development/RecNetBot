@@ -170,10 +170,10 @@ class ImageQuiz(BaseView):
         # Fetch images randomly until amount is met
         while len(self.image_cache[image_pool]) < self.amount:
             self.image_cache[image_pool] += await self.RecNet.images.fetch_many(random.sample(range(min_id, max_id), 100))
-        
+
         # Check if random images need to be drawn due to low amount
-        if len(self.image_cache[image_pool]) <= self.amount:
-            image = self.image_cache[image_pool]
+        if len(self.image_cache[image_pool]) == 1:
+            image = self.image_cache[image_pool][0]
             self.image_cache[image_pool] = []
         else:
             # Choose random image from image pool
