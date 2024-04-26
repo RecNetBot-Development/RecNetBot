@@ -122,7 +122,8 @@ class RecNetBot(commands.AutoShardedBot):
             await self.CatAPI.initialize()
             
         # Start task that backups database every once in a while
-        backup_database.start(self)
+        if not backup_database.is_running():
+            backup_database.start(self)
 
         self.verify_post = await self.RecNet.images.fetch(self.config["verify_post"])
         self.log_channel = await self.fetch_channel(self.config["log_channel"])
