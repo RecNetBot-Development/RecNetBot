@@ -7,13 +7,13 @@ from utils import img_url, room_url, BaseView
 from recnetpy.dataclasses.room import Room
 from discord.commands import slash_command
 from resources import get_icon
-from utils import load_config
+from utils import load_config, shorten
 
 config = load_config(is_production=True)
 
 class RoomButton(discord.ui.Button):
     def __init__(self, name: str, answer_showcase: bool = None):
-        self.original_label = name
+        self.original_label = shorten(name, 50)
         if answer_showcase is not None:
             super().__init__(style=discord.ButtonStyle.green if answer_showcase is True else discord.ButtonStyle.red, label=self.original_label, disabled=True)
         else:
