@@ -7,6 +7,7 @@ import aiohttp
 import math
 import asyncio
 import re
+from recnetpy.rest.exceptions import HTTPError
 from embeds import get_default_embed
 from discord.utils import escape_markdown, escape_mentions, get_or_fetch
 from typing import List, TYPE_CHECKING, Optional, Dict
@@ -119,7 +120,10 @@ async def validate_feeds(bot: 'RecNetBot'):
     if not feeds: return
     
     # Update all rooms
-    await fetch_rooms(bot, feeds)
+    try:
+        await fetch_rooms(bot, feeds)
+    except Exception as exc:
+        print(exc)  # Prevent feeds from crashing
     
     # Restart the task if it has crashed
     if not update_feeds.is_running():
