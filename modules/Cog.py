@@ -180,7 +180,7 @@ class Cog(commands.Cog):
                                   "- Make sure the bot does not have interfering roles\n" \
                                   "- Make sure the channel permissions do not overlap with the bot's required permissions\n" \
                                   f"- If all hope is lost, get help from [the support server]({self.bot.config['server_link']})"
-                em.add_field("RecNetBot Permission Requirements", value=embed_text)
+                em.add_field(name="RecNetBot Permission Requirements", value=embed_text)
 
                 await ctx.respond(embed=em)
                 return  # Don't report to log channel
