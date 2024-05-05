@@ -389,7 +389,7 @@ async def send(webhook: discord.Webhook, bot: 'RecNetBot', **kwargs) -> Optional
 
     return msg
 
-async def start_feed_tracking(bot: 'RecNetBot'):
+def start_feed_tracking(bot: 'RecNetBot'):
     # Check if dev mode for logs
     global dev_mode
     dev_mode = not bot.production
