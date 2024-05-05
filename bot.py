@@ -17,7 +17,7 @@ from googleapiclient import discovery
 from googleapiclient.errors import HttpError
 from google.auth.exceptions import DefaultCredentialsError
 from utils.paginator import RNBPage, RNBPaginator
-from tasks import start_feed_tracking, backup_database, update_feeds
+from tasks import start_feed_tracking, start_backup_task, backup_database, update_feeds
 
 class RecNetBot(commands.AutoShardedBot):
     def __init__(self, production: bool):
@@ -128,8 +128,7 @@ class RecNetBot(commands.AutoShardedBot):
             await self.CatAPI.initialize()
             
         # Start task that backups database every once in a while
-        if not backup_database.is_running():
-            backup_database.start(self)
+        start_backup_task(self)
 
         self.verify_post = await self.RecNet.images.fetch(self.config["verify_post"])
         self.log_channel = await self.fetch_channel(self.config["log_channel"])
