@@ -15,7 +15,7 @@ async def data(
     self, 
     ctx: discord.ApplicationContext, 
     room: Option(FetchRoom, name="name", description="Enter RR room", required=False, autocomplete=room_searcher),
-    _id: Option(int, name="id", description="Enter room ID instead", default=None, required=False)
+    _id: Option(str, name="id", description="Enter room ID instead", default=None, required=False)
 ):
     await ctx.interaction.response.defer()
 
