@@ -15,7 +15,7 @@ async def data(
     self, 
     ctx: discord.ApplicationContext, 
     account: Option(FetchAccount, name="username", description="Enter RR username", default=None, required=False, autocomplete=account_searcher),
-    _id: Option(int, name="id", description="Enter RR account ID instead", default=None, required=False)
+    _id: Option(str, name="id", description="Enter RR account ID instead", default=None, required=False)
 ):
     await ctx.interaction.response.defer()
 
