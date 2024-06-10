@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 
 class FetchImage(commands.Converter):
     """
-    Converts a room name param to a RR image
+    Converts a image param to a RR image
     """
     async def convert(self, ctx: discord.ApplicationContext, _image: str | int):
         image = None
