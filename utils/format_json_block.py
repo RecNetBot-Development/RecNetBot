@@ -6,4 +6,4 @@ def format_json_block(raw_json: dict) -> str:
     """
     
     formatted = json.dumps(raw_json, indent=4, separators=(",", ": "))
-    return f"```json\n{formatted}```"
+    return f"```json\n{formatted.replace('`', '')}```"  # Get rid of ` to prevent escaping
