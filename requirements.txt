@@ -1,5 +1,5 @@
 recnetpy==0.2.71
-py-cord @ git+https://github.com/Pycord-Development/pycord@f5683c5
+git+https://github.com/Pycord-Development/pycord@0536899144a1d912707ca603337767a5b98338e5
 google-api-python-client==2.62.0
 owoify-py==2.0.0
 CairoSVG==2.7.1
