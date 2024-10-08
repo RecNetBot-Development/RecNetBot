@@ -76,7 +76,7 @@ class RoleView(discord.ui.View):
             for role in chunk:
                 pieces.append(
                     #f"[{role.account.display_name}]({profile_url(role.account.username)})\n{get_emoji('arrow')}{role.role}"
-                    f"[{role.account.display_name}]({profile_url(role.account.username)}) • {role.name}"
+                    f"[@{role.account.username}]({profile_url(role.account.username)}) • {role.name}"
                 )
             
             em.description = "\n".join(pieces)
@@ -149,6 +149,16 @@ class Dropdown(discord.ui.Select):
                 )
             )
 
+        # If hosts
+        contributors = len(list(filter(lambda role: role.id == 25, self.roles)))
+        if contributors:
+            options.append(
+                discord.SelectOption(
+                    label=f"Contributor ({contributors})",
+                    emoji=get_emoji('role_host')
+                )
+            )
+
         super().__init__(
             placeholder="Select Roles",
             min_values=1,
@@ -169,6 +179,7 @@ class Dropdown(discord.ui.Select):
             "Creator": 255,
             "Temporary Co-Owner": 31,
             "Co-Owner": 30,
+            "Contributor": 25,
             "Moderator": 20,
             "Host": 10
         }
