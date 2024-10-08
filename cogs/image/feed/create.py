@@ -84,11 +84,19 @@ async def create(
 ):
     await ctx.interaction.response.defer()
 
+    # How many feeds can a user create
+    max_feeds = 2
+
     # Support server link
     server_link = ctx.bot.config.get('server_link')
 
-    # How many feeds can a user create
-    max_feeds = 2
+    # Forbid threads
+    if type(ctx.interaction.channel) is discord.threads.Thread:
+        await ctx.respond(
+            "You can't create photo feeds in threads! [|=(]\n\n" \
+            f"If this is a mistake, reach out to us [here](<{server_link}>)."
+        )
+        return
 
     # Make sure user is admin in server
     if not ctx.author.guild_permissions.administrator:
@@ -167,6 +175,7 @@ async def create(
             "Thanks for trying this feature out! <3", 
             ephemeral=True
         )
+
 
     # Wait for response
     await view.wait()
