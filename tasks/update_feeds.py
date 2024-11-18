@@ -317,7 +317,7 @@ def image_message(img: recnetpy.dataclasses.Image, filename: str = None) -> Dict
 
     # Create content
     username = escape_mentions(escape_markdown(img.player.username))
-    content = f"New photo taken in ^{img.room.name} by @{username} — <t:{img.created_at}:R>"
+    content = f"New photo taken in ^{img.room.name} by @{escape_mentions(username)} — <t:{img.created_at}:R>"
 
     # Add description in content if any
     if img.description:
