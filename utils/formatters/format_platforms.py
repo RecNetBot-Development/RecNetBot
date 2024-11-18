@@ -9,8 +9,10 @@ PLATFORM_URLS = {
     'ios': "https://apps.apple.com/us/app/rec-room/id1450306065", 
     'android': "https://play.google.com/store/apps/details?id=com.AgainstGravity.RecRoom",
     'standalone': "https://rec.net/download",
-    'pico': "https://www.picoxr.com/global/games/rec-room"
+    'pico': "https://www.picoxr.com/global/games/rec-room",
+    'nintendo': "https://www.nintendo.com/us/store/products/rec-room-switch/"
 }
+TOTAL_PLATFORMS = len(PLATFORM_URLS.keys())
 
 def format_platforms(platforms: List[str]) -> List[str]:
     """

@@ -1,6 +1,6 @@
 import discord
 from utils import profile_url, img_url
-from utils.formatters import format_platforms
+from utils.formatters import format_platforms, TOTAL_PLATFORMS
 from utils.converters import FetchAccount
 from embeds import get_default_embed
 from discord.commands import slash_command
@@ -47,5 +47,12 @@ async def platforms(
     # Create the embed and send
     em.description = "All the platforms this user has played on:\n"
     em.description += ' '.join(format_platforms(account.platforms))
+
+    # Include extra info on how many total platforms the user has played on
+    extra_info = f"{len(account.platforms)} of {TOTAL_PLATFORMS} platforms."
+    if len(account.platforms) == TOTAL_PLATFORMS:
+        extra_info += " Nice collection!"
+    em.set_footer(text=extra_info)
+    
     await ctx.respond(embed=em, view=Menu(account.username))
     

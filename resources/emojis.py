@@ -121,6 +121,7 @@ class Emoji:
     token_white = "<:token2:1120446788072120432>"
     discord_white = "<:discord2:1120446959799500961>"
     kofi = "<:kofi:1120441142463434752>"
+    nintendo = "<:nintendo:1308086794088091648>"
 
 
 class CategoryIcons:
@@ -176,3 +177,4 @@ def get_emoji(name: str) -> str:
     emoji_name = name.lower()
     emoji = getattr(Emoji, emoji_name) if hasattr(Emoji, emoji_name) else Emoji.unknown
     return emoji
+    #return f"<:{name}:{emoji}>" if isinstance(emoji, int) else emoji
