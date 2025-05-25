@@ -56,8 +56,9 @@ async def fetch_profile_embed(account: Account, include: List = ["subscriber", "
     optional include: ["subscriber", "level", "bio", "influencer"]
     """
     
-    if "subscriber" in include:
-        await account.get_subscriber_count()
+    # Temporary fix for 403 errors with sub count
+    #if "subscriber" in include:
+    #    await account.get_subscriber_count()
     if "level" in include:
         await account.get_level()
     if "bio" in include:
